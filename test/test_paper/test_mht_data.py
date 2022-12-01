@@ -10,4 +10,9 @@ def test_mht_init():
          "target_year": 2022, "test_type": "mht"},
     ]
     for row in rows:
-        MhtData(**row)
+        md = MhtData(**row)
+        assert len(md.scale_student_score) == 3
+        assert len(md.sub_scale_score) == 4
+        assert len(md.grade_scale_student_score) == 3
+        assert len(md.grade_special_students) == 3
+
