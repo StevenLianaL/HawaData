@@ -105,6 +105,13 @@ class DataQuery:
         sql = f"select * from items where id in {tuple(item_ids)}"
         return pd.read_sql(sql, self.db.conn)
 
+    def query_item_codes(self, item_ids: list[int]):
+        item_code_sql = f'select ic.item_id,ic.code,ic.category,c.name ' \
+                        f'from item_codes ic left join codebook c on ic.code = c.code ' \
+                        f'where ic.item_id in {tuple(item_ids)};'
+        item_codes = pd.read_sql(item_code_sql, self.db.conn)
+        return item_codes
+
     @property
     def conn(self):
         return self.db.conn

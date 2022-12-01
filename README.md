@@ -6,3 +6,7 @@
    1. 设置MySQL数据库
    2. 设置Redis数据库
    3. 设置MongoDB数据库
+   4. 设置 COMPLETED True
+2. 启动服务
+   1. 启动MongoDB数据库
+   `` .connect()``
