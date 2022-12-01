@@ -1,6 +1,6 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
 from dataclasses import dataclass, field
-from typing import Optional, ClassVar, Any
+from typing import Optional, ClassVar, Any, Set
 
 import pandas as pd
 import pendulum
@@ -33,7 +33,8 @@ class CommonData(metaclass=MetaCommomData):
 
     # 卷子
     test_type: str = ''
-    test_types: list[str] = field(default_factory=lambda: ['publicWelfare', 'ZjpublicWelfare'])
+    test_types: list = field(default_factory=list)
+    code_word_list: Set[str] = field(default=set)  # 卷子使用指标的词表，详见继承
 
     # meta class tool
     db: ClassVar[DbUtil] = None
@@ -74,7 +75,6 @@ class CommonData(metaclass=MetaCommomData):
         # 初始化数据
         init_functions = [i for i in dir(self) if i.startswith('_to_init_')]
         for func in init_functions:
-            project.logger.debug(f'init: {func}')
             getattr(self, func)()
 
         # 构建辅助工具
@@ -83,7 +83,6 @@ class CommonData(metaclass=MetaCommomData):
         # 计算数据
         count_functions = [i for i in dir(self) if i.startswith('_to_count_')]
         for func in count_functions:
-            project.logger.debug(f'count: {func}')
             getattr(self, func)()
 
     def _to_init_a_meta_unit(self):
@@ -93,6 +92,7 @@ class CommonData(metaclass=MetaCommomData):
         if not self.target_year:
             self.target_year = pendulum.now().year
         self.last_year_num = self.target_year - 1
+        project.logger.info(f'target_year: {self.target_year}')
 
     def _to_init_c_schools(self):
         if self.school_ids:
@@ -127,16 +127,19 @@ class CommonData(metaclass=MetaCommomData):
 
     def _to_init_e_answers(self):
         self.answers = self.query.query_answers(case_ids=self.case_ids)
+        project.logger.debug(f'answers: {len(self.answers)}')
 
     def _to_init_f_students(self):
         self.student_ids = set(self.answers['student_id'].tolist())
         student_id_list = list(self.student_ids)
         self.students = self.query.query_students(student_id_list)
         self.student_count = len(self.student_ids)
+        project.logger.debug(f'students: {self.student_count}')
 
     def _to_init_g_items(self):
         self.item_ids = set(self.answers['item_id'].drop_duplicates())
         self.items = self.query.query_items(self.item_ids)
+        project.logger.debug(f'items: {len(self.items)}')
 
     def _to_build_helper(self):
         self.grade = GradeData(case_ids=self.case_ids)
@@ -145,28 +148,34 @@ class CommonData(metaclass=MetaCommomData):
     def _to_count_a_final_answers(self):
         items = {}
         item_codes = self.query.query_item_codes(self.item_ids)
-
+        project.logger.debug(f"{self.code_word_list=}")
         for item_id, codes in item_codes.groupby('item_id'):
             items[item_id] = [i for i in codes.to_dict(orient='records')
-                              if i['category'] in {'dimension', 'field'}]
+                              if i['category'] in self.code_word_list]
 
         data = pd.merge(
             self.answers, self.students.loc[:, ['id', 'gender', 'first_name', 'last_name']],
             left_on='student_id', right_on='id'
         )
-        data = pd.merge(data, item_codes, left_on='item_id', right_on='item_id')
+        project.logger.debug(f"ans merge students {len(data)}")
+        # inner 时，final_answers 和 answers 数目不等：final_answers 过滤掉了 没有 code_word_list（维度领域或其他）的题目
+        # outer 时，数目相等，不过滤任何题目
+        data = pd.merge(data, item_codes, left_on='item_id', right_on='item_id', how='inner')
+
         data['cls'] = data['id_y'].apply(lambda x: int(str(x)[13:15]))
         data['grade'] = data['case_id'].apply(lambda x: int(str(x)[-2:]))
         data['username'] = data.apply(lambda x: f"{x.last_name}{x.first_name}", axis=1)
-        data['dimension'] = data.item_id.apply(self._count_field, args=('dimension', items))
-        data['field'] = data.item_id.apply(self._count_field, args=('field', items))
+        for code_word in self.code_word_list:
+            data[code_word] = data.item_id.apply(self._count_field, args=(code_word, items))
         self.final_answers = data.drop_duplicates(subset=['case_id', 'student_id', 'item_id'])
+        project.logger.debug(f'final_answers: {len(self.final_answers)}')
 
     def _to_count_b_final_scores(self):
         res = self.final_answers.groupby(by=['grade', 'gender', 'student_id']).score.mean().reset_index()
         res = res.assign(score=res.score * 100)
         res['level'] = res.score.apply(lambda x: self.count_level(x))
         self.final_scores = res
+        project.logger.debug(f'final_scores: {len(self.final_scores)}')
 
     def _count_field(self, item_id: int, code: str, items: dict):
         return [i for i in items[item_id] if i['category'] == code][0]['name']

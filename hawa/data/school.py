@@ -5,10 +5,10 @@ import pandas as pd
 from munch import Munch
 
 from hawa.config import project
-from hawa.paper.health import HealthData
+from hawa.paper.health import HealthReportData
 
 
-class SchoolHealthData(HealthData):
+class SchoolHealthReportData(HealthReportData):
     meta_unit_type: str = 'school'
 
     grade_gender_distribution = None

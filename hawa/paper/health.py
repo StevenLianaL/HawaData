@@ -3,7 +3,7 @@ import itertools
 import json
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Union
+from typing import Union, Set
 
 import pandas as pd
 from munch import Munch
@@ -13,8 +13,12 @@ from hawa.config import project
 
 
 @dataclass
-class HealthData(CommonData):
+class HealthReportData(CommonData):
     """健康测评数据，不应直接使用，应向下继承 city/district/school 等"""
+
+    test_types: list[str] = field(default_factory=lambda: ['publicWelfare', 'ZjpublicWelfare'])
+    code_word_list: Set[str] = field(default_factory=lambda: {'dimension', 'field'})
+
     # 计算数据
     code_scores: pd.DataFrame = pd.DataFrame()
     summary_scores: dict = field(default_factory=dict)

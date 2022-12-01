@@ -90,9 +90,9 @@ class DataQuery:
         if len(case_ids) == 0:
             return []
         elif len(case_ids) == 1:
-            sql = f"select * from answers where case_id={case_ids[0]};"
+            sql = f"select * from answers where case_id={case_ids[0]} and valid=1;"
         else:
-            sql = f"select * from answers where case_id in {tuple(case_ids)};"
+            sql = f"select * from answers where case_id in {tuple(case_ids)} and valid=1;"
         answers = pd.read_sql(sql, self.db.conn).drop_duplicates(subset=['case_id', 'student_id', 'item_id'])
         return answers
 
