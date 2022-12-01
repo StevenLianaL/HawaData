@@ -1,3 +1,4 @@
+from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Set
 
@@ -15,12 +16,28 @@ class MhtData(CommonData):
         for score, row in self.final_scores.groupby('score'):
             data.append((int(score), row.score.count()))
         data.sort(key=lambda x: x[0])
-        scores, people_count = [], []
+        x_axis, y_axis = [], []
         for (score, student_count) in data:
-            scores.append(score)
-            people_count.append(student_count)
+            x_axis.append(score)
+            y_axis.append(student_count)
         return {
             "name": f"{self.meta_unit.name}参测学生总量表得分图",
-            "scores": scores,
-            "counts": people_count
+            "x_scores": x_axis,
+            "y_counts": y_axis
+        }
+
+    def _to_count_d_sub_code_score(self):
+        """在 8 个子量表上的得分图，横轴量表，纵轴分数"""
+        mht_scores = defaultdict(list)
+        x_axis, y_axis = [], []
+        for (student_id, mht), group in self.final_answers.groupby(by=['student_id', 'mht']):
+            if mht == '效度':
+                continue
+            mht_scores[mht].append(group.score.sum())
+        for mht, score_list in mht_scores.items():
+            y_axis.append(round(sum(score_list) / len(score_list), 1))
+        return {
+            "name": f"{self.meta_unit.name}参测学生在 8 个子量表上的得分图",
+            "x_mht": x_axis,
+            "y_count": y_axis,
         }
