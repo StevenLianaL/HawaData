@@ -35,3 +35,4 @@ def test_mht_web_run():
 
         assert len(md.scale_student_score['x_scores']) == 100
         assert len(md.scale_student_score['y_counts']) == 100
+        print(md.meta_unit)

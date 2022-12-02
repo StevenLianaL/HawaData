@@ -4,4 +4,5 @@ text = (
     ("0.0.3", "Add new inheritance classes."),
     ("0.0.4", "Fix mht data web support."),
     ("0.0.5", "Fix mht student score group error"),
+    ("0.0.6", "Fix mro order"),
 )

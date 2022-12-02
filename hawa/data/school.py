@@ -12,10 +12,12 @@ from hawa.paper.mht import MhtWebData
 
 @dataclass
 class SchoolMixin:
+    """为了在 __mro__ 中有更高的优先级， mixin 在继承时，应该放在最前"""
     meta_unit_type: str = 'school'
 
 
-class SchoolHealthReportData(HealthReportData, SchoolMixin):
+@dataclass
+class SchoolHealthReportData(SchoolMixin, HealthReportData):
     grade_gender_distribution = None
     grade_score = None  # 年级最高、最低、平均分
     grade_rank_dis = None  # 年级、性别、水平学生分布占比
@@ -261,5 +263,7 @@ class SchoolHealthReportData(HealthReportData, SchoolMixin):
             return text.replace('还', '')
 
 
-class SchoolMhtWebData(MhtWebData, SchoolMixin):
+@dataclass
+class SchoolMhtWebData(SchoolMixin, MhtWebData):
+    meta_unit_type: str = 'school'
     pass
