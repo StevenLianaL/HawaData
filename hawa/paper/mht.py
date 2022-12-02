@@ -5,6 +5,7 @@ from typing import Set
 import pandas as pd
 
 from hawa.common.data import CommonData
+from hawa.config import project
 
 
 @dataclass
@@ -20,8 +21,31 @@ class MhtData(CommonData):
     grade_special_students: dict = field(default_factory=dict)
 
     # 计算数据2
+    invalid_student_count: int = 0
+    unused_student_count: int = 0
+    unused_student_ids: list[int] = field(default_factory=list)
     mht_final_answers: pd.DataFrame = pd.DataFrame()
     mht_final_scores: pd.DataFrame = pd.DataFrame()
+
+    def _to_count_a_final_answers(self):
+        super()._to_count_a_final_answers()
+        old_answers = self.final_answers
+        old_answers['score'] = old_answers['score'].astype(int)
+
+        # 去除具备社会期许效应的学生
+        to_count_validity_answers = old_answers.loc[old_answers['mht'] == '效度', :]
+        unused_student_ids = []
+        for student_id, group in to_count_validity_answers.groupby(by='student_id'):
+            if group['score'].sum() >= 8:
+                unused_student_ids.append(student_id)
+
+        self.unused_student_ids = unused_student_ids
+        self.unused_student_count = len(unused_student_ids)
+        self.total_student_count = self.student_count + self.unused_student_count
+
+        self.final_answers = old_answers[~old_answers['student_id'].isin(unused_student_ids)]
+
+        project.logger.debug(f'final_answers: {len(self.final_answers)}')
 
     def _to_count_c_mht_ans_score(self):
         self.mht_final_answers = self.final_answers.loc[self.final_answers['mht'] != '效度', :]

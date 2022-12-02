@@ -6,5 +6,6 @@ text = (
     ("0.0.5", "Fix mht student score group error."),
     ("0.0.6", "Fix mro order."),
     ("0.0.7", "Add mht grade name."),
-    ("0.1.0", "Filter validity")
+    ("0.1.0", "Filter validity"),
+    ("0.1.1", "Revove mht unused students"),
 )
