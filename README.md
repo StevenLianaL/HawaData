@@ -16,8 +16,12 @@
 4. 设置 COMPLETED True
 ````
 set_project() # 参数见文档
+# or
+set_project(build_set_project_params(project))
+
 ````
 ### 2. 启动服务
 1. 启动MongoDB数据库
 ```` 
 .connect()
+## 版本
