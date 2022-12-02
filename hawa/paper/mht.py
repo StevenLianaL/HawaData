@@ -55,7 +55,7 @@ class MhtData(CommonData):
     def _tool_count_student_score(self, score: pd.DataFrame):
         data = []
         for score, row in score.groupby('score'):
-            data.append((int(score), row.score.count()))
+            data.append((int(score), int(row.score.count())))
         data.sort(key=lambda x: x[0])
         x_axis, y_axis = [], []
         for (score, student_count) in data:
@@ -76,7 +76,7 @@ class MhtData(CommonData):
             mht_scores[mht].append(group.score.sum())
         for mht, score_list in mht_scores.items():
             x_axis.append(mht)
-            y_axis.append(round(sum(score_list) / len(score_list), 1))
+            y_axis.append(round(float(sum(score_list) / len(score_list)), 1))
         return {
             "name": f"{self.meta_unit.name}参测学生在 8 个子量表上的得分图" if not name else name,
             "unit_name": unit_name,
