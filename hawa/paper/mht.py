@@ -79,7 +79,12 @@ class MhtData(CommonData):
             y_axis.append(round(sum(score_list) / len(score_list), 1))
         return {
             "name": f"{self.meta_unit.name}参测学生在 8 个子量表上的得分图" if not name else name,
-            "unit_name": "",
+            "unit_name": unit_name,
             "x_mht": x_axis,
             "y_count": y_axis,
         }
+
+
+@dataclass
+class MhtWebData(MhtData):
+    pass

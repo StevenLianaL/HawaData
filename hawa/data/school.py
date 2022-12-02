@@ -1,16 +1,21 @@
 import random
 from collections import defaultdict
+from dataclasses import dataclass
 
 import pandas as pd
 from munch import Munch
 
 from hawa.config import project
 from hawa.paper.health import HealthReportData
+from hawa.paper.mht import MhtWebData
 
 
-class SchoolHealthReportData(HealthReportData):
+@dataclass
+class SchoolMixin:
     meta_unit_type: str = 'school'
 
+
+class SchoolHealthReportData(HealthReportData, SchoolMixin):
     grade_gender_distribution = None
     grade_score = None  # 年级最高、最低、平均分
     grade_rank_dis = None  # 年级、性别、水平学生分布占比
@@ -254,3 +259,7 @@ class SchoolHealthReportData(HealthReportData):
             return text
         else:
             return text.replace('还', '')
+
+
+class SchoolMhtWebData(MhtWebData, SchoolMixin):
+    pass

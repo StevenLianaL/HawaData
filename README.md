@@ -24,4 +24,15 @@ set_project(build_set_project_params(project))
 1. 启动MongoDB数据库
 ```` 
 .connect()
+````
+
+### 3. 使用
+````
+# 学校报告数据
+data = SchoolHealthReportData(**{"meta_unit_id": 3707030003, "target_year": 2021})
+# mht web 数据
+data = SchoolMhtWebData(**{"meta_unit_id": 4107110001, "target_year": 2022})
+````
+
+
 ## 版本
