@@ -5,6 +5,7 @@ from typing import Set
 import pandas as pd
 
 from hawa.common.data import CommonData
+from hawa.config import project
 
 
 @dataclass
@@ -32,7 +33,7 @@ class MhtData(CommonData):
         """参考 _to_count_c_student_score， 分年级计算"""
         res = {}
         for grade, grade_group in self.final_scores.groupby(by='grade'):
-            grade_data = self._tool_count_student_score(score=grade_group)
+            grade_data = self._tool_count_student_score(score=grade_group, grade=grade)
             res[grade] = grade_data
         self.grade_scale_student_score = res
 
@@ -52,7 +53,7 @@ class MhtData(CommonData):
         self.grade_special_students = res
 
     # 计算工具
-    def _tool_count_student_score(self, score: pd.DataFrame):
+    def _tool_count_student_score(self, score: pd.DataFrame, grade: int = None):
         score['score'] = score['score'].astype(int)
         data = []
         handred = set(range(1, 101))
@@ -66,13 +67,19 @@ class MhtData(CommonData):
         for (score, student_count) in data:
             x_axis.append(score)
             y_axis.append(student_count)
+
+        if grade:
+            name = f"{self.meta_unit.name}{project.grade_mapping[grade]}年级参测学生总量表得分图"
+        else:
+            name = f"{self.meta_unit.name}参测学生总量表得分图"
+
         return {
-            "name": f"{self.meta_unit.name}参测学生总量表得分图",
+            "name": name,
             "x_scores": x_axis,
             "y_counts": y_axis
         }
 
-    def _tool_count_sub_code_score(self, answers: pd.DataFrame, name: str = '', unit_name: str = ''):
+    def _tool_count_sub_code_score(self, answers: pd.DataFrame, name: str = '', unit_name: str = '', grade: int = None):
         mht_scores = defaultdict(list)
         x_axis, y_axis = [], []
         for (student_id, mht), group in answers.groupby(by=['student_id', 'mht']):
@@ -82,8 +89,14 @@ class MhtData(CommonData):
         for mht, score_list in mht_scores.items():
             x_axis.append(mht)
             y_axis.append(round(float(sum(score_list) / len(score_list)), 1))
+
+        if grade:
+            name = f"{self.meta_unit.name}{project.grade_mapping[grade]}年级参测学生在8个子量表上的得分图"
+        else:
+            name = f"{self.meta_unit.name}参测学生在8个子量表上的得分图"
+
         return {
-            "name": f"{self.meta_unit.name}参测学生在 8 个子量表上的得分图" if not name else name,
+            "name": name,
             "unit_name": unit_name,
             "x_mht": x_axis,
             "y_count": y_axis,
