@@ -5,7 +5,6 @@ from typing import Set
 import pandas as pd
 
 from hawa.common.data import CommonData
-from hawa.config import project
 
 
 @dataclass
@@ -36,14 +35,14 @@ class MhtData(CommonData):
     def _to_count_e_sub_scale_code_score(self):
         """在 8 个子量表上的得分图，横轴量表，纵轴分数"""
         self.sub_scale_score = self._tool_count_sub_code_score(
-            answers=self.mht_final_answers, unit_name=self.meta_unit.name
+            answers=self.mht_final_answers
         )
 
     def _to_count_f_grade_student_score(self):
         """参考 _to_count_c_student_score， 分年级计算"""
         res = {}
         for grade, grade_group in self.mht_final_scores.groupby(by='grade'):
-            grade_data = self._tool_count_student_score(score=grade_group, grade=grade)
+            grade_data = self._tool_count_student_score(score=grade_group)
             res[grade] = grade_data
         self.grade_scale_student_score = res
 
@@ -51,9 +50,7 @@ class MhtData(CommonData):
         """在 8 个子量表上的得分图，横轴量表，纵轴分数"""
         res = {}
         for grade, grade_ans_group in self.mht_final_answers.groupby('grade'):
-            grade_data = self._tool_count_sub_code_score(
-                answers=grade_ans_group, grade=grade
-            )
+            grade_data = self._tool_count_sub_code_score(answers=grade_ans_group)
             res[grade] = grade_data
         self.grade_sub_scale_score = res
 
@@ -64,16 +61,12 @@ class MhtData(CommonData):
             for student_id, student_group in grade_ans_group.groupby('student_id'):
                 student_name = student_group['username'].tolist()[0]
                 res[grade].append(
-                    self._tool_count_sub_code_score(
-                        answers=student_group,
-                        name=f"{student_name}8个子量表得分",
-                        unit_name=student_name
-                    )
+                    self._tool_count_sub_code_score(answers=student_group, unit_name=student_name)
                 )
         self.grade_special_students = res
 
     # 计算工具
-    def _tool_count_student_score(self, score: pd.DataFrame, grade: int = None):
+    def _tool_count_student_score(self, score: pd.DataFrame):
         data = []
         handred = set(range(1, 101))
         for score, row in score.groupby('score'):
@@ -87,18 +80,13 @@ class MhtData(CommonData):
             x_axis.append(score)
             y_axis.append(student_count)
 
-        if grade:
-            name = f"{self.meta_unit.name}{project.grade_mapping[grade]}年级参测学生总量表得分图"
-        else:
-            name = f"{self.meta_unit.name}参测学生总量表得分图"
-
         return {
-            "name": name,
-            "x_scores": x_axis,
-            "y_counts": y_axis
+            "name": self.meta_unit.name,
+            "x_axis": x_axis,
+            "y_axis": y_axis
         }
 
-    def _tool_count_sub_code_score(self, answers: pd.DataFrame, name: str = '', unit_name: str = '', grade: int = None):
+    def _tool_count_sub_code_score(self, answers: pd.DataFrame, unit_name: str = ''):
         mht_scores = defaultdict(list)
         x_axis, y_axis = [], []
         for (student_id, mht), group in answers.groupby(by=['student_id', 'mht']):
@@ -108,19 +96,11 @@ class MhtData(CommonData):
         for mht, score_list in mht_scores.items():
             x_axis.append(mht)
             y_axis.append(round(float(sum(score_list) / len(score_list)), 1))
-        if name:
-            name = f"{name}在8个子量表上的得分图"
-        else:
-            if grade:
-                name = f"{self.meta_unit.name}{project.grade_mapping[grade]}年级参测学生在8个子量表上的得分图"
-            else:
-                name = f"{self.meta_unit.name}参测学生在8个子量表上的得分图"
 
         return {
-            "name": name,
-            "unit_name": unit_name,
-            "x_mht": x_axis,
-            "y_count": y_axis,
+            "name": unit_name if unit_name else self.meta_unit.name,
+            "x_axis": x_axis,
+            "y_axis": y_axis,
         }
 
 

@@ -22,7 +22,7 @@ def test_mht_web_run():
     for row in rows:
         md = SchoolMhtWebData(**row)
         assert len(md.scale_student_score) == 3
-        assert len(md.sub_scale_score) == 4
+        assert len(md.sub_scale_score) == 3
         assert len(md.grade_scale_student_score) == 3
         assert len(md.grade_special_students) == 3
 
@@ -34,6 +34,8 @@ def test_mht_web_run():
         for d in data:
             validate_data_for_web(d)
 
-        assert len(md.scale_student_score['x_scores']) == 100
-        assert len(md.scale_student_score['y_counts']) == 100
-        print(md.meta_unit)
+        assert len(md.scale_student_score['x_axis']) == 100
+        assert len(md.scale_student_score['y_axis']) == 100
+        print(md.sub_scale_score)
+
+        print(md.grade_sub_scale_score)
