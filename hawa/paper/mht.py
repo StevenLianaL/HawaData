@@ -53,9 +53,14 @@ class MhtData(CommonData):
 
     # 计算工具
     def _tool_count_student_score(self, score: pd.DataFrame):
+        score['score'] = score['score'].astype(int)
         data = []
+        handred = set(range(1, 101))
         for score, row in score.groupby('score'):
-            data.append((int(score), int(row.score.count())))
+            handred.discard(score)
+            data.append((score, int(row.score.count())))
+        for score in handred:
+            data.append((score, 0))
         data.sort(key=lambda x: x[0])
         x_axis, y_axis = [], []
         for (score, student_count) in data:

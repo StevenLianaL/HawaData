@@ -5,7 +5,7 @@ from verion_text import text
 with open("README.md", "r", encoding='utf8') as fh:
     long_description = fh.read()
     for version, description in text:
-        long_description += f"- {version} {description}"
+        long_description += f"\n- {version} {description}"
 
 with open("requirements.txt", "r", encoding='utf8') as fh:
     requires = fh.read().replace('==', '>=')

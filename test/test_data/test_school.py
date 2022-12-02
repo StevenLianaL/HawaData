@@ -32,3 +32,6 @@ def test_mht_web_run():
         ]
         for d in data:
             validate_data_for_web(d)
+
+        assert len(md.scale_student_score['x_scores']) == 100
+        assert len(md.scale_student_score['y_counts']) == 100

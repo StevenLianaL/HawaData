@@ -3,4 +3,5 @@ text = (
     ("0.0.2", "Add build_set_project_params function."),
     ("0.0.3", "Add new inheritance classes."),
     ("0.0.4", "Fix mht data web support."),
+    ("0.0.5", "Fix mht student score group error"),
 )
