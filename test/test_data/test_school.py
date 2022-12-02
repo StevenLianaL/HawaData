@@ -28,7 +28,8 @@ def test_mht_web_run():
 
         data = [
             md.scale_student_score, md.sub_scale_score,
-            md.grade_scale_student_score, md.grade_special_students
+            md.grade_scale_student_score, md.grade_sub_scale_score,
+            md.grade_special_students
         ]
         for d in data:
             validate_data_for_web(d)

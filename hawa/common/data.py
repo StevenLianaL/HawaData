@@ -171,10 +171,7 @@ class CommonData(metaclass=MetaCommomData):
         project.logger.debug(f'final_answers: {len(self.final_answers)}')
 
     def _to_count_b_final_scores(self):
-        res = self.final_answers.groupby(by=['grade', 'gender', 'student_id']).score.mean().reset_index()
-        res = res.assign(score=res.score * 100)
-        res['level'] = res.score.apply(lambda x: self.count_level(x))
-        self.final_scores = res
+        self.final_scores = self.count_final_score(answers=self.final_answers)
         project.logger.debug(f'final_scores: {len(self.final_scores)}')
 
     def _count_field(self, item_id: int, code: str, items: dict):
@@ -193,3 +190,9 @@ class CommonData(metaclass=MetaCommomData):
             a = 'D'
         key = "RANK_LABEL" if mode == 'r' else 'FEEDBACK_LEVEL'
         return project.ranks[key][a]
+
+    def count_final_score(self, answers: pd.DataFrame):
+        res = answers.groupby(by=['grade', 'gender', 'student_id']).score.mean().reset_index()
+        res = res.assign(score=res.score * 100)
+        res['level'] = res.score.apply(lambda x: self.count_level(x))
+        return res
