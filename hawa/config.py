@@ -13,7 +13,7 @@ def is_debug():
 class Settings(BaseSettings):
     # mode
     DEBUG = is_debug()
-    COMPLETED = True  # 配置是否加载完成
+    COMPLETED = False  # 配置是否加载完成
 
     PROJECT = 'HawaData'
     client_id = 6
