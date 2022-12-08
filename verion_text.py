@@ -9,4 +9,5 @@ text = (
     ("0.1.0", "Filter validity"),
     ("0.1.1", "Revove mht unused students"),
     ("0.1.2", "Use sqlarchemy engine replace mysqlclient conn"),
+    ("0.1.3", "Fix local engine"),
 )
