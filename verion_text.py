@@ -10,4 +10,5 @@ text = (
     ("0.1.1", "Revove mht unused students"),
     ("0.1.2", "Use sqlarchemy engine replace mysqlclient conn"),
     ("0.1.3", "Fix local engine"),
+    ("0.1.4", "Fix not same data by mht final score"),
 )
