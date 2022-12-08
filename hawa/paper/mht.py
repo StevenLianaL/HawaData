@@ -90,8 +90,7 @@ class MhtData(CommonData):
     def _tool_count_student_score(self, score: pd.DataFrame):
         data = []
         handred = set(range(0, 101))
-
-        score['score'] = score.score.astype(int)
+        score['score'] = score.score.apply(lambda x: int(round(x, 0)))
 
         for s, row in score.groupby('score'):
             handred.discard(s)

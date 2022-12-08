@@ -34,8 +34,6 @@ def test_mht_web_run():
         for d in data:
             validate_data_for_web(d)
 
-        print(md.scale_student_score['x_axis'], 'axis')
-
         assert len(md.scale_student_score['x_axis']) == 101
         assert len(md.scale_student_score['y_axis']) == 101
     # OK 207 -> 187 效度>7 筛选20
