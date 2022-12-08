@@ -34,11 +34,12 @@ def test_mht_web_run():
         for d in data:
             validate_data_for_web(d)
 
+        print(md.scale_student_score['x_axis'], 'axis')
+
         assert len(md.scale_student_score['x_axis']) == 101
         assert len(md.scale_student_score['y_axis']) == 101
-        sss = md.scale_student_score
-        res = []
-        for (x, y) in zip(sss['x_axis'], sss['y_axis']):
-            if x > 65 and y:
-                res.append(y)
-        print(sum(res))
+    # OK 207 -> 187 效度>7 筛选20
+
+    # NO 总量表分（包含效度） > 65， 正确 包含效度 18人, HawaData 20人， 原因为 去掉效度题（重复计算 score ）后，只有90题，导致总分增大。
+
+    # 刘紫凝 66 宋子晨 68

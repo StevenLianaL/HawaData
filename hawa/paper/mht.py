@@ -25,7 +25,6 @@ class MhtData(CommonData):
     unused_student_count: int = 0
     unused_student_ids: list[int] = field(default_factory=list)
     mht_final_answers: pd.DataFrame = pd.DataFrame()
-    mht_final_scores: pd.DataFrame = pd.DataFrame()
 
     def _to_count_a_final_answers(self):
         super()._to_count_a_final_answers()
@@ -49,12 +48,10 @@ class MhtData(CommonData):
 
     def _to_count_c_mht_ans_score(self):
         self.mht_final_answers = self.final_answers.loc[self.final_answers['mht'] != '效度', :]
-        self.mht_final_scores = self.count_final_score(answers=self.mht_final_answers)
-        self.mht_final_scores['score'] = self.mht_final_scores['score'].astype(int)
 
     def _to_count_d_scale_student_score(self):
         """学生总量表得分图数据，横轴分数，纵轴人数 （总 及 各年级）"""
-        self.scale_student_score = self._tool_count_student_score(score=self.mht_final_scores)
+        self.scale_student_score = self._tool_count_student_score(score=self.final_scores)
 
     def _to_count_e_sub_scale_code_score(self):
         """在 8 个子量表上的得分图，横轴量表，纵轴分数"""
@@ -65,7 +62,7 @@ class MhtData(CommonData):
     def _to_count_f_grade_student_score(self):
         """参考 _to_count_c_student_score， 分年级计算"""
         res = {}
-        for grade, grade_group in self.mht_final_scores.groupby(by='grade'):
+        for grade, grade_group in self.final_scores.groupby(by='grade'):
             grade_data = self._tool_count_student_score(score=grade_group)
             res[grade] = grade_data
         self.grade_scale_student_score = res
@@ -93,6 +90,8 @@ class MhtData(CommonData):
     def _tool_count_student_score(self, score: pd.DataFrame):
         data = []
         handred = set(range(0, 101))
+
+        score['score'] = score.score.astype(int)
 
         for s, row in score.groupby('score'):
             handred.discard(s)
