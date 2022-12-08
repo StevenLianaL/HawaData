@@ -1,7 +1,7 @@
-decorator>=5.1.1
-loguru>=0.6.0
-mongo-log>=0.0.4
-mongoengine>=0.24.2
+decorator==5.1.1
+loguru==0.6.0
+mongo-log==0.0.4
+mongoengine==0.24.2
 munch==2.5.0
 mysqlclient==2.0.3
 numpy==1.23.5
@@ -12,3 +12,6 @@ pydantic==1.10.2
 pymongo==4.3.3
 redis==4.3.5
 redisopy==0.0.2
+sqlalchemy==1.4.44
+databases==0.5.3
+

@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     client_id = 6
 
     # db
+    DB_MODE = 'mysql'
     DB_HOST = '' if not DEBUG else 'localhost'
     DB_PORT = 3306
     DB_NAME = '' if not DEBUG else 'yass'

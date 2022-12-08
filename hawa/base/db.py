@@ -1,9 +1,20 @@
 import MySQLdb
 import mongoengine
+import sqlalchemy
+from databases import Database
 from redis.client import StrictRedis
 
 from hawa.base.decos import singleton
 from hawa.config import project
+
+DATABASE_URL = f"{project.DB_MODE}://{project.DB_USER}:{project.DB_PSWD}@{project.DB_HOST}/" \
+               f"{project.DB_NAME}?charset=utf8"
+
+database = Database(DATABASE_URL)
+
+metadata = sqlalchemy.MetaData()
+
+engine = sqlalchemy.create_engine(DATABASE_URL, encoding='utf-8')
 
 
 @singleton
@@ -13,12 +24,7 @@ class DbUtil:
 
     @property
     def conn(self):
-        """link mysql by mysqlclient"""
-        if project.COMPLETED:
-            if not self._conn:
-                self._conn = self.connect()
-            return self._conn
-        return self.connect()
+        return engine
 
     def connect(self):
         return MySQLdb.connect(
@@ -31,10 +37,9 @@ class DbUtil:
 
     @property
     def cursor(self):
-        if not project.COMPLETED:
-            return self.conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
         if not self._cursor:
-            self._cursor = self.conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+            conn = self.connect()
+            self._cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
         return self._cursor
 
 

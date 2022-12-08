@@ -46,7 +46,8 @@ class DataQuery:
             startwith = startwith // 10
             logger.info(f"startwith: {startwith}")
 
-        sql = f"select * from schools where id like '{startwith}%';"
+        param_len = len(str(startwith))
+        sql = f"select * from schools where left(id,{param_len})={startwith};"
         return pd.read_sql(sql, self.db.conn)
 
     def query_papers(self, test_type: str = '', test_types: list[str] = None):
