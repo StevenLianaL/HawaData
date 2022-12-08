@@ -92,16 +92,17 @@ class MhtData(CommonData):
     # 计算工具
     def _tool_count_student_score(self, score: pd.DataFrame):
         data = []
-        handred = set(range(1, 101))
-        for score, row in score.groupby('score'):
-            handred.discard(score)
-            data.append((score, int(row.score.count())))
-        for score in handred:
-            data.append((score, 0))
+        handred = set(range(0, 101))
+
+        for s, row in score.groupby('score'):
+            handred.discard(s)
+            data.append((s, int(row.score.count())))
+        for h in handred:
+            data.append((h, 0))
         data.sort(key=lambda x: x[0])
         x_axis, y_axis = [], []
-        for (score, student_count) in data:
-            x_axis.append(score)
+        for (s, student_count) in data:
+            x_axis.append(s)
             y_axis.append(student_count)
 
         return {

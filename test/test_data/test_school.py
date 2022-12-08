@@ -34,8 +34,11 @@ def test_mht_web_run():
         for d in data:
             validate_data_for_web(d)
 
-        assert len(md.scale_student_score['x_axis']) == 100
-        assert len(md.scale_student_score['y_axis']) == 100
-        print(md.sub_scale_score)
-
-        print(md.grade_sub_scale_score)
+        assert len(md.scale_student_score['x_axis']) == 101
+        assert len(md.scale_student_score['y_axis']) == 101
+        sss = md.scale_student_score
+        res = []
+        for (x, y) in zip(sss['x_axis'], sss['y_axis']):
+            if x > 65 and y:
+                res.append(y)
+        print(sum(res))

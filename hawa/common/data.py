@@ -4,6 +4,7 @@ from typing import Optional, ClassVar, Any, Set
 
 import pandas as pd
 import pendulum
+from munch import Munch
 
 from hawa.base.db import DbUtil, RedisUtil
 from hawa.common.query import DataQuery
@@ -192,7 +193,16 @@ class CommonData(metaclass=MetaCommomData):
         return project.ranks[key][a]
 
     def count_final_score(self, answers: pd.DataFrame):
-        res = answers.groupby(by=['grade', 'gender', 'student_id']).score.mean().reset_index()
-        res = res.assign(score=res.score * 100)
-        res['level'] = res.score.apply(lambda x: self.count_level(x))
-        return res
+        records = []
+        for student_id, group in answers.groupby('student_id'):
+            score = group.score.mean() * 100
+            record = Munch(
+                student_id=student_id,
+                username=group['username'].tolist()[0],
+                grade=group['grade'].tolist()[0],
+                gender=group['gender'].tolist()[0],
+                score=score,
+                level=self.count_level(score),
+            )
+            records.append(record)
+        return pd.DataFrame.from_records(records)
