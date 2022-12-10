@@ -17,9 +17,14 @@ class DbUtil:
     @property
     def conn(self):
         if project.COMPLETED:
-            if not self._conn:
+            try:
+                if not self._conn:
+                    self._conn = self.db_engine
+                return self._conn
+            except Exception as e:
+                project.logger.info(f"{type(e)=} {e=}")
                 self._conn = self.db_engine
-            return self._conn
+                return self._conn
         return self.db_engine
 
     @property
