@@ -16,13 +16,11 @@ class DataQuery:
         match meta_unit_type:
             case 'school':
                 sql = f"select id,name,short_name from schools where id={meta_unit_id};"
-                self.db.cursor.execute(sql)
-                data = self.db.cursor.fetchone()
+                data = self.db.query_by_sql(sql=sql, mode='one')
                 meta_unit = MetaUnit(**data)
             case 'district' | 'city' | 'province':
                 sql = f"select id,name from locations where id={meta_unit_id};"
-                self.db.cursor.execute(sql)
-                data = self.db.cursor.fetchone()
+                data = self.db.query_by_sql(sql=sql, mode='one')
                 meta_unit = MetaUnit(**data, short_name=data['name'])
             case _:
                 meta_unit = MetaUnit(id=0, name='全国', short_name='全国')

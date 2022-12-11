@@ -14,4 +14,5 @@ text = (
     ("0.1.5", "Fix float to int error"),
     ("0.1.6", "Fix special students"),
     ("0.1.7", "Handle link error for db."),
+    ("0.1.8", "Fix mysqldb cursor error."),
 )

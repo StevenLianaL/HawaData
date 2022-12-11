@@ -12,10 +12,11 @@ metadata = sqlalchemy.MetaData()
 @singleton
 class DbUtil:
     _conn = None
-    _cursor = None
+    _cursor_conn = None
 
     @property
     def conn(self):
+        """engine wrapper for pandas.read_sql"""
         if project.COMPLETED:
             try:
                 if not self._conn:
@@ -45,10 +46,36 @@ class DbUtil:
 
     @property
     def cursor(self):
-        if not self._cursor:
-            conn = self.connect()
-            self._cursor = conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
-        return self._cursor
+        """only for test"""
+        return self.cursor_conn.cursor(cursorclass=MySQLdb.cursors.DictCursor)
+
+    @property
+    def cursor_conn(self):
+        if not self._cursor_conn:
+            self._cursor_conn = self.connect()
+        if not self._cursor_conn.open:
+            self._cursor_conn = self.connect()
+        # is self._cursor_conn alive?
+        try:
+            self._cursor_conn.ping()
+        except Exception as e:
+            project.logger.info(f"{type(e)=} {e=}")
+            self._cursor_conn = self.connect()
+        return self._cursor_conn
+
+    def query_by_sql(self, sql: str, mode: str = 'all'):
+        """
+        :param sql:
+        :param mode: all or one
+        :return: list or dict by mode
+        """
+        with self.cursor_conn.cursor(cursorclass=MySQLdb.cursors.DictCursor) as cursor:
+            cursor.execute(sql)
+            match mode:
+                case 'all':
+                    return cursor.fetchall()
+                case 'one':
+                    return cursor.fetchone()
 
 
 class MongoUtil:
