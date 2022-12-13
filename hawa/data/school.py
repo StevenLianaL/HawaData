@@ -26,7 +26,7 @@ class SchoolHealthReportData(SchoolMixin, HealthReportData):
     compare_grade_year_school = None  # 比较学校与去年维度领域
     compare_all_total = None  # 比照去年数据和学校数据的全年级平均数
 
-    async def _to_count_k_grade_reverse_rank_dis(self):
+    def _to_count_k_grade_reverse_rank_dis(self):
         records = {}
         rank_dis = self.grade_rank_dis
         for g in self.grade.grades:
@@ -35,7 +35,7 @@ class SchoolHealthReportData(SchoolMixin, HealthReportData):
             records[g] = [b for b in sorted(base, key=lambda x: x[0], reverse=True)]
         self.grade_reverse_rank_dis = records
 
-    async def _to_count_l_grade_code_score(self):
+    def _to_count_l_grade_code_score(self):
         """健康素养水平 所需数据"""
         records = {}
         scores = self.code_scores
@@ -55,7 +55,7 @@ class SchoolHealthReportData(SchoolMixin, HealthReportData):
             }
         self.grade_code_score = records
 
-    async def _to_count_n_compare_grade_year_school(self):
+    def _to_count_n_compare_grade_year_school(self):
         if not self.is_load_last:
             return
         res = defaultdict(dict)
@@ -65,7 +65,7 @@ class SchoolHealthReportData(SchoolMixin, HealthReportData):
                 res[grade][col] = self._count_dim_field_diff(grade=grade, key=col)
         self.compare_grade_year_school = res
 
-    async def _to_count_o_compare_all_total(self):
+    def _to_count_o_compare_all_total(self):
         if not self.is_load_last:
             return
         data = []
