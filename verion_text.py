@@ -16,4 +16,5 @@ text = (
     ("0.1.7", "Handle link error for db."),
     ("0.1.8", "Fix mysqldb cursor error."),
     ("0.1.9", "Fix redundant async"),
+    ("0.2.0", "Add district data"),
 )
