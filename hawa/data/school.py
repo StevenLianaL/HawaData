@@ -3,7 +3,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 
 import pandas as pd
-from munch import Munch
 
 from hawa.config import project
 from hawa.paper.health import HealthReportData
@@ -75,11 +74,6 @@ class SchoolHealthReportData(SchoolMixin, HealthReportData):
             data.append(sch - year)
         self.compare_all_total = self.count_cond(a=sum(data) / len(data), b=0)
 
-    # property 数据
-    @property
-    def gender_count(self) -> Munch:
-        r = self.students.gender.value_counts()
-        return Munch({'M': 0, 'F': 0} | r.to_dict())
 
     # 工具函数
 

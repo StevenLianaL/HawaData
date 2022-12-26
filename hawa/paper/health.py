@@ -256,3 +256,8 @@ class HealthReportData(HealthData):
         field_score = sum([dict(v)[category] for v in list(data.values()) if v['category'] == 'field']) / 6
         score = (dim_score + field_score) / 2
         return score
+
+    @property
+    def gender_count(self) -> Munch:
+        r = self.students.gender.value_counts()
+        return Munch({'M': 0, 'F': 0} | r.to_dict())
