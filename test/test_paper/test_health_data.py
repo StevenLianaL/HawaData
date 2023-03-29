@@ -16,3 +16,8 @@ def test_health_init():
     for row in rows:
         logger.info(row)
         HealthReportData(**row)
+
+
+def test_cache_year_data():
+    # HealthReportData.cache_year_data(year=2022)
+    pass

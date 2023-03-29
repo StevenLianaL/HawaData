@@ -18,5 +18,6 @@ text = (
     ("0.1.9", "Fix redundant async"),
     ("0.2.0", "Add district data"),
     ("0.2.1", "Move gender count data to health."),
-    ("0.2.2", "Move health school to health report")
+    ("0.2.2", "Move health school to health report"),
+    ("0.2.3", "Fix cache year data"),
 )

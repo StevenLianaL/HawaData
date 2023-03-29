@@ -235,13 +235,15 @@ class HealthReportData(HealthData):
             data.append(sch - year)
         self.compare_all_total = self.count_cond(a=sum(data) / len(data), b=0)
 
-    def cache_year_data(self, year: int):
+    @classmethod
+    def cache_year_data(cls, year: int):
         """缓存年数据"""
         project.logger.info(f"缓存年数据 {year=}")
-        key = f'{project.REDIS_PREFIX}{self.last_year_num}:data'
+        key = f'{project.REDIS_PREFIX}{year}:data'
 
         res = defaultdict(dict)
-        tool = self.__class__(meta_unit_type='country', meta_unit_id=0, target_year=year, is_load_last=False)
+        tool = cls(meta_unit_type='country', meta_unit_id=0, target_year=year, last_year_num=year - 1,
+                   is_load_last=False)
         project.logger.debug('after init data')
 
         for grade, value in zip(tool.grade.grades, tool.grade_gender_distribution.values()):
@@ -257,9 +259,9 @@ class HealthReportData(HealthData):
         for grade, first_value in res.items():
             for second_key, second_value in first_value.items():
                 if second_key == 'code':
-                    total_score = self._count_year_score('total', second_value)
-                    f_score = self._count_year_score('F', second_value)
-                    m_score = self._count_year_score('M', second_value)
+                    total_score = cls._count_year_score('total', second_value)
+                    f_score = cls._count_year_score('F', second_value)
+                    m_score = cls._count_year_score('M', second_value)
                     score_dict[grade] = {
                         'total': total_score, 'F': f_score, 'M': m_score
                     }
@@ -267,10 +269,10 @@ class HealthReportData(HealthData):
             res[grade]['score'] = value
         # 计算总人数
         res['total'] = defaultdict(dict)
-        res['total']['total'] = sum([self._get_value(v, 'total') for v in res.values()])
-        res['total']['M'] = sum([self._get_value(v, 'M') for v in res.values()])
-        res['total']['F'] = sum([self._get_value(v, 'F') for v in res.values()])
-        self.redis.conn.set(key, json.dumps(res))
+        res['total']['total'] = sum([cls._get_value(v, 'total') for v in res.values()])
+        res['total']['M'] = sum([cls._get_value(v, 'M') for v in res.values()])
+        res['total']['F'] = sum([cls._get_value(v, 'F') for v in res.values()])
+        cls.redis.conn.set(key, json.dumps(res, ensure_ascii=False))
 
     def _count_grade_code_score(self, code: str, grade: int, category: str):
         """计算指定年级、指定维度、领域的分数"""
@@ -302,7 +304,8 @@ class HealthReportData(HealthData):
         n = n * 100
         return int(n) if n in (0, 0.0, 100.0, 100) else round(n, prec)
 
-    def _get_value(self, v, k):
+    @staticmethod
+    def _get_value(v, k):
         """计算去年数据中的总人数"""
         base: Union[dict, int] = dict(v).get('people', 0)
         if base:
