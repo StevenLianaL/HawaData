@@ -190,7 +190,10 @@ class HealthReportData(HealthData):
         records = {}
         rank_dis = self.grade_rank_dis
         for g in self.grade.grades:
-            here = rank_dis[g].total
+            try:
+                here = rank_dis[g].total
+            except KeyError:
+                continue
             base = [(v, k) for k, v in here.items()]
             records[g] = [b for b in sorted(base, key=lambda x: x[0], reverse=True)]
         self.grade_reverse_rank_dis = records

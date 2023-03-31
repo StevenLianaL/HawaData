@@ -22,4 +22,5 @@ text = (
     ("0.2.3", "Fix cache year data"),
     ("0.2.4", "Filter users when length id <18"),
     ("0.2.5", "Filter users when length id <18 true"),
+    ("0.2.6", "Fix rank dis"),
 )
