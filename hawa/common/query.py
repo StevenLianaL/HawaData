@@ -96,7 +96,7 @@ class DataQuery:
         return answers
 
     def query_students(self, student_ids: list[int]):
-        sql = f"select * from users where id in {tuple(student_ids)};"
+        sql = f"select * from users where id in {tuple(student_ids)} and length(id)>=18;"
         students = pd.read_sql(sql, self.db.conn).drop_duplicates(subset=['id'])
         return students
 
