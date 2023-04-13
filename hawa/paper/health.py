@@ -447,7 +447,8 @@ class HealthReportData(HealthData):
         data = {}
         for grade in self.grade.grades:
             sch = self.grade_score[grade].avg
-            year = self.last_year[str(grade)]['score']['total']
+            last_year_grade_data = self.get_last_year_miss(grade=grade)
+            year = last_year_grade_data['score']['total']
             data[grade] = sch - year
         total_dif = sum(data.values()) / len(data)
         diff = []
@@ -478,7 +479,8 @@ class HealthReportData(HealthData):
         for grade in self.grade.grades:
             if category == 'total':
                 first = self.grade_score[grade].avg
-                second = self.last_year[str(grade)]['score']['total']
+                last_year_grade_data = self.get_last_year_miss(grade=grade)
+                second = last_year_grade_data['score']['total']
             else:
                 first = self.summary_scores[grade]['M']
                 second = self.summary_scores[grade]['F']

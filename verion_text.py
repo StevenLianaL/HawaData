@@ -25,4 +25,5 @@ text = (
     ("0.2.6", "Fix rank dis"),
     ("0.2.7", "Fix miss grade"),
     ("0.2.8", "Fix miss grade all"),
+    ("0.2.9", "Fix miss grade again"),
 )
