@@ -8,7 +8,7 @@ prepare_test()
 
 def test_common_init():
     rows = [
-        {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021},
+        {"meta_unit_type": "school", "meta_unit_id": 1101089005, "target_year": 2023},
         # {"meta_unit_type": "district", "meta_unit_id": 370703, "target_year": 2021},
         # {"meta_unit_type": "city", "meta_unit_id": 331100, "target_year": 2021},
         # {"meta_unit_type": "province", "meta_unit_id": 410000, "target_year": 2021},

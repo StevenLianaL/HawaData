@@ -50,7 +50,15 @@ class HealthReportData(HealthData):
         self.last_year = json.loads(self.redis.conn.get(key))
         res = []
         for grade in self.grade.grades:
-            year_code_score = pd.DataFrame(self.last_year[str(grade)]['code']).T
+            try:
+                year_code_score = pd.DataFrame(self.last_year[str(grade)]['code']).T
+            except KeyError:
+                temp_key = f'{project.REDIS_PREFIX}{self.last_year_num - 1}:data'
+                temp_last_year = json.loads(self.redis.conn.get(temp_key))
+                try:
+                    year_code_score = pd.DataFrame(temp_last_year[str(grade - 1)]['code']).T
+                except KeyError:
+                    year_code_score = pd.DataFrame(temp_last_year[str(grade - 3)]['code']).T
             year_code_score['i'] = [int(grade) * 10 + i for i in range(1, 11)]
             year_code_score.set_index('i', inplace=True)
             res.append(year_code_score)
