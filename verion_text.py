@@ -24,4 +24,5 @@ text = (
     ("0.2.5", "Filter users when length id <18 true"),
     ("0.2.6", "Fix rank dis"),
     ("0.2.7", "Fix miss grade"),
+    ("0.2.8", "Fix miss grade all"),
 )

@@ -1,4 +1,5 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
+import json
 from dataclasses import dataclass, field
 from typing import Optional, ClassVar, Any, Set
 
@@ -206,3 +207,20 @@ class CommonData(metaclass=MetaCommomData):
             )
             records.append(record)
         return pd.DataFrame.from_records(records)
+
+    def get_last_year_miss(self, grade: int):
+        key = f'{project.REDIS_PREFIX}{self.last_year_num}:data'
+        data = json.loads(self.redis.conn.get(key))
+        try:
+            grade_data = data[str(grade)]
+        except KeyError:
+            temp_key = f'{project.REDIS_PREFIX}{self.last_year_num - 1}:data'
+            temp_data = json.loads(self.redis.conn.get(temp_key))
+            try:
+                grade_data = temp_data[str(grade - 1)]
+            except KeyError:
+                grade_data = temp_data[str(grade - 3)]
+        grade_data['people']['grade'] = f"{grade}年级"
+        for k, v in grade_data['code'].items():
+            grade_data['code'][k]['grade'] = grade
+        return grade_data
