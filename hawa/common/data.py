@@ -88,7 +88,7 @@ class CommonData(metaclass=MetaCommomData):
             getattr(self, func)()
 
     def _to_init_a_meta_unit(self):
-        self.meta_unit = self.query.query_unit(self.meta_unit_type, self.meta_unit_id)
+        self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
 
     def _to_init_b_time(self):
         if not self.target_year:

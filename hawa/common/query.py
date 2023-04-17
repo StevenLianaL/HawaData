@@ -40,10 +40,6 @@ class DataQuery:
         return pd.read_sql(sql, self.db.conn)
 
     def query_schools_by_startwith(self, startwith: int):
-        while startwith % 10 == 0:
-            startwith = startwith // 10
-            logger.info(f"startwith: {startwith}")
-
         param_len = len(str(startwith))
         sql = f"select * from schools where left(id,{param_len})={startwith};"
         return pd.read_sql(sql, self.db.conn)

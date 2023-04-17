@@ -9,11 +9,12 @@ prepare_test()
 def test_health_report_run():
     rows = [
         # {"meta_unit_id": 5134010001, "target_year": 2021},
-        {"meta_unit_id": 1101089005, "target_year": 2023},
+        {"meta_unit_id": 5134310010, "target_year": 2023},
     ]
     for row in rows:
         logger.info(row)
-        SchoolHealthReportData(**row)
+        d = SchoolHealthReportData(**row)
+        print(d.case_gender_counts)
 
 
 def test_mht_web_run():
