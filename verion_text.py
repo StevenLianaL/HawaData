@@ -27,4 +27,5 @@ text = (
     ("0.2.8", "Fix miss grade all"),
     ("0.2.9", "Fix miss grade again"),
     ("0.3.0", "Fix more school when query school"),
+    ("0.3.1", "Update replace select *"),
 )
