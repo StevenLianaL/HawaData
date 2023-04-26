@@ -8,6 +8,7 @@ from typing import Union, Set
 
 import pandas as pd
 from munch import Munch
+from pingouin import cronbach_alpha
 
 from hawa.common.data import CommonData
 from hawa.config import project
@@ -137,13 +138,12 @@ class HealthReportData(HealthData):
         self.case_gender_counts = records.to_dict(orient='records')
 
     def _to_count_g_cronbach_alpha(self):
-        import pingouin as pg
         cols = ['student_id', 'item_id', 'score']
         res = []
         for grade, group in self.final_answers.groupby('grade'):
             base = group.loc[:, cols]
             data = pd.pivot_table(base, index='item_id', columns='student_id', values='score')
-            c: tuple = pg.cronbach_alpha(data)
+            c: tuple = cronbach_alpha(data)
             res.append(c[0])
         self.cronbach_alpha = [round(i, 3) for i in res]
 

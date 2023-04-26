@@ -148,15 +148,17 @@ class CommonData(metaclass=MetaCommomData):
         self.case = CaseData(cases=self.cases)
 
     def _to_count_a_final_answers(self):
-        items = {}
+        items = {k: {} for k in self.code_word_list}
         item_codes = self.query.query_item_codes(self.item_ids)
+        # code-dimension/field  ~  item_id  ~ code   name
         project.logger.debug(f"{self.code_word_list=}")
-        for item_id, codes in item_codes.groupby('item_id'):
-            items[item_id] = [i for i in codes.to_dict(orient='records')
-                              if i['category'] in self.code_word_list]
+        for (item_id, category), codes in item_codes.groupby(['item_id', 'category']):
+            if category in self.code_word_list:
+                for _, code_data in codes.iterrows():
+                    items[category][item_id] = code_data['name']
 
         data = pd.merge(
-            self.answers, self.students.loc[:, ['id', 'gender', 'first_name', 'last_name']],
+            self.answers, self.students.loc[:, ['id', 'gender', 'nickname']],
             left_on='student_id', right_on='id'
         )
         project.logger.debug(f"ans merge students {len(data)}")
@@ -166,18 +168,15 @@ class CommonData(metaclass=MetaCommomData):
 
         data['cls'] = data['id_y'].apply(lambda x: int(str(x)[13:15]))
         data['grade'] = data['case_id'].apply(lambda x: int(str(x)[-2:]))
-        data['username'] = data.apply(lambda x: f"{x.last_name}{x.first_name}", axis=1)
+        data['username'] = data['nickname']
         for code_word in self.code_word_list:
-            data[code_word] = data.item_id.apply(self._count_field, args=(code_word, items))
+            data[code_word] = data.item_id.apply(lambda x: items[code_word][x])
         self.final_answers = data.drop_duplicates(subset=['case_id', 'student_id', 'item_id'])
         project.logger.debug(f'final_answers: {len(self.final_answers)}')
 
     def _to_count_b_final_scores(self):
         self.final_scores = self.count_final_score(answers=self.final_answers)
         project.logger.debug(f'final_scores: {len(self.final_scores)}')
-
-    def _count_field(self, item_id: int, code: str, items: dict):
-        return [i for i in items[item_id] if i['category'] == code][0]['name']
 
     @staticmethod
     def count_level(score, mode: str = 'f'):
