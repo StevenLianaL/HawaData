@@ -167,7 +167,7 @@ class CommonData(metaclass=MetaCommomData):
         data = pd.merge(data, item_codes, left_on='item_id', right_on='item_id', how='inner')
 
         data['cls'] = data['id_y'].apply(lambda x: int(str(x)[13:15]))
-        data['grade'] = data['case_id'].apply(lambda x: int(str(x)[-2:]))
+        data['grade'] = data['case_id'].apply(lambda x: x % 100)
         data['username'] = data['nickname']
         for code_word in self.code_word_list:
             data[code_word] = data.item_id.apply(lambda x: items[code_word][x])
