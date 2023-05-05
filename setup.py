@@ -19,8 +19,8 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/StevenLianaL/HawaData",
-    packages=setuptools.find_packages(exclude=["tests*"]),
-    install_requires=requires,
+    # packages=setuptools.find_packages(exclude=["tests*"]),
+    # install_requires=requires,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

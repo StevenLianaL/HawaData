@@ -32,7 +32,7 @@ class DbUtil:
     def db_engine(self):
         database_url = f"{project.DB_MODE}://{project.DB_USER}:{project.DB_PSWD}@{project.DB_HOST}/" \
                        f"{project.DB_NAME}?charset=utf8"
-        engine = sqlalchemy.create_engine(database_url, encoding='utf-8')
+        engine = sqlalchemy.create_engine(database_url)
         return engine
 
     def connect(self):
