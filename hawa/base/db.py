@@ -13,6 +13,7 @@ metadata = sqlalchemy.MetaData()
 class DbUtil:
     _conn = None
     _cursor_conn = None
+    _engine_conn = None
 
     @property
     def conn(self):
@@ -27,6 +28,12 @@ class DbUtil:
                 self._conn = self.db_engine
                 return self._conn
         return self.db_engine
+
+    @property
+    def engine_conn(self):
+        if not self._engine_conn:
+            self._engine_conn = self.db_engine.connect()
+        return self._engine_conn
 
     @property
     def db_engine(self):

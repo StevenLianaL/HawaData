@@ -32,4 +32,5 @@ text = (
     ("0.3.3", "performance improvement by grade"),
     ("0.3.4", "up to py3.11"),
     ("0.3.5", "fix engine encoding"),
+    ("0.3.6", "update sqlarchemy to 2+"),
 )

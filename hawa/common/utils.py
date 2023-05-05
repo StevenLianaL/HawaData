@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 import pandas as pd
+from sqlalchemy import text
 
 from hawa.base.db import DbUtil
 from hawa.config import project
@@ -37,8 +38,8 @@ class Measurement:
         return self._get_fields(category='dimension')
 
     def _get_fields(self, category: str):
-        data = pd.read_sql(
-            f"select code, category, name from codebook where category='{category}' and name<>'其他'", self.db.conn)
+        sql = f"select code, category, name from codebook where category='{category}' and name<>'其他'"
+        data = pd.read_sql(text(sql), self.db.engine_conn)
         return data['name'].to_list()
 
     def _get_field_names(self, category: str):
