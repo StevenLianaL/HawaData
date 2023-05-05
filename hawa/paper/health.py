@@ -118,7 +118,7 @@ class HealthReportData(HealthData):
         # 年级 班级 男生数 女生数 总人数
         # 班级 男生数 女生数 总人数
         records = []
-        for grade, grade_group in data.groupby(by=['grade']):
+        for grade, grade_group in data.groupby(by='grade'):
             for cls, cls_group in grade_group.groupby('cls'):
                 grade_cls = Munch(grade=grade, cls=cls)
                 cls_total = Munch(total=len(cls_group))
@@ -211,9 +211,8 @@ class HealthReportData(HealthData):
 
             dimensions = self._count_df_reverse(first_col='code', second_col='total', data=base_dimensions)
             fields = self._count_df_reverse(first_col='code', second_col='total', data=base_fields)
-
-            a = base.loc[base.category == 'field', ['code', 'F']].mean().mean()
-            b = base.loc[base.category == 'field', ['code', 'M']].mean().mean()
+            a = base.loc[base.category == 'field', ['F']].mean().mean()
+            b = base.loc[base.category == 'field', ['M']].mean().mean()
             records[grade] = {
                 'dimension': dimensions, 'field': fields,
                 'cond': self.count_cond(a, b)
@@ -338,7 +337,7 @@ class HealthReportData(HealthData):
     # 工具函数
 
     def _count_df_reverse(self, first_col: str, second_col: str, data: pd.DataFrame):
-        base = data.to_dict(orient='record')
+        base = data.to_dict(orient='records')
         middle = {d[first_col]: d[second_col] / 100 for d in base}
         reverse_middle = {v: k for k, v in middle.items()}
         res = [(self._retain_prec(k), reverse_middle[k]) for k in sorted(reverse_middle.keys(), reverse=True)]
