@@ -214,11 +214,14 @@ class CommonData(metaclass=MetaCommomData):
             grade_data = data[str(grade)]
         except KeyError:
             temp_key = f'{project.REDIS_PREFIX}{self.last_year_num - 1}:data'
-            temp_data = json.loads(self.redis.conn.get(temp_key))
-            try:
+            print(temp_key,'tk')
+            temp_cache_data=self.redis.conn.get(temp_key)
+            if temp_cache_data:
+                temp_data = json.loads(temp_cache_data)
                 grade_data = temp_data[str(grade - 1)]
-            except KeyError:
-                grade_data = temp_data[str(grade - 3)]
+            else:
+                grade_data = data[str(3)]
+
         grade_data['people']['grade'] = f"{grade}年级"
         for k, v in grade_data['code'].items():
             grade_data['code'][k]['grade'] = grade
