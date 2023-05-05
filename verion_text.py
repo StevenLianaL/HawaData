@@ -30,4 +30,5 @@ text = (
     ("0.3.1", "Update replace select *"),
     ("0.3.2", "performance improvement by nickname/username、cronbach_alpha、code_word"),
     ("0.3.3", "performance improvement by grade"),
+    ("0.3.4", "up to py3.11"),
 )

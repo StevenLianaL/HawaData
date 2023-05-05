@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 import pandas as pd
 
-from hawa.config import project
 from hawa.base.db import DbUtil
+from hawa.config import project
 
 
 class Measurement:
@@ -48,7 +48,7 @@ class Measurement:
 
 @dataclass
 class CaseData:
-    cases: pd.DataFrame = pd.DataFrame()
+    cases: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     @property
     def join_date(self):

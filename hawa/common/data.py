@@ -46,14 +46,14 @@ class CommonData(metaclass=MetaCommomData):
     # 原始数据
 
     school_ids: list[int] = field(default_factory=list)
-    schools: pd.DataFrame = pd.DataFrame()
+    schools: pd.DataFrame = field(default_factory=pd.DataFrame)
 
-    cases: pd.DataFrame = pd.DataFrame()
+    cases: pd.DataFrame = field(default_factory=pd.DataFrame)
     case_ids: list[int] = field(default_factory=list)
 
-    answers: pd.DataFrame = pd.DataFrame()
+    answers: pd.DataFrame = field(default_factory=pd.DataFrame)
 
-    students: pd.DataFrame = pd.DataFrame()
+    students: pd.DataFrame = field(default_factory=pd.DataFrame)
     student_ids: list[int] = field(default_factory=list)
     student_count: Optional[int] = None
 
@@ -66,12 +66,12 @@ class CommonData(metaclass=MetaCommomData):
     measurement = Measurement()
 
     # 计算数据
-    final_answers: pd.DataFrame = pd.DataFrame()
-    final_scores: pd.DataFrame = pd.DataFrame()
+    final_answers: pd.DataFrame = field(default_factory=pd.DataFrame)
+    final_scores: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     # 去年全国数据
     last_year = None
-    last_year_code_scores: Optional[pd.DataFrame] = pd.DataFrame()
+    last_year_code_scores: Optional[pd.DataFrame] = field(default_factory=pd.DataFrame)
 
     def __post_init__(self):
         # 初始化数据

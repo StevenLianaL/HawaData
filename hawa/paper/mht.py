@@ -24,7 +24,7 @@ class MhtData(CommonData):
     invalid_student_count: int = 0
     unused_student_count: int = 0
     unused_student_ids: list[int] = field(default_factory=list)
-    mht_final_answers: pd.DataFrame = pd.DataFrame()
+    mht_final_answers: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     def _to_count_a_final_answers(self):
         super()._to_count_a_final_answers()

@@ -30,7 +30,7 @@ class HealthData(CommonData):
 @dataclass
 class HealthReportData(HealthData):
     # 计算数据
-    code_scores: pd.DataFrame = pd.DataFrame()
+    code_scores: pd.DataFrame = field(default_factory=pd.DataFrame)
     summary_scores: dict = field(default_factory=dict)
     grade_good_bad = None  # 优势 优先关注点
 
