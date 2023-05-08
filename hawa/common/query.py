@@ -59,23 +59,24 @@ class DataQuery:
             valid_to_start: str, valid_to_end: str,
     ):
         if len(paper_ids) == 0:
-            return []
+            return pd.DataFrame()
         elif len(paper_ids) == 1:
             paper_sql = f"and c.paper_id={paper_ids[0]}"
         else:
             paper_sql = f"and c.paper_id in {tuple(paper_ids)}"
 
         if len(school_ids) == 0:
-            return []
+            return pd.DataFrame()
         elif len(school_ids) == 1:
             school_sql = f"and cs.school_id={school_ids[0]}"
         else:
             school_sql = f"and cs.school_id in {tuple(school_ids)}"
 
         sql = f"select c.id,c.name,c.valid_from,c.valid_to,c.client_id,c.created," \
-              f"c.paper_id,c.is_cleared " \
+              f"c.paper_id,c.is_cleared, cp.name project_name, c.project_id " \
               f"from cases c " \
               f"inner join case_schools cs on c.id=cs.case_id " \
+              f"inner join case_projects cp on c.project_id=cp.id " \
               f"where  is_cleared=1 and valid_to between '{valid_to_start}' and '{valid_to_end}'" \
               f" {school_sql} {paper_sql};"
         cases = pd.read_sql(text(sql), self.db.engine_conn).drop_duplicates(subset=['id'])
@@ -89,7 +90,8 @@ class DataQuery:
             sql = f"select {answer_cols} from answers where case_id={case_ids[0]} and valid=1;"
         else:
             sql = f"select {answer_cols} from answers where case_id in {tuple(case_ids)} and valid=1;"
-        answers = pd.read_sql(text(sql), self.db.engine_conn).drop_duplicates(subset=['case_id', 'student_id', 'item_id'])
+        answers = pd.read_sql(text(sql), self.db.engine_conn).drop_duplicates(
+            subset=['case_id', 'student_id', 'item_id'])
         return answers
 
     def query_students(self, student_ids: list[int]):

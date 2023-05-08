@@ -35,4 +35,5 @@ text = (
     ("0.3.6", "update sqlarchemy to 2+"),
     ("0.3.7", "update pandas to 2+"),
     ("0.3.8", "fix loss data"),
+    ("0.4.0", "add case project_id"),
 )

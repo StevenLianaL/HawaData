@@ -1,5 +1,6 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
 import json
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Optional, ClassVar, Any, Set
 
@@ -50,6 +51,7 @@ class CommonData(metaclass=MetaCommomData):
 
     cases: pd.DataFrame = field(default_factory=pd.DataFrame)
     case_ids: list[int] = field(default_factory=list)
+    case_project_ids: Counter = field(default_factory=Counter)
 
     answers: pd.DataFrame = field(default_factory=pd.DataFrame)
 
@@ -125,6 +127,7 @@ class CommonData(metaclass=MetaCommomData):
         if self.cases.empty:
             raise Exception(f'no cases:{self.meta_unit} {self.school_ids}')
         self.case_ids = self.cases['id'].tolist()
+        self.case_project_ids = Counter(self.cases['project_id'].tolist())
         project.logger.debug(f'cases: {len(self.cases)}')
 
     def _to_init_e_answers(self):
@@ -214,8 +217,7 @@ class CommonData(metaclass=MetaCommomData):
             grade_data = data[str(grade)]
         except KeyError:
             temp_key = f'{project.REDIS_PREFIX}{self.last_year_num - 1}:data'
-            print(temp_key,'tk')
-            temp_cache_data=self.redis.conn.get(temp_key)
+            temp_cache_data = self.redis.conn.get(temp_key)
             if temp_cache_data:
                 temp_data = json.loads(temp_cache_data)
                 grade_data = temp_data[str(grade - 1)]
