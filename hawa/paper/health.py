@@ -28,6 +28,23 @@ class HealthData(CommonData):
 
 
 @dataclass
+class HealthApiData(HealthData):
+    """为 yingde api 项目提供基类"""
+
+    def score_rank(self, grade: int):
+        """某年级 健康素养水平各等级占比"""
+        base = {'优秀': 0, '良好': 0, '中等': 0, '待提高': 0}
+        final_scores = self.final_scores[self.final_scores['grade'] == grade]
+        raw = dict(final_scores['level'].value_counts())
+        data = base | raw
+        sum_data = sum(data.values())
+        if not sum_data:
+            raise ValueError(f'grade {grade} score rank is empty')
+        percent = {k: round(v / sum_data, 2) for k, v in data.items()}
+        return percent
+
+
+@dataclass
 class HealthReportData(HealthData):
     # 计算数据
     code_scores: pd.DataFrame = field(default_factory=pd.DataFrame)

@@ -14,7 +14,7 @@ class DataQuery:
     def query_unit(self, meta_unit_type: str, meta_unit_id: str):
         MetaUnit = namedtuple("MetaUnit", ["id", "name", "short_name"])
         match meta_unit_type:
-            case 'school':
+            case 'school' | 'class':
                 sql = f"select id,name,short_name from schools where id={meta_unit_id};"
                 data = self.db.query_by_sql(sql=sql, mode='one')
                 meta_unit = MetaUnit(**data)

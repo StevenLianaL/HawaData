@@ -25,7 +25,7 @@ class MetaCommomData(type):
 @dataclass
 class CommonData(metaclass=MetaCommomData):
     # 构造单位
-    meta_unit_type: Optional[str] = ''  # school/district/city/province/country
+    meta_unit_type: Optional[str] = ''  # class/school/district/city/province/country
     meta_unit_id: Optional[int] = None
     meta_unit: Optional[Any] = None
 
@@ -102,10 +102,15 @@ class CommonData(metaclass=MetaCommomData):
         if self.school_ids:
             self.schools = self.query.query_schools_by_ids(self.school_ids)
         else:
-            if self.meta_unit_type == 'country':
-                self.schools = self.query.query_schools_all()
-            else:
-                self.schools = self.query.query_schools_by_startwith(self.meta_unit_id)
+            match self.meta_unit_type:
+                case 'country':
+                    self.schools = self.query.query_schools_all()
+                case 'province':
+                    self.schools = self.query.query_schools_by_startwith(self.meta_unit_id // 10000)
+                case 'city':
+                    self.schools = self.query.query_schools_by_startwith(self.meta_unit_id // 100)
+                case 'district' | 'school' | 'class':
+                    self.schools = self.query.query_schools_by_startwith(self.meta_unit_id)
             self.school_ids = self.schools['id'].tolist()
         project.logger.debug(f'schools: {len(self.schools)}')
 
