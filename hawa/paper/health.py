@@ -2,9 +2,9 @@
 import itertools
 import json
 import random
-from collections import defaultdict
+from collections import defaultdict, Counter
 from dataclasses import dataclass, field
-from typing import Union, Set
+from typing import Union, Set, Optional
 
 import pandas as pd
 from munch import Munch
@@ -30,6 +30,16 @@ class HealthData(CommonData):
 @dataclass
 class HealthApiData(HealthData):
     """为 yingde api 项目提供基类"""
+    grade: Optional[int] = None  # 必填
+
+    def _to_init_d_cases(self):
+        """如果有年级参数，则筛选年级暑假"""
+        super()._to_init_d_cases()
+        if self.grade:
+            self.cases = self.cases.loc[self.cases['id'] % 100 == self.grade, :]
+            self.case_ids = self.cases['id'].tolist()
+            self.case_project_ids = Counter(self.cases['project_id'].tolist())
+            project.logger.debug(f'cases: {len(self.cases)}')
 
     def score_rank(self, grade: int):
         """某年级 健康素养水平各等级占比"""

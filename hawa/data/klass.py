@@ -1,4 +1,3 @@
-from collections import Counter
 from dataclasses import dataclass
 from typing import Optional
 
@@ -19,7 +18,6 @@ class ClassMixin:
 class ClassHealthApiData(ClassMixin, HealthApiData):
     """使用 school id 作为 meta_unit_id，额外增加班级的逻辑"""
     meta_class_id: Optional[int] = None  # 必填
-    grade: Optional[int] = None  # 必填
     class_id: Optional[int] = None
     class_name: Optional[str] = ''
 
@@ -38,13 +36,6 @@ class ClassHealthApiData(ClassMixin, HealthApiData):
             short_name=self.meta_unit.short_name
         )
 
-    def _to_init_d_cases(self):
-        super()._to_init_d_cases()
-        self.cases = self.cases.loc[self.cases['id'] % 100 == self.grade, :]
-        self.case_ids = self.cases['id'].tolist()
-        self.case_project_ids = Counter(self.cases['project_id'].tolist())
-        project.logger.debug(f'cases: {len(self.cases)}')
-
     def _to_init_e_answers(self):
         """筛选班级的答案"""
         super()._to_init_e_answers()
@@ -54,4 +45,3 @@ class ClassHealthApiData(ClassMixin, HealthApiData):
                 records.append(row)
         self.answers = pd.DataFrame.from_records(records)
         project.logger.debug(f'class answers: {len(self.answers)}')
-
