@@ -37,4 +37,5 @@ text = (
     ("0.3.8", "fix loss data"),
     ("0.4.0", "add case project_id"),
     ("0.4.1", "fix miss grade data"),
+    ("0.5.0", "add health api data"),
 )
