@@ -58,7 +58,7 @@ class HealthApiData(HealthData):
         return percent
 
     def gender_compare(self, grade: int):
-        """某年级"""
+        """某年级学生健康素养水平及性别比较图"""
         final_scores = self.__get_grade_final_scores(grade=grade)
         total_score = final_scores.score.mean()
         m_score = final_scores.loc[final_scores.gender == 'M'].score.mean()
@@ -68,6 +68,40 @@ class HealthApiData(HealthData):
             "M": round(m_score, 2),
             "F": round(f_score, 2)
         }
+
+    def dim_field_gender_compare(self, grade: int, item_code: str):
+        """某年级六大领域/四大维度测评得分及性别比较图"""
+        final_answers = self.__get_grade_final_answers(grade=grade)
+        answers = final_answers.loc[~final_answers[item_code].isnull(), :]
+        raw_data = {
+            'total': answers,
+            'M': answers.loc[answers.gender == 'M', :],
+            'F': answers.loc[answers.gender == 'F', :]
+        }
+        res = {}
+        for gender_k, gender_v in raw_data.items():
+            res[gender_k] = {}
+            for this_item_code, code_group in gender_v.groupby(item_code):
+                score = round(code_group.score.mean() * 100, 2)
+                res[gender_k][this_item_code] = score
+        codes = answers[item_code].unique().tolist()
+        gender_box = []
+        for gender_k, gender_data in res.items():
+            row_data = {
+                "name": gender_k,
+                "value": []
+            }
+            for c in codes:
+                row_data["value"].append(res[gender_k][c])
+            gender_box.append(row_data)
+
+        return {
+            "category": codes,
+            "values": gender_box,
+        }
+
+    def __get_grade_final_answers(self, grade: int):
+        return self.final_answers[self.final_answers['grade'] == grade]
 
     def __get_grade_final_scores(self, grade: int):
         return self.final_scores[self.final_scores['grade'] == grade]

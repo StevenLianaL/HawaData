@@ -23,6 +23,10 @@ def test_health_api_run():
         print(f"{d.meta_unit_id}")
         print(f"{d.score_rank(grade=row['grade'])=}")
         print(f"{d.gender_compare(grade=row['grade'])=}")
+        print(f"{d.dim_field_gender_compare(grade=row['grade'],item_code='dimension')=}")
+        print(f"{d.dim_field_gender_compare(grade=row['grade'],item_code='field')=}")
+        d.final_answers.to_csv(f"test_{d.meta_unit_id}.csv", index=False)
+        print(d.final_answers.category.unique())
 
 
 def test_class_health_api_run():

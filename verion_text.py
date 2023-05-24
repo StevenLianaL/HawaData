@@ -43,4 +43,5 @@ text = (
     ("0.5.3", "add NoCasesError"),
     ("0.5.4", "add NoCasesError"),
     ("0.5.5", "add gender compare data to health api"),
+    ("0.5.6", "add dim or field gender compare data to health api"),
 )
