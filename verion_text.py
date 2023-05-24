@@ -39,4 +39,6 @@ text = (
     ("0.4.1", "fix miss grade data"),
     ("0.5.0", "add health api data"),
     ("0.5.1", "add grade param"),
+    ("0.5.2", "fix score rank percent"),
+    ("0.5.3", "add NoCasesError"),
 )

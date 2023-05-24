@@ -10,6 +10,7 @@ import pandas as pd
 from munch import Munch
 from pingouin import cronbach_alpha
 
+from hawa.base.errors import NoCasesError
 from hawa.common.data import CommonData
 from hawa.config import project
 
@@ -40,6 +41,8 @@ class HealthApiData(HealthData):
             self.case_ids = self.cases['id'].tolist()
             self.case_project_ids = Counter(self.cases['project_id'].tolist())
             project.logger.debug(f'cases: {len(self.cases)}')
+        if len(self.cases) == 0:
+            raise NoCasesError(f'grade {self.grade} cases is empty')
 
     def score_rank(self, grade: int):
         """某年级 健康素养水平各等级占比"""
@@ -50,7 +53,7 @@ class HealthApiData(HealthData):
         sum_data = sum(data.values())
         if not sum_data:
             raise ValueError(f'grade {grade} score rank is empty')
-        percent = {k: round(v / sum_data, 2) for k, v in data.items()}
+        percent = {k: round(v * 100 / sum_data, 2) for k, v in data.items()}
         return percent
 
 
