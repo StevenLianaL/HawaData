@@ -11,8 +11,8 @@ def test_health_api_run():
     rows = [
         # {"meta_unit_id": 5134010001, "target_year": 2021},
         # {"meta_unit_id": 5134310010, "target_year": 2023},
-        # {"meta_unit_id": 1101089005, "target_year": 2023, "meta_unit_type": "school", "grade": 10},
-        {"meta_unit_type": "school", "meta_unit_id": 3707030001, "target_year": 2021, "grade": 3},
+        {"meta_unit_id": 1101089005, "target_year": 2023, "meta_unit_type": "school", "grade": 10},
+        # {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021, "grade": 3},
         # {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},
         # {"meta_unit_id": 4107000001, "target_year": 2023},

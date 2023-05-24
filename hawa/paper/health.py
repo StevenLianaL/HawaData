@@ -48,7 +48,7 @@ class HealthApiData(HealthData):
         """某年级 健康素养水平各等级占比"""
         base = {'优秀': 0, '良好': 0, '中等': 0, '待提高': 0}
         final_scores = self.final_scores[self.final_scores['grade'] == grade]
-        raw = dict(final_scores['level'].value_counts())
+        raw = final_scores.level.value_counts().to_dict()
         data = base | raw
         sum_data = sum(data.values())
         if not sum_data:
