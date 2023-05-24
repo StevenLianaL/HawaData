@@ -32,6 +32,7 @@ class HealthData(CommonData):
 class HealthApiData(HealthData):
     """为 yingde api 项目提供基类"""
     grade: Optional[int] = None  # 必填
+    grade_final_scores: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     def _to_init_d_cases(self):
         """如果有年级参数，则筛选年级暑假"""
@@ -47,7 +48,7 @@ class HealthApiData(HealthData):
     def score_rank(self, grade: int):
         """某年级 健康素养水平各等级占比"""
         base = {'优秀': 0, '良好': 0, '中等': 0, '待提高': 0}
-        final_scores = self.final_scores[self.final_scores['grade'] == grade]
+        final_scores = self.__get_grade_final_scores(grade=grade)
         raw = final_scores.level.value_counts().to_dict()
         data = base | raw
         sum_data = sum(data.values())
@@ -55,6 +56,21 @@ class HealthApiData(HealthData):
             raise ValueError(f'grade {grade} score rank is empty')
         percent = {k: round(v * 100 / sum_data, 2) for k, v in data.items()}
         return percent
+
+    def gender_compare(self, grade: int):
+        """某年级"""
+        final_scores = self.__get_grade_final_scores(grade=grade)
+        total_score = final_scores.score.mean()
+        m_score = final_scores.loc[final_scores.gender == 'M'].score.mean()
+        f_score = final_scores.loc[final_scores.gender == 'F'].score.mean()
+        return {
+            "total": round(total_score, 2),
+            "M": round(m_score, 2),
+            "F": round(f_score, 2)
+        }
+
+    def __get_grade_final_scores(self, grade: int):
+        return self.final_scores[self.final_scores['grade'] == grade]
 
 
 @dataclass
