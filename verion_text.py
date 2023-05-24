@@ -41,4 +41,5 @@ text = (
     ("0.5.1", "add grade param"),
     ("0.5.2", "fix score rank percent"),
     ("0.5.3", "add NoCasesError"),
+    ("0.5.4", "add NoCasesError"),
 )

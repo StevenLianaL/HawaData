@@ -9,6 +9,7 @@ import pendulum
 from munch import Munch
 
 from hawa.base.db import DbUtil, RedisUtil
+from hawa.base.errors import NoCasesError
 from hawa.common.query import DataQuery
 from hawa.common.utils import GradeData, CaseData, Measurement
 from hawa.config import project
@@ -130,7 +131,7 @@ class CommonData(metaclass=MetaCommomData):
             valid_to_end=end_stamp_str,
         )
         if self.cases.empty:
-            raise Exception(f'no cases:{self.meta_unit} {self.school_ids}')
+            raise NoCasesError(f'no cases:{self.meta_unit} {self.school_ids}')
         self.case_ids = self.cases['id'].tolist()
         self.case_project_ids = Counter(self.cases['project_id'].tolist())
         project.logger.debug(f'cases: {len(self.cases)}')
