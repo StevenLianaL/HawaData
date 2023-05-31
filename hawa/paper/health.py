@@ -1,7 +1,6 @@
 """健康测评数据"""
 import itertools
 import json
-import random
 from collections import defaultdict, Counter
 from dataclasses import dataclass, field
 from typing import Union, Set, Optional
@@ -295,7 +294,7 @@ class HealthReportData(HealthData):
             b = base.loc[base.category == 'field', ['M']].mean().mean()
             records[grade] = {
                 'dimension': dimensions, 'field': fields,
-                'cond': self.count_cond(a, b)
+                'cond': self.count_cond(a, b, target='男生')
             }
         self.grade_code_score = records
 
@@ -423,18 +422,18 @@ class HealthReportData(HealthData):
         res = [(self._retain_prec(k), reverse_middle[k]) for k in sorted(reverse_middle.keys(), reverse=True)]
         return res
 
-    def count_cond(self, a: float, b: float):
+    def count_cond(self, a: float, b: float, target: str = ''):
         if a == b:
-            conditions = '等于'.split()
+            condition = f'等于{target}' if target else '等于'
         elif a - b >= 5:
-            conditions = '明显高于'.split()
+            condition = f'明显高于{target}' if target else '明显高于'
         elif abs(a - b) < 5:
-            conditions = '差异不明显于'.split()
+            condition = f'与{target}的差异不明显' if target else '差异不明显于'
         elif a - b <= -5:
-            conditions = '明显低于'.split()
+            condition = f'明显低于{target}' if target else '明显低于'
         else:
             raise
-        return random.choice(conditions)
+        return condition
 
     def _count_dim_field_diff(self, grade: int, key: str):
         """计算学校与全国对比的维度、领域高低
@@ -481,9 +480,9 @@ class HealthReportData(HealthData):
         level_m = round(sum([grade_rank_dis_m['优秀'], grade_rank_dis_m['良好']]), 1)
         level_f = round(sum([grade_rank_dis_f['优秀'], grade_rank_dis_f['良好']]), 1)
         if level_m - level_f >= 5:
-            return '男生明显大于女生'
+            return '男生明显高于女生'
         elif level_m - level_f <= -5:
-            return '男生明显小于女生'
+            return '男生明显低于女生'
         else:
             return '男生与女生不存在明显差异'
 
@@ -517,7 +516,8 @@ class HealthReportData(HealthData):
         if len(codes) == 1:
             return f'“{codes[0]}”'
         elif len(codes) > 1:
-            return '、'.join([f'“{i}”' for i in codes[:-1]]) + f'和“{codes[-1]}”'
+            code_text = '、'.join([f'“{i}”' for i in codes[:-1]]) + f'和“{codes[-1]}”'
+            return f"在{code_text}等维度和领域，"
         else:
             return ''
 
@@ -554,7 +554,7 @@ class HealthReportData(HealthData):
         """描述全年级对比情况
         :param category: total/gender  total：总体比全国 / gender：男生比女生。
         """
-        bigger, smaller = [], []
+        bigger, smaller, others = [], [], []
         for grade in self.grade.grades:
             if category == 'total':
                 first = self.grade_score[grade].avg
@@ -567,6 +567,8 @@ class HealthReportData(HealthData):
                 bigger.append(f"{project.grade_simple[grade]}年级")
             elif first - second <= -5:
                 smaller.append(f"{project.grade_simple[grade]}年级")
+            else:
+                others.append(f"{project.grade_simple[grade]}年级")
         res = ''
         if bigger:
             local_codes = self._build_codes(bigger)
@@ -585,8 +587,9 @@ class HealthReportData(HealthData):
                     res += "明显低于全国平均分数，"
                 case 'gender':
                     res += "男生明显低于女生，"
-        if (bigger or smaller) and len(bigger) + len(smaller) < len(self.grade.grades):
-            res += '其他年级没有明显差异。'
+        if (bigger or smaller) and ((len(bigger) + len(smaller)) < len(self.grade.grades)):
+            local_codes = self._build_codes(others)
+            res += f'{local_codes}没有明显差异。'
         if not bigger and not smaller:
             res = f'{self.meta_unit.short_name}分数对比无明显差异。'
         return res
