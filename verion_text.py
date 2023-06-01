@@ -47,4 +47,5 @@ text = (
     ("0.5.7", "update describe_grade_text"),
     ("0.5.8", "update other report text"),
     ("0.5.9", "add grade periods"),
+    ("0.5.10", "add score text"),
 )

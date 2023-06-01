@@ -572,21 +572,21 @@ class HealthReportData(HealthData):
         res = ''
         if bigger:
             local_codes = self._build_codes(bigger)
-            res += f"{self.meta_unit.short_name}{local_codes}分数"
+            res += f"{self.meta_unit.short_name}{local_codes}"
             match category:
                 case 'total':
-                    res += '明显高于全国平均分数，'
+                    res += '分数明显高于全国平均分数，'
                 case 'gender':
-                    res += '男生明显高于女生，'
+                    res += '男生分数明显高于女生分数，'
 
         if smaller:
             local_codes = self._build_codes(smaller)
-            res += f"{self.meta_unit.short_name}{local_codes}分数"
+            res += f"{self.meta_unit.short_name}{local_codes}"
             match category:
                 case 'total':
-                    res += "明显低于全国平均分数，"
+                    res += "分数明显低于全国平均分数，"
                 case 'gender':
-                    res += "男生明显低于女生，"
+                    res += "男生分数明显低于女生分数，"
         if (bigger or smaller) and ((len(bigger) + len(smaller)) < len(self.grade.grades)):
             local_codes = self._build_codes(others)
             res += f'{local_codes}没有明显差异。'
