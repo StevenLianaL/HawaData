@@ -93,5 +93,17 @@ class GradeData:
         return '、'.join([project.grade_simple[i] for i in self.grades]) + '年级'
 
     @property
+    def grade_periods(self):
+        res = set()
+        for g in self.grades:
+            if g <= 6:
+                res.add('小学')
+            elif g <= 9:
+                res.add('初中')
+            else:
+                res.add('高中')
+        return res
+
+    @property
     def grade_name_list(self) -> list[str]:
         return [f"{project.grade_simple[i]}年级" for i in self.grades]
