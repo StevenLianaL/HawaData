@@ -517,7 +517,7 @@ class HealthReportData(HealthData):
             return f'“{codes[0]}”'
         elif len(codes) > 1:
             code_text = '、'.join([f'“{i}”' for i in codes[:-1]]) + f'和“{codes[-1]}”'
-            return f"在{code_text}等维度和领域，"
+            return f"在{code_text}维度和领域，"
         else:
             return ''
 
