@@ -49,4 +49,5 @@ text = (
     ("0.5.9", "add grade periods"),
     ("0.5.10", "add score text"),
     ("0.5.11", "remove text"),
+    ("0.5.12", "get grade focus"),
 )

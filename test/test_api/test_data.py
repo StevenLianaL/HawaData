@@ -12,8 +12,8 @@ def test_health_api_run():
         # {"meta_unit_id": 5134010001, "target_year": 2021},
         # {"meta_unit_id": 5134310010, "target_year": 2023},
         {"meta_unit_id": 1101089005, "target_year": 2023, "meta_unit_type": "school", "grade": 10},
-        {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021, "grade": 3},
-        {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
+        # {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021, "grade": 3},
+        # {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},
         # {"meta_unit_id": 4107000001, "target_year": 2023},
     ]
@@ -25,8 +25,7 @@ def test_health_api_run():
         print(f"{d.gender_compare(grade=row['grade'])=}")
         print(f"{d.dim_field_gender_compare(grade=row['grade'],item_code='dimension')=}")
         print(f"{d.dim_field_gender_compare(grade=row['grade'],item_code='field')=}")
-        d.final_answers.to_csv(f"test_{d.meta_unit_id}.csv", index=False)
-        print(d.final_answers.category.unique())
+        print(f"{d.get_grade_focus(grade=row['grade'])=}")
 
 
 def test_class_health_api_run():
