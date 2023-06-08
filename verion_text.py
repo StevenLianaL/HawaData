@@ -50,4 +50,5 @@ text = (
     ("0.5.10", "add score text"),
     ("0.5.11", "remove text"),
     ("0.5.12", "get grade focus"),
+    ("0.5.13", "count grade class scores"),
 )

@@ -1,6 +1,7 @@
 from loguru import logger
 
 from hawa.data.klass import ClassHealthApiData
+from hawa.data.school import SchoolHealthApiData
 from hawa.paper.health import HealthApiData
 from test.mock import prepare_test
 
@@ -20,12 +21,11 @@ def test_health_api_run():
     for row in rows:
         logger.info(row)
         d = HealthApiData(**row)
+        dd = SchoolHealthApiData(**row)
         print(f"{d.meta_unit_id}")
         print(f"{d.score_rank(grade=row['grade'])=}")
         print(f"{d.gender_compare(grade=row['grade'])=}")
-        print(f"{d.dim_field_gender_compare(grade=row['grade'],item_code='dimension')=}")
-        print(f"{d.dim_field_gender_compare(grade=row['grade'],item_code='field')=}")
-        print(f"{d.get_grade_focus(grade=row['grade'])=}")
+        print(f"{dd.get_class_scores()=}")
 
 
 def test_class_health_api_run():
