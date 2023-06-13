@@ -110,8 +110,10 @@ class CommonData(metaclass=MetaCommomData):
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id // 10000)
                 case 'city':
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id // 100)
-                case 'district' | 'school' | 'class':
+                case 'district' | 'school' | 'class' | 'student':
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id)
+                case _:
+                    raise ValueError(f'unknown meta_unit_type: {self.meta_unit_type}')
             self.school_ids = self.schools['id'].tolist()
         project.logger.debug(f'schools: {len(self.schools)}')
 

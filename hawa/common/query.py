@@ -15,6 +15,10 @@ class DataQuery:
 
     def query_unit(self, meta_unit_type: str, meta_unit_id: str):
         match meta_unit_type:
+            case 'student':
+                sql = f"select id,nickname from users where id={meta_unit_id};"
+                data = self.db.query_by_sql(sql=sql, mode='one')
+                meta_unit = MetaUnit(id=data['id'], name=data['nickname'], short_name=data['nickname'])
             case 'school' | 'class':
                 sql = f"select id,name,short_name from schools where id={meta_unit_id};"
                 data = self.db.query_by_sql(sql=sql, mode='one')
@@ -98,6 +102,7 @@ class DataQuery:
     def query_students(self, student_ids: list[int]):
         user_cols = "id, username, first_name, last_name, nickname, gender, role, source, created, " \
                     "unit_id, client_id, extra"
+        student_ids.append(0)
         sql = f"select {user_cols} from users where id in {tuple(student_ids)} and length(id)>=18;"
         students = pd.read_sql(text(sql), self.db.engine_conn).drop_duplicates(subset=['id'])
         return students

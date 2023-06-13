@@ -51,4 +51,5 @@ text = (
     ("0.5.11", "remove text"),
     ("0.5.12", "get grade focus"),
     ("0.5.13", "count grade class scores"),
+    ("0.6.0", "add student health api data"),
 )

@@ -34,7 +34,7 @@ class HealthApiData(HealthData):
     grade_final_scores: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     def _to_init_d_cases(self):
-        """如果有年级参数，则筛选年级暑假"""
+        """如果有年级参数，则筛选年级数据"""
         super()._to_init_d_cases()
         if self.grade:
             self.cases = self.cases.loc[self.cases['id'] % 100 == self.grade, :]

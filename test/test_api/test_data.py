@@ -2,6 +2,7 @@ from loguru import logger
 
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.school import SchoolHealthApiData
+from hawa.data.student import StudentHealthApiData
 from hawa.paper.health import HealthApiData
 from test.mock import prepare_test
 
@@ -41,3 +42,16 @@ def test_class_health_api_run():
                 print(f"{d.meta_unit_id} {i=} {d.score_rank(i)}")
             except Exception as e:
                 print(f"{str(e)=}")
+
+
+def test_student_health_api_run():
+    data = [
+        {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "student",
+         "meta_student_id": 513401000102301216},
+        {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "student",
+         "meta_student_id": 513401000102301216, "grade": 3},
+    ]
+    for row in data:
+        logger.info(row)
+        d = StudentHealthApiData(**row)
+        print(f"{d.meta_unit_id} {d.final_answers=}")
