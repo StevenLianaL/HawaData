@@ -79,10 +79,9 @@ class HealthApiData(HealthData):
         }
         res = {}
         for gender_k, gender_v in raw_data.items():
-            res[gender_k] = {}
-            for this_item_code, code_group in gender_v.groupby(item_code):
-                score = round(code_group.score.mean() * 100, 2)
-                res[gender_k][this_item_code] = score
+            res[gender_k] = self.count_dim_or_field_scores_by_answers(
+                answers=gender_v, item_code=item_code, res_format='dict'
+            )
         codes = answers[item_code].unique().tolist()
         gender_box = []
         for gender_k, gender_data in res.items():
@@ -119,6 +118,25 @@ class HealthApiData(HealthData):
 
     def __get_grade_final_scores(self, grade: int):
         return self.final_scores[self.final_scores['grade'] == grade]
+
+    def count_dim_or_field_scores_by_answers(self, answers, item_code, res_format: str = 'dict'):
+        """
+        计算维度或领域得分
+        :param answers: 由 final answers 中取出的部分数据，属于某一主体
+        :param item_code: dimension/field
+        :return:
+        """
+        keys, values, mapping = [], [], {}
+        for code, code_group in answers.groupby(item_code):
+            score = round(code_group.score.mean() * 100, 2)
+            keys.append(code)
+            values.append(score)
+            mapping[code] = score
+        match res_format:
+            case 'dict':
+                return mapping
+            case 'list':
+                return keys, values
 
 
 @dataclass

@@ -21,11 +21,11 @@ def test_health_api_run():
     ]
     for row in rows:
         logger.info(row)
-        d = HealthApiData(**row)
         dd = SchoolHealthApiData(**row)
-        print(f"{d.meta_unit_id}")
-        print(f"{d.score_rank(grade=row['grade'])=}")
-        print(f"{d.gender_compare(grade=row['grade'])=}")
+        print(f"{dd.meta_unit_id}")
+        print(f"{dd.score_rank(grade=row['grade'])=}")
+        print(f"{dd.gender_compare(grade=row['grade'])=}")
+        print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field')=}")
         print(f"{dd.get_class_scores()=}")
 
 
