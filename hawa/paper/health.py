@@ -100,17 +100,13 @@ class HealthApiData(HealthData):
 
     def get_grade_focus(self, grade: int, gender: str = 'total'):
         """获取年级的优先关注点"""
-        dimensions = self.dim_field_gender_compare(grade=grade, item_code='dimension')
-        fields = self.dim_field_gender_compare(grade=grade, item_code='field')
-        res = []
-        for data in (dimensions, fields):
-            code_names = data.get('category', [])
-            try:
-                code_scores = [row['value'] for row in data['values'] if row['name'] == gender][0]
-            except IndexError:
-                code_scores = []
-            for n, s in zip(code_names, code_scores):
-                res.append(n) if s < 60 else None
+        dimensions = self.count_dim_or_field_scores_by_answers(
+            answers=self.final_answers, item_code='dimension', res_format='dict'
+        )
+        fields = self.count_dim_or_field_scores_by_answers(
+            answers=self.final_answers, item_code='field', res_format='dict'
+        )
+        res = [k for k, v in (dimensions | fields).items() if v < 60]
         return res
 
     def __get_grade_final_answers(self, grade: int):
