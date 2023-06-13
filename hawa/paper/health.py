@@ -98,6 +98,13 @@ class HealthApiData(HealthData):
             "values": gender_box,
         }
 
+    def count_student_grade(self, student_id: int):
+        """计算指定学生的年级"""
+        fa = self.final_answers
+        student_answers = fa.loc[fa['student_id'] == student_id, :]
+        case_ids = student_answers['case_id'].unique().tolist()
+        return case_ids[0] % 100
+
     def get_grade_focus(self, grade: int, gender: str = 'total'):
         """获取年级的优先关注点"""
         dimensions = self.count_dim_or_field_scores_by_answers(
