@@ -27,8 +27,6 @@ class HealthData(CommonData):
             return text.replace('还', '')
 
 
-
-
 @dataclass
 class HealthApiData(HealthData):
     """为 yingde api 项目提供基类"""

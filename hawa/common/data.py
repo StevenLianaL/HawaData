@@ -270,3 +270,13 @@ class CommonData(metaclass=MetaCommomData):
         return {
             "data": res, "codes": codes, "legend": self.rank_names,
         }
+
+    def count_sub_units(self, target_level: str = 'school'):
+        """查询下辖单位"""
+        match target_level:
+            case 'school':
+                return self.school_ids
+            case 'district':
+                return {i // (10 ** 4) for i in self.school_ids}
+            case _:
+                raise ValueError(f"target_level: {target_level} not support")
