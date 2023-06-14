@@ -55,4 +55,5 @@ text = (
     ("0.6.1", "count dim field scores"),
     ("0.6.2", "count dim field scores 2"),
     ("0.6.3", "count student grade"),
+    ("0.6.4", "count dim field rank"),
 )

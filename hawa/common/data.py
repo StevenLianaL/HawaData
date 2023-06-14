@@ -1,6 +1,6 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
 import json
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from typing import Optional, ClassVar, Any, Set
 
@@ -66,6 +66,7 @@ class CommonData(metaclass=MetaCommomData):
     # 辅助工具
     grade_util: Optional[GradeData] = None
     case_util: Optional[CaseData] = None
+    rank_names = ['待提高', '中等', '良好', '优秀']
     measurement = Measurement()
 
     # 计算数据
@@ -236,3 +237,36 @@ class CommonData(metaclass=MetaCommomData):
         for k, v in grade_data['code'].items():
             grade_data['code'][k]['grade'] = grade
         return grade_data
+
+    def sort_rank(self, name: str) -> int:
+        order_map = dict(zip(self.rank_names, range(0, 4)))
+        return order_map[name]
+
+    def count_dim_field_ranks(self, item_code: str):
+        """
+        计算维度、领域的 ranks 分级比例
+        :param item_code:dimision or field
+        """
+        r = defaultdict(list)
+        codes = set()
+        for (s, c), student_code_group in self.final_answers.groupby(['student_id', item_code]):
+            s_c_score = round(student_code_group.score.mean() * 100, 2)
+            codes.add(c)
+            r[c].append(s_c_score)
+        codes = list(codes)
+        df = pd.DataFrame.from_records(r)
+        res = {}
+        for c in codes:
+            row = df[c]
+            base_row_ranks = {k: 0 for k in self.rank_names}
+            count_row_ranks = pd.cut(
+                row, bins=[0, 60, 80, 90, 100], labels=self.rank_names,
+                right=False, include_lowest=True,
+            ).value_counts().to_dict()
+            sum_value = sum(count_row_ranks.values())
+            row_ranks = {k: round(v / sum_value * 100, 2) for k, v in (base_row_ranks | count_row_ranks).items()}
+            res[c] = row_ranks
+
+        return {
+            "data": res, "codes": codes, "legend": self.rank_names,
+        }

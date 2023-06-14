@@ -3,7 +3,6 @@ from loguru import logger
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.school import SchoolHealthApiData
 from hawa.data.student import StudentHealthApiData
-from hawa.paper.health import HealthApiData
 from test.mock import prepare_test
 
 prepare_test()
@@ -42,6 +41,8 @@ def test_class_health_api_run():
                 print(f"{d.meta_unit_id} {i=} {d.score_rank(i)}")
             except Exception as e:
                 print(f"{str(e)=}")
+
+        print(f"{d.count_dim_field_ranks('dimension')=}")
 
 
 def test_student_health_api_run():
