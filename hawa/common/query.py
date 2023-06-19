@@ -33,7 +33,8 @@ class DataQuery:
 
     def query_schools_all(self):
         sql = f"select id, name, short_name, created from schools;"
-        return pd.read_sql(text(sql), self.db.engine_conn)
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
 
     def query_schools_by_ids(self, school_ids: list[int]):
         if len(school_ids) == 0:
@@ -42,12 +43,14 @@ class DataQuery:
             sql = f"select id, name, short_name, created from schools where id={school_ids[0]};"
         else:
             sql = f"select id, name, short_name, created from schools where id in {tuple(school_ids)};"
-        return pd.read_sql(text(sql), self.db.engine_conn)
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
 
     def query_schools_by_startwith(self, startwith: int):
         param_len = len(str(startwith))
         sql = f"select id, name, short_name, created from schools where left(id,{param_len})={startwith};"
-        return pd.read_sql(text(sql), self.db.engine_conn)
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
 
     def query_papers(self, test_type: str = '', test_types: list[str] = None):
         """优先 test_types"""
@@ -57,7 +60,8 @@ class DataQuery:
             sql = f"select id, name, grade, test_type, created from papers where test_type='{test_type}';"
         else:
             raise
-        return pd.read_sql(text(sql), self.db.engine_conn)
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
 
     def query_cases(
             self, school_ids: list[int], paper_ids: list[int],
@@ -84,7 +88,8 @@ class DataQuery:
               f"inner join case_projects cp on c.project_id=cp.id " \
               f"where  is_cleared=1 and valid_to between '{valid_to_start}' and '{valid_to_end}'" \
               f" {school_sql} {paper_sql};"
-        cases = pd.read_sql(text(sql), self.db.engine_conn).drop_duplicates(subset=['id'])
+        with self.db.engine_conn() as conn:
+            cases = pd.read_sql(text(sql), conn).drop_duplicates(subset=['id'])
         return cases
 
     def query_answers(self, case_ids: list[int]):
@@ -95,8 +100,9 @@ class DataQuery:
             sql = f"select {answer_cols} from answers where case_id={case_ids[0]} and valid=1;"
         else:
             sql = f"select {answer_cols} from answers where case_id in {tuple(case_ids)} and valid=1;"
-        answers = pd.read_sql(text(sql), self.db.engine_conn).drop_duplicates(
-            subset=['case_id', 'student_id', 'item_id'])
+        with self.db.engine_conn() as conn:
+            answers = pd.read_sql(text(sql), conn).drop_duplicates(
+                subset=['case_id', 'student_id', 'item_id'])
         return answers
 
     def query_students(self, student_ids: list[int]):
@@ -104,18 +110,21 @@ class DataQuery:
                     "unit_id, client_id, extra"
         student_ids.append(0)
         sql = f"select {user_cols} from users where id in {tuple(student_ids)} and length(id)>=18;"
-        students = pd.read_sql(text(sql), self.db.engine_conn).drop_duplicates(subset=['id'])
+        with self.db.engine_conn() as conn:
+            students = pd.read_sql(text(sql), conn).drop_duplicates(subset=['id'])
         return students
 
     def query_items(self, item_ids: list[int]):
         item_cols = "id, item_text, choices, item_key, item_type, grade, test_type, pattern, " \
                     "`source`, created"
         sql = f"select {item_cols} from items where id in {tuple(item_ids)};"
-        return pd.read_sql(text(sql), self.db.engine_conn)
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
 
     def query_item_codes(self, item_ids: list[int]):
         item_code_sql = f'select ic.item_id,ic.code,ic.category,c.name ' \
                         f'from item_codes ic left join codebook c on ic.code = c.code ' \
                         f'where ic.item_id in {tuple(item_ids)};'
-        item_codes = pd.read_sql(text(item_code_sql), self.db.engine_conn)
+        with self.db.engine_conn() as conn:
+            item_codes = pd.read_sql(text(item_code_sql), conn)
         return item_codes

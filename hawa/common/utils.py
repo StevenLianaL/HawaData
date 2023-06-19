@@ -39,7 +39,8 @@ class Measurement:
 
     def _get_fields(self, category: str):
         sql = f"select code, category, name from codebook where category='{category}' and name<>'其他'"
-        data = pd.read_sql(text(sql), self.db.engine_conn)
+        with self.db.engine_conn() as conn:
+            data = pd.read_sql(text(sql), conn)
         return data['name'].to_list()
 
     def _get_field_names(self, category: str):

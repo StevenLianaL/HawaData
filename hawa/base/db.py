@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 import MySQLdb
 import mongoengine
 import sqlalchemy
@@ -16,17 +18,17 @@ class DbUtil:
     _engine_conn = None
 
     @property
-    def engine_conn(self):
-        if not self._engine_conn:
-            self._engine_conn = self.db_engine.connect()
-        return self._engine_conn
-
-    @property
     def db_engine(self):
         database_url = f"{project.DB_MODE}://{project.DB_USER}:{project.DB_PSWD}@{project.DB_HOST}/" \
                        f"{project.DB_NAME}?charset=utf8"
-        engine = sqlalchemy.create_engine(database_url)
+        engine = sqlalchemy.create_engine(database_url, pool_pre_ping=True)
         return engine
+
+    @contextmanager
+    def engine_conn(self):
+        self._engine_conn = self.db_engine.connect()
+        yield self._engine_conn
+        self._engine_conn.close()
 
     def connect(self):
         return MySQLdb.connect(

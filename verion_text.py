@@ -57,4 +57,5 @@ text = (
     ("0.6.3", "count student grade"),
     ("0.6.4", "count dim field rank"),
     ("0.6.5", "count sub unit ids"),
+    ("0.6.6", "use contextmanager to connect db"),
 )
