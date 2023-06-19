@@ -16,20 +16,6 @@ class DbUtil:
     _engine_conn = None
 
     @property
-    def conn(self):
-        """engine wrapper for pandas.read_sql"""
-        if project.COMPLETED:
-            try:
-                if not self._conn:
-                    self._conn = self.db_engine
-                return self._conn
-            except Exception as e:
-                project.logger.info(f"{type(e)=} {e=}")
-                self._conn = self.db_engine
-                return self._conn
-        return self.db_engine
-
-    @property
     def engine_conn(self):
         if not self._engine_conn:
             self._engine_conn = self.db_engine.connect()

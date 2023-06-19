@@ -119,7 +119,3 @@ class DataQuery:
                         f'where ic.item_id in {tuple(item_ids)};'
         item_codes = pd.read_sql(text(item_code_sql), self.db.engine_conn)
         return item_codes
-
-    @property
-    def conn(self):
-        return self.db.conn
