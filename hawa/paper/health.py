@@ -44,10 +44,16 @@ class HealthApiData(HealthData):
         if len(self.cases) == 0:
             raise NoCasesError(f'grade {self.grade} cases is empty')
 
-    def score_rank(self, grade: int):
-        """某年级 健康素养水平各等级占比"""
+    def score_rank(self, grade: int, gender: str = ''):
+        """
+        某年级 健康素养水平各等级占比
+        :param grade: 年级
+        :param gender: 性别 '' 全部 'M' 男 'F' 女
+        """
         base = {'优秀': 0, '良好': 0, '中等': 0, '待提高': 0}
-        final_scores = self.__get_grade_final_scores(grade=grade)
+        fs = final_scores = self.__get_grade_final_scores(grade=grade)
+        if gender:
+            final_scores = fs.loc[fs.gender == gender, :]
         raw = final_scores.level.value_counts().to_dict()
         data = base | raw
         sum_data = sum(data.values())
