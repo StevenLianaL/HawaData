@@ -2,6 +2,7 @@
 import json
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
+from pprint import pprint
 from typing import Optional, ClassVar, Any, Set
 
 import pandas as pd
@@ -280,3 +281,21 @@ class CommonData(metaclass=MetaCommomData):
                 return {i // (10 ** 4) for i in self.school_ids}
             case _:
                 raise ValueError(f"target_level: {target_level} not support")
+
+    def get_cascade_students(self):
+        """年级/班级/学生嵌套"""
+        data = self.final_scores
+        data['cls'] = data['student_id'].apply(lambda x: str(x)[:15])
+        res = []
+        for grade, grade_group in data.groupby('grade'):
+            grade_row = {'label': f'{grade}年级', 'value': grade, 'children': []}
+            for cls, cls_group in grade_group.groupby('cls'):
+                cls_row = {'label': f'{cls[13:]}班', 'value': int(cls), 'children': []}
+                for _, student_g_row in cls_group.iterrows():
+                    student_row = {
+                        'label': student_g_row['username'],
+                        'value': str(student_g_row['student_id'])}
+                    cls_row['children'].append(student_row)
+                grade_row['children'].append(cls_row)
+            res.append(grade_row)
+        return res

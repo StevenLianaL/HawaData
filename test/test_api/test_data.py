@@ -26,6 +26,7 @@ def test_health_api_run():
         print(f"{dd.gender_compare(grade=row['grade'])=}")
         print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field')=}")
         print(f"{dd.get_class_scores()=}")
+        print(f"{dd.get_cascade_students()}")
 
 
 def test_class_health_api_run():
@@ -38,7 +39,7 @@ def test_class_health_api_run():
         d = ClassHealthApiData(**row)
         for i in range(3, 4):
             try:
-                print(f"{d.meta_unit_id} {i=} {d.score_rank(i,gender='F')}")
+                print(f"{d.meta_unit_id} {i=} {d.score_rank(i, gender='F')}")
             except Exception as e:
                 print(f"{str(e)=}")
 
