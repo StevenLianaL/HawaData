@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from loguru import logger
 
 from hawa.data.klass import ClassHealthApiData
@@ -26,7 +28,7 @@ def test_health_api_run():
         print(f"{dd.gender_compare(grade=row['grade'])=}")
         print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field')=}")
         print(f"{dd.get_class_scores()=}")
-        print(f"{dd.get_cascade_students()}")
+        pprint(dd.get_cascade_students())
 
 
 def test_class_health_api_run():

@@ -2,7 +2,6 @@
 import json
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
-from pprint import pprint
 from typing import Optional, ClassVar, Any, Set
 
 import pandas as pd
@@ -288,14 +287,26 @@ class CommonData(metaclass=MetaCommomData):
         data['cls'] = data['student_id'].apply(lambda x: str(x)[:15])
         res = []
         for grade, grade_group in data.groupby('grade'):
-            grade_row = {'label': f'{grade}年级', 'value': grade, 'children': []}
+            grade_row = {
+                'label': f'{grade}年级', 'value': grade,
+                'children': [], "is_leaf": False
+            }
             for cls, cls_group in grade_group.groupby('cls'):
-                cls_row = {'label': f'{cls[13:]}班', 'value': int(cls), 'children': []}
+                cls_row = {
+                    'label': f'{cls[13:]}班', 'value': int(cls),
+                    'children': [], "is_leaf": False
+                }
                 for _, student_g_row in cls_group.iterrows():
                     student_row = {
                         'label': student_g_row['username'],
-                        'value': str(student_g_row['student_id'])}
+                        'value': str(student_g_row['student_id']),
+                        "is_leaf": True
+                    }
                     cls_row['children'].append(student_row)
+                if not cls_row['children']:
+                    cls_row['is_leaf'] = True
                 grade_row['children'].append(cls_row)
+            if not grade_row['children']:
+                grade_row['is_leaf'] = True
             res.append(grade_row)
         return res

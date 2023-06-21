@@ -60,4 +60,5 @@ text = (
     ("0.7.0", "use contextmanager to connect db"),
     ("0.7.1", "count score rank with gender"),
     ("0.7.2", "add cascade students"),
+    ("0.7.3", "add is_leaf to cascade students"),
 )
