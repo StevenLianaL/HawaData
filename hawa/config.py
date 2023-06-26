@@ -69,6 +69,7 @@ class Settings(BaseSettings):
         8: '初中二', 9: '初中三', 10: '高中一', 11: '高中二',
         12: '高中三'
     }
+
     grade_simple = {**dict(zip(range(1, 11), '一二三四五六七八九十')), **{11: '十一', 12: '十二'}}
 
     # number

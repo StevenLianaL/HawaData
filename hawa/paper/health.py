@@ -74,7 +74,7 @@ class HealthApiData(HealthData):
             "F": round(f_score, 2)
         }
 
-    def dim_field_gender_compare(self, grade: int, item_code: str):
+    def dim_field_gender_compare(self, grade: int, item_code: str, key_format: str = 'en'):
         """某年级六大领域/四大维度测评得分及性别比较图"""
         final_answers = self.__get_grade_final_answers(grade=grade)
         answers = final_answers.loc[~final_answers[item_code].isnull(), :]
@@ -92,7 +92,7 @@ class HealthApiData(HealthData):
         gender_box = []
         for gender_k, gender_data in res.items():
             row_data = {
-                "name": gender_k,
+                "name": gender_k if key_format == 'en' else project.gender_map[gender_k],
                 "value": []
             }
             for c in codes:

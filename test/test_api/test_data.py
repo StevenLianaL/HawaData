@@ -26,7 +26,7 @@ def test_health_api_run():
         print(f"{dd.meta_unit_id}")
         print(f"{dd.score_rank(grade=row['grade'])=}")
         print(f"{dd.gender_compare(grade=row['grade'])=}")
-        print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field')=}")
+        print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field',key_format='zh')=}")
         print(f"{dd.get_class_scores()=}")
         pprint(dd.get_cascade_students())
 
