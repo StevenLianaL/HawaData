@@ -63,4 +63,5 @@ text = (
     ("0.7.3", "add is_leaf to cascade students"),
     ("0.7.4", "add ch key for dim_field data"),
     ("0.7.5", "add ch key for dim_field data"),
+    ("0.7.6", "add ProvinceHealthApiDataLess for cascade schools"),
 )

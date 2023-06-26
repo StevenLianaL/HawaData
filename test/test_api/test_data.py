@@ -3,6 +3,7 @@ from pprint import pprint
 from loguru import logger
 
 from hawa.data.klass import ClassHealthApiData
+from hawa.data.province import ProvinceHealthApiDataLess
 from hawa.data.school import SchoolHealthApiData
 from hawa.data.student import StudentHealthApiData
 from test.mock import prepare_test
@@ -28,7 +29,17 @@ def test_health_api_run():
         print(f"{dd.gender_compare(grade=row['grade'])=}")
         print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field',key_format='zh')=}")
         print(f"{dd.get_class_scores()=}")
-        pprint(dd.get_cascade_students())
+        pprint(dd.get_cascade_schools_from_province())
+
+
+def test_cascade_schools_from_province():
+    rows = [
+        {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province"},
+        {"meta_unit_id": 510000, "target_year": 2023, "meta_unit_type": "province"},
+    ]
+    for row in rows:
+        dd = ProvinceHealthApiDataLess(**row)
+        pprint(dd.get_cascade_schools_from_province())
 
 
 def test_class_health_api_run():

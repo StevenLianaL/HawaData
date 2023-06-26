@@ -85,6 +85,7 @@ class Settings(BaseSettings):
 
     # other
     municipality = {11, 12, 31, 50}
+    municipality_ids = {110000, 120000, 310000, 500000}
 
     class Config:
         env_prefix = 'No_Env_'  # 不使用环境变量

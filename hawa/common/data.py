@@ -81,6 +81,7 @@ class CommonData(metaclass=MetaCommomData):
         # 初始化数据
         init_functions = [i for i in dir(self) if i.startswith('_to_init_')]
         for func in init_functions:
+            print(f"{func=}")
             getattr(self, func)()
 
         # 构建辅助工具
@@ -137,6 +138,7 @@ class CommonData(metaclass=MetaCommomData):
             raise NoCasesError(f'no cases:{self.meta_unit} {self.school_ids}')
         self.case_ids = self.cases['id'].tolist()
         self.case_project_ids = Counter(self.cases['project_id'].tolist())
+        self.school_ids = self.cases['school_id'].unique().tolist()
         project.logger.debug(f'cases: {len(self.cases)}')
 
     def _to_init_e_answers(self):
@@ -309,4 +311,67 @@ class CommonData(metaclass=MetaCommomData):
             if not grade_row['children']:
                 grade_row['is_leaf'] = True
             res.append(grade_row)
+        return res
+
+    def get_cascade_schools_from_province(self):
+        """省-市-区县-学校的 cascade 数据"""
+        sch_ids = self.school_ids
+        province_ids = {i // (10 ** 8) * 10000 for i in sch_ids}
+        city_ids = {i // (10 ** 6) * 100 for i in sch_ids}
+        district_ids = {i // (10 ** 4) for i in sch_ids}
+        location_ids = province_ids | city_ids | district_ids
+        locations = self.query.query_locations(list(location_ids))
+        schools = self.schools
+        location_map = {lo['id']: lo for _, lo in locations.iterrows()}
+        school_map = {sch['id']: sch for _, sch in schools.iterrows()}
+        res = []
+        for p_id in province_ids:
+            p = location_map[p_id]
+            p_row = {
+                'label': p['name'], 'value': p['id'], 'children': [], "is_leaf": False
+            }
+            if p_id not in project.municipality_ids:
+                for c_id in city_ids:
+                    if c_id // 10000 * 10000 != p_id:
+                        continue
+                    c = location_map[c_id]
+                    c_row = {
+                        'label': c['name'], 'value': c['id'], 'children': [], "is_leaf": False
+                    }
+                    for d_id in district_ids:
+                        if d_id // 100 * 100 != c_id:
+                            continue
+                        d = location_map[d_id]
+                        d_row = {
+                            'label': d['name'], 'value': d['id'], 'children': [], "is_leaf": False
+                        }
+                        for s_id in sch_ids:
+                            if s_id // 10000 != d_id:
+                                continue
+                            s = school_map[s_id]
+                            s_row = {
+                                'label': s['name'], 'value': s['id'], "is_leaf": True
+                            }
+                            d_row['children'].append(s_row)
+                        c_row['children'].append(d_row)
+                    p_row['children'].append(c_row)
+                res.append(p_row)
+            else:
+                for d_id in district_ids:
+                    if d_id // 10000 * 10000 != p_id:
+                        continue
+                    d = location_map[d_id]
+                    d_row = {
+                        'label': d['name'], 'value': d['id'], 'children': [], "is_leaf": False
+                    }
+                    for s_id in sch_ids:
+                        if s_id // 10000 != d_id:
+                            continue
+                        s = school_map[s_id]
+                        s_row = {
+                            'label': s['name'], 'value': s['id'], "is_leaf": True
+                        }
+                        d_row['children'].append(s_row)
+                    p_row['children'].append(d_row)
+                res.append(p_row)
         return res
