@@ -53,6 +53,10 @@ class Settings(BaseSettings):
         'total': '总体', 'M': '男生', "F": "女生"
     }
 
+    total_gender_map = {
+        'total': '全部', 'M': '男生', "F": "女生"
+    }
+
     # rank
     ranks = {
         'RANK_LABEL': {'A': '优秀', 'B': '良好', 'C': '达标', 'D': '待达标'},

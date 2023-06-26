@@ -92,7 +92,7 @@ class HealthApiData(HealthData):
         gender_box = []
         for gender_k, gender_data in res.items():
             row_data = {
-                "name": gender_k if key_format == 'en' else project.gender_map[gender_k],
+                "name": gender_k if key_format == 'en' else project.total_gender_map[gender_k],
                 "value": []
             }
             for c in codes:
