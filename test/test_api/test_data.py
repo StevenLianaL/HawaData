@@ -4,7 +4,7 @@ from loguru import logger
 
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.province import ProvinceHealthApiDataLess
-from hawa.data.school import SchoolHealthApiData
+from hawa.data.school import SchoolHealthApiData, SchoolMhtApiData
 from hawa.data.student import StudentHealthApiData
 from test.mock import prepare_test
 
@@ -70,3 +70,10 @@ def test_student_health_api_run():
         logger.info(row)
         d = StudentHealthApiData(**row)
         print(f"{d.meta_unit_id} {d.final_answers=}")
+
+
+def test_mht_school_api_run():
+    s = SchoolMhtApiData(
+        meta_unit_id=4107000032, target_year=2023, meta_unit_type='school'
+    )
+    print(f"{s.get_cascade_students()=}")

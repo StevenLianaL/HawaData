@@ -81,7 +81,6 @@ class CommonData(metaclass=MetaCommomData):
         # 初始化数据
         init_functions = [i for i in dir(self) if i.startswith('_to_init_')]
         for func in init_functions:
-            print(f"{func=}")
             getattr(self, func)()
 
         # 构建辅助工具

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from hawa.paper.health import HealthReportData, HealthApiData
-from hawa.paper.mht import MhtWebData
+from hawa.paper.mht import MhtWebData, MhtApiData
 
 
 @dataclass
@@ -24,6 +24,11 @@ class SchoolHealthApiData(SchoolMixin, HealthApiData):
 @dataclass
 class SchoolHealthReportData(SchoolMixin, HealthReportData):
     pass
+
+
+@dataclass
+class SchoolMhtApiData(SchoolMixin, MhtApiData):
+    meta_unit_type: str = 'school'
 
 
 @dataclass
