@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
 
-import pandas as pd
-
 from hawa.config import project
 from hawa.paper.health import HealthApiData
 
@@ -28,10 +26,6 @@ class StudentHealthApiData(StudentMixin, HealthApiData):
 
     def _to_init_e_answers(self):
         """筛选学生的答案"""
-        super()._to_init_e_answers()
-        records = []
-        for _, row in self.answers.iterrows():
-            if int(str(row['student_id'])) == self.meta_student_id:
-                records.append(row)
-        self.answers = pd.DataFrame.from_records(records)
+        self.answers = self.query.query_answers(case_ids=self.case_ids, student_id=self.meta_student_id)
+
         project.logger.debug(f'student answers: {len(self.answers)}')

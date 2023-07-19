@@ -69,7 +69,6 @@ def test_student_health_api_run():
     for row in data:
         logger.info(row)
         d = StudentHealthApiData(**row)
-        print(f"{d.meta_unit_id} {d.final_answers=}")
 
 
 def test_mht_school_api_run():

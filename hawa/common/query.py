@@ -92,7 +92,7 @@ class DataQuery:
             cases = pd.read_sql(text(sql), conn).drop_duplicates(subset=['id'])
         return cases
 
-    def query_answers(self, case_ids: list[int]):
+    def query_answers(self, case_ids: list[int], student_id: int = None):
         answer_cols = "id, student_id, item_id, case_id, answer, score, created, valid"
         if len(case_ids) == 0:
             return []
@@ -100,6 +100,8 @@ class DataQuery:
             sql = f"select {answer_cols} from answers where case_id={case_ids[0]} and valid=1;"
         else:
             sql = f"select {answer_cols} from answers where case_id in {tuple(case_ids)} and valid=1;"
+        if student_id:
+            sql += f" and student_id={student_id};"
         with self.db.engine_conn() as conn:
             answers = pd.read_sql(text(sql), conn).drop_duplicates(
                 subset=['case_id', 'student_id', 'item_id'])
