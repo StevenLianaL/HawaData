@@ -136,3 +136,8 @@ class DataQuery:
         with self.db.engine_conn() as conn:
             locations = pd.read_sql(text(location_sql), conn)
         return locations
+
+    def query_codebook(self):
+        sql = f"select code,category,name,`order` from codebook;"
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)

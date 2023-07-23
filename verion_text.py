@@ -66,4 +66,5 @@ text = (
     ("0.7.6", "add ProvinceHealthApiDataLess for cascade schools"),
     ("0.7.7", "add school mht api data"),
     ("0.7.8", "optimization student data"),
+    ("0.7.9", "sort dim field"),
 )

@@ -88,7 +88,9 @@ class HealthApiData(HealthData):
             res[gender_k] = self.count_dim_or_field_scores_by_answers(
                 answers=gender_v, item_code=item_code, res_format='dict'
             )
+        map_order = self.get_dim_field_order(key=item_code)
         codes = answers[item_code].unique().tolist()
+        codes = sorted(codes, key=lambda x: map_order[x])
         gender_box = []
         for gender_k, gender_data in res.items():
             row_data = {

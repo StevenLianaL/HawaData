@@ -50,6 +50,8 @@ class CommonData(metaclass=MetaCommomData):
     school_ids: list[int] = field(default_factory=list)
     schools: pd.DataFrame = field(default_factory=pd.DataFrame)
 
+    codebook: pd.DataFrame = field(default_factory=pd.DataFrame)
+
     cases: pd.DataFrame = field(default_factory=pd.DataFrame)
     case_ids: list[int] = field(default_factory=list)
     case_project_ids: Counter = field(default_factory=Counter)
@@ -155,6 +157,15 @@ class CommonData(metaclass=MetaCommomData):
         self.item_ids = set(self.answers['item_id'].drop_duplicates())
         self.items = self.query.query_items(self.item_ids)
         project.logger.debug(f'items: {len(self.items)}')
+
+    def _to_init_z_dim_field(self):
+        cache_key = f"{project.PROJECT}:codebook"
+        if data := self.redis.conn.get(cache_key):
+            self.codebook = pd.DataFrame.from_records(json.loads(data))
+        else:
+            self.codebook = self.query.query_codebook()
+            cache_data = self.codebook.to_json(orient='records', force_ascii=False)
+            self.redis.conn.set(cache_key, cache_data, ex=60 * 60 * 24 * 7)
 
     def _to_build_helper(self):
         self.grade = GradeData(case_ids=self.case_ids)
@@ -374,3 +385,11 @@ class CommonData(metaclass=MetaCommomData):
                     p_row['children'].append(d_row)
                 res.append(p_row)
         return res
+
+    def get_dim_field_order(self, key: str):
+        """获取维度/领域顺序的映射
+        :param key: dimension/field
+        """
+        data = self.codebook.loc[self.codebook['category'] == key, :]
+        order_map = {i['name']: i['order'] for _, i in data.iterrows()}
+        return order_map
