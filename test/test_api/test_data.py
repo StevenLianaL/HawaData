@@ -56,7 +56,7 @@ def test_class_health_api_run():
             except Exception as e:
                 print(f"{str(e)=}")
 
-        print(f"{d.count_dim_field_ranks('dimension')=}")
+        print(f"{d.count_dim_field_ranks('field')=}")
 
 
 def test_student_health_api_run():

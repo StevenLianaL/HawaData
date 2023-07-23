@@ -278,9 +278,10 @@ class CommonData(metaclass=MetaCommomData):
             sum_value = sum(count_row_ranks.values())
             row_ranks = {k: round(v / sum_value * 100, 2) for k, v in (base_row_ranks | count_row_ranks).items()}
             res[c] = row_ranks
-
+        code_map = self.get_dim_field_order(key=item_code)
         return {
-            "data": res, "codes": codes, "legend": self.rank_names,
+            "data": res, "codes": sorted(codes, key=lambda x: code_map[x]),
+            "legend": self.rank_names,
         }
 
     def count_sub_units(self, target_level: str = 'school'):
