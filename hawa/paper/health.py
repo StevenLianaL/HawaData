@@ -147,6 +147,9 @@ class HealthApiData(HealthData):
             case 'dict':
                 return mapping
             case 'list':
+                code_map = self.get_dim_field_order(key=item_code)
+                keys = sorted(keys, key=lambda x: code_map[x])
+                values = [mapping[k] for k in keys]
                 return keys, values
 
 
