@@ -394,4 +394,6 @@ class CommonData(metaclass=MetaCommomData):
         """
         data = self.codebook.loc[self.codebook['category'] == key, :]
         order_map = {i['name']: i['order'] for _, i in data.iterrows()}
+        if '其他' in order_map.keys():
+            del order_map['其他']
         return order_map
