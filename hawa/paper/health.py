@@ -11,6 +11,7 @@ from pingouin import cronbach_alpha
 
 from hawa.base.errors import NoCasesError
 from hawa.common.data import CommonData
+from hawa.common.utils import Util
 from hawa.config import project
 
 
@@ -59,7 +60,7 @@ class HealthApiData(HealthData):
         sum_data = sum(data.values())
         if not sum_data:
             raise ValueError(f'grade {grade} score rank is empty')
-        percent = {k: round(v * 100 / sum_data, project.precision) for k, v in data.items()}
+        percent = {k: Util.format_num(v * 100 / sum_data, project.precision) for k, v in data.items()}
         return percent
 
     def gender_compare(self, grade: int):
@@ -69,9 +70,9 @@ class HealthApiData(HealthData):
         m_score = final_scores.loc[final_scores.gender == 'M'].score.mean()
         f_score = final_scores.loc[final_scores.gender == 'F'].score.mean()
         return {
-            "total": round(total_score, project.precision),
-            "M": round(m_score, project.precision),
-            "F": round(f_score, project.precision)
+            "total": Util.format_num(total_score, project.precision),
+            "M": Util.format_num(m_score, project.precision),
+            "F": Util.format_num(f_score, project.precision),
         }
 
     def dim_field_gender_compare(self, grade: int, item_code: str, key_format: str = 'en'):
@@ -139,7 +140,7 @@ class HealthApiData(HealthData):
         """
         keys, values, mapping = [], [], {}
         for code, code_group in answers.groupby(item_code):
-            score = round(code_group.score.mean() * 100, project.precision)
+            score = Util.format_num(code_group.score.mean() * 100, project.precision)
             keys.append(code)
             values.append(score)
             mapping[code] = score
@@ -200,7 +201,7 @@ class HealthReportData(HealthData):
         records = defaultdict(dict)
         for grade, group in self.code_scores.groupby('grade'):
             for gender in project.gender_map.keys():
-                records[grade][gender] = round(self._count_school_score(group, key=gender), project.precision)
+                records[grade][gender] = Util.format_num(self._count_school_score(group, key=gender), project.precision)
         self.summary_scores = records
 
     def _to_count_e_grade_good_bad(self):
@@ -524,8 +525,8 @@ class HealthReportData(HealthData):
     def compare_gender_text(self, grade: int):
         grade_rank_dis_m = self.grade_rank_dis[grade].M
         grade_rank_dis_f = self.grade_rank_dis[grade].F
-        level_m = round(sum([grade_rank_dis_m['优秀'], grade_rank_dis_m['良好']]), project.precision)
-        level_f = round(sum([grade_rank_dis_f['优秀'], grade_rank_dis_f['良好']]), project.precision)
+        level_m = Util.format_num(sum([grade_rank_dis_m['优秀'], grade_rank_dis_m['良好']]), project.precision)
+        level_f = Util.format_num(sum([grade_rank_dis_f['优秀'], grade_rank_dis_f['良好']]), project.precision)
         if level_m - level_f >= 5:
             return '男生明显高于女生'
         elif level_m - level_f <= -5:

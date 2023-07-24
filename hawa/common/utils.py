@@ -108,3 +108,9 @@ class GradeData:
     @property
     def grade_name_list(self) -> list[str]:
         return [f"{project.grade_simple[i]}年级" for i in self.grades]
+
+
+class Util:
+    @classmethod
+    def format_num(cls, num: float | int, precision: int = 1):
+        return round(float(num), precision)

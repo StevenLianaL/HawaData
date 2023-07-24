@@ -11,7 +11,7 @@ from munch import Munch
 from hawa.base.db import DbUtil, RedisUtil
 from hawa.base.errors import NoCasesError
 from hawa.common.query import DataQuery
-from hawa.common.utils import GradeData, CaseData, Measurement
+from hawa.common.utils import GradeData, CaseData, Measurement, Util
 from hawa.config import project
 
 
@@ -262,7 +262,7 @@ class CommonData(metaclass=MetaCommomData):
         r = defaultdict(list)
         codes = set()
         for (s, c), student_code_group in self.final_answers.groupby(['student_id', item_code]):
-            s_c_score = round(student_code_group.score.mean() * 100, project.precision)
+            s_c_score = Util.format_num(student_code_group.score.mean() * 100, project.precision)
             codes.add(c)
             r[c].append(s_c_score)
         codes = list(codes)
@@ -276,7 +276,7 @@ class CommonData(metaclass=MetaCommomData):
                 right=False, include_lowest=True,
             ).value_counts().to_dict()
             sum_value = sum(count_row_ranks.values())
-            row_ranks = {k: round(v / sum_value * 100, project.precision) for k, v in
+            row_ranks = {k: Util.format_num(v / sum_value * 100, project.precision) for k, v in
                          (base_row_ranks | count_row_ranks).items()}
             res[c] = row_ranks
         code_map = self.get_dim_field_order(key=item_code)

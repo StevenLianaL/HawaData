@@ -5,6 +5,7 @@ from typing import Set
 import pandas as pd
 
 from hawa.common.data import CommonData
+from hawa.common.utils import Util
 from hawa.config import project
 
 
@@ -81,7 +82,7 @@ class MhtData(CommonData):
         for grade, grade_ans_group in self.final_answers.groupby('grade'):
             for student_id, student_group in grade_ans_group.groupby('student_id'):
                 student_name = student_group['username'].tolist()[0]
-                student_score = round(student_group['score'].sum(), project.precision)
+                student_score = Util.format_num(student_group['score'].sum(), precision=project.precision)
                 if student_score > 65:
                     res[grade].append(
                         self._tool_count_sub_code_score(answers=student_group, unit_name=student_name)
@@ -92,7 +93,7 @@ class MhtData(CommonData):
     def _tool_count_student_score(self, score: pd.DataFrame):
         data = []
         handred = set(range(0, 101))
-        score['score'] = score.score.apply(lambda x: int(round(x, project.precision)))
+        score['score'] = score.score.apply(lambda x: int(x))
 
         for s, row in score.groupby('score'):
             handred.discard(s)
@@ -120,7 +121,7 @@ class MhtData(CommonData):
             mht_scores[mht].append(group.score.sum())
         for mht, score_list in mht_scores.items():
             x_axis.append(mht)
-            y_axis.append(round(float(sum(score_list) / len(score_list)), project.precision))
+            y_axis.append(Util.format_num(float(sum(score_list) / len(score_list)), precision=project.precision))
 
         return {
             "name": unit_name if unit_name else self.meta_unit.name,

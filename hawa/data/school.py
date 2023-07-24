@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from hawa.common.utils import Util
 from hawa.config import project
 from hawa.paper.health import HealthReportData, HealthApiData
 from hawa.paper.mht import MhtWebData, MhtApiData
@@ -18,7 +19,7 @@ class SchoolHealthApiData(SchoolMixin, HealthApiData):
         scores = self.final_scores
         scores['cls'] = scores['student_id'].apply(lambda x: f"{int(str(x)[13:15])}班")
         res = scores.groupby('cls').score.mean().to_dict()
-        keys, values = res.keys(), [round(i, project.precision) for i in res.values()]
+        keys, values = res.keys(), [Util.format_num(i) for i in res.values()]
         return {'keys': list(keys), 'values': list(values)}
 
 
