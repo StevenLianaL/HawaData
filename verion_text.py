@@ -69,4 +69,5 @@ text = (
     ("0.7.9", "sort dim field"),
     ("0.8.0", "sort dim field"),
     ("0.8.1", "sort dim field"),
+    ("0.8.2", "add global precision"),
 )

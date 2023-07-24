@@ -27,9 +27,11 @@ def test_health_api_run():
         # print(f"{dd.meta_unit_id}")
         # print(f"{dd.score_rank(grade=row['grade'])=}")
         # print(f"{dd.gender_compare(grade=row['grade'])=}")
-        print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field',key_format='zh')=}")
+        # print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field',key_format='zh')=}")
         # print(f"{dd.get_class_scores()=}")
         # pprint(dd.get_cascade_schools_from_province())
+        print(f"{dd.count_dim_or_field_scores_by_answers(answers=dd.final_answers,item_code= 'field',res_format= 'dict')=}")
+
 
 
 def test_cascade_schools_from_province():

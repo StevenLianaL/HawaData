@@ -262,7 +262,7 @@ class CommonData(metaclass=MetaCommomData):
         r = defaultdict(list)
         codes = set()
         for (s, c), student_code_group in self.final_answers.groupby(['student_id', item_code]):
-            s_c_score = round(student_code_group.score.mean() * 100, 2)
+            s_c_score = round(student_code_group.score.mean() * 100, project.precision)
             codes.add(c)
             r[c].append(s_c_score)
         codes = list(codes)
@@ -276,7 +276,8 @@ class CommonData(metaclass=MetaCommomData):
                 right=False, include_lowest=True,
             ).value_counts().to_dict()
             sum_value = sum(count_row_ranks.values())
-            row_ranks = {k: round(v / sum_value * 100, 2) for k, v in (base_row_ranks | count_row_ranks).items()}
+            row_ranks = {k: round(v / sum_value * 100, project.precision) for k, v in
+                         (base_row_ranks | count_row_ranks).items()}
             res[c] = row_ranks
         code_map = self.get_dim_field_order(key=item_code)
         return {

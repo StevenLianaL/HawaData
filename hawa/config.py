@@ -78,6 +78,7 @@ class Settings(BaseSettings):
 
     # number
     number_map = dict(zip(range(1, 11), '一二三四五六七八九十'))
+    precision = 1
 
     category_map = {
         'total': "学生", 'M': '男生', "F": "女生"
