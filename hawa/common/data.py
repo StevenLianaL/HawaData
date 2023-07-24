@@ -35,6 +35,8 @@ class CommonData(metaclass=MetaCommomData):
     last_year_num: Optional[int] = None
     is_load_last: bool = True  # 仅计算往年数据时 为 False
 
+    is_load_all: bool = True  # 加载全部数据
+
     # 卷子
     test_type: str = ''
     test_types: list = field(default_factory=list)
@@ -81,17 +83,19 @@ class CommonData(metaclass=MetaCommomData):
 
     def __post_init__(self):
         # 初始化数据
-        init_functions = [i for i in dir(self) if i.startswith('_to_init_')]
-        for func in init_functions:
-            getattr(self, func)()
+        if self.is_load_all:
+            self.load_all_data()
 
-        # 构建辅助工具
-        self._to_build_helper()
+            # 构建辅助工具
+            self._to_build_helper()
 
-        # 计算数据
-        count_functions = [i for i in dir(self) if i.startswith('_to_count_')]
-        for func in count_functions:
-            getattr(self, func)()
+            # 计算数据
+            count_functions = [i for i in dir(self) if i.startswith('_to_count_')]
+            for func in count_functions:
+                getattr(self, func)()
+        else:
+            self.load_less_data()
+            self._to_build_helper()
 
     def _to_init_a_meta_unit(self):
         self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
@@ -397,3 +401,15 @@ class CommonData(metaclass=MetaCommomData):
         if '其他' in order_map.keys():
             del order_map['其他']
         return order_map
+
+    def load_less_data(self):
+        init_functions = [i for i in dir(self) if i.startswith('_to_init_')]
+        for func in init_functions:
+            if '_to_init_e_' in func:
+                break
+            getattr(self, func)()
+
+    def load_all_data(self):
+        init_functions = [i for i in dir(self) if i.startswith('_to_init_')]
+        for func in init_functions:
+            getattr(self, func)()
