@@ -4,8 +4,9 @@ from loguru import logger
 
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.province import ProvinceHealthApiDataLess
-from hawa.data.school import SchoolHealthApiData, SchoolMhtApiData
+from hawa.data.school import SchoolMhtApiData
 from hawa.data.student import StudentHealthApiData
+from hawa.paper.health import HealthApiData
 from test.mock import prepare_test
 
 prepare_test()
@@ -15,7 +16,9 @@ def test_health_api_run():
     rows = [
         # {"meta_unit_id": 5134010001, "target_year": 2021},
         # {"meta_unit_id": 5134310010, "target_year": 2023},
-        {"meta_unit_id": 1101089005, "target_year": 2023, "meta_unit_type": "school", "grade": 10},
+        # {"meta_unit_id": 513400, "target_year": 2023, "meta_unit_type": "city"},
+        {"meta_unit_id": 513401, "target_year": 2023, "meta_unit_type": "district"},
+        # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
         # {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021, "grade": 3},
         # {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},
@@ -23,15 +26,14 @@ def test_health_api_run():
     ]
     for row in rows:
         logger.info(row)
-        dd = SchoolHealthApiData(**row)
+        dd = HealthApiData(**row)
+        # dd = SchoolHealthApiData(**row)
         # print(f"{dd.meta_unit_id}")
         # print(f"{dd.score_rank(grade=row['grade'])=}")
         # print(f"{dd.gender_compare(grade=row['grade'])=}")
         # print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field',key_format='zh')=}")
         # print(f"{dd.get_class_scores()=}")
         # pprint(dd.get_cascade_schools_from_province())
-        print(f"{dd.count_dim_or_field_scores_by_answers(answers=dd.final_answers,item_code= 'field',res_format= 'dict')=}")
-
 
 
 def test_cascade_schools_from_province():

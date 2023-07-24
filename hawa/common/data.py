@@ -1,14 +1,15 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
 import json
+import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from typing import Optional, ClassVar, Any, Set
 
 import pandas as pd
 import pendulum
-from munch import Munch
 
 from hawa.base.db import DbUtil, RedisUtil
+from hawa.base.decos import log_func_time
 from hawa.base.errors import NoCasesError
 from hawa.common.query import DataQuery
 from hawa.common.utils import GradeData, CaseData, Measurement, Util
@@ -84,15 +85,24 @@ class CommonData(metaclass=MetaCommomData):
     def __post_init__(self):
         # 初始化数据
         if self.is_load_all:
+            t0 = time.perf_counter()
             self.load_all_data()
+            t1 = time.perf_counter()
+            print(f"load all data cost: {t1 - t0:.2f}s")
 
             # 构建辅助工具
             self._to_build_helper()
+
+            t2 = time.perf_counter()
+            print(f"build helper cost: {t2 - t1:.2f}s")
 
             # 计算数据
             count_functions = [i for i in dir(self) if i.startswith('_to_count_')]
             for func in count_functions:
                 getattr(self, func)()
+
+            t3 = time.perf_counter()
+            print(f"count data cost: {t3 - t2:.2f}s")
         else:
             self.load_less_data()
             self._to_build_helper()
@@ -146,6 +156,7 @@ class CommonData(metaclass=MetaCommomData):
         self.school_ids = self.cases['school_id'].unique().tolist()
         project.logger.debug(f'cases: {len(self.cases)}')
 
+    @log_func_time
     def _to_init_e_answers(self):
         self.answers = self.query.query_answers(case_ids=self.case_ids)
         project.logger.debug(f'answers: {len(self.answers)}')
@@ -175,6 +186,7 @@ class CommonData(metaclass=MetaCommomData):
         self.grade = GradeData(case_ids=self.case_ids)
         self.case = CaseData(cases=self.cases)
 
+    @log_func_time
     def _to_count_a_final_answers(self):
         items = {k: {} for k in self.code_word_list}
         item_codes = self.query.query_item_codes(self.item_ids)
@@ -202,6 +214,7 @@ class CommonData(metaclass=MetaCommomData):
         self.final_answers = data.drop_duplicates(subset=['case_id', 'student_id', 'item_id'])
         project.logger.debug(f'final_answers: {len(self.final_answers)}')
 
+    @log_func_time
     def _to_count_b_final_scores(self):
         self.final_scores = self.count_final_score(answers=self.final_answers)
         project.logger.debug(f'final_scores: {len(self.final_scores)}')
@@ -224,14 +237,14 @@ class CommonData(metaclass=MetaCommomData):
         records = []
         for student_id, group in answers.groupby('student_id'):
             score = group.score.mean() * 100
-            record = Munch(
-                student_id=student_id,
-                username=group['username'].tolist()[0],
-                grade=group['grade'].tolist()[0],
-                gender=group['gender'].tolist()[0],
-                score=score,
-                level=self.count_level(score),
-            )
+            record = {
+                "student_id": student_id,
+                "username": group['username'].tolist()[0],
+                "grade": group['grade'].tolist()[0],
+                "gender": group['gender'].tolist()[0],
+                "score": score,
+                "level": self.count_level(score),
+            }
             records.append(record)
         return pd.DataFrame.from_records(records)
 
