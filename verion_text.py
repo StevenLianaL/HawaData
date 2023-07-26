@@ -73,4 +73,5 @@ text = (
     ("0.8.3", "add global precision in func"),
     ("0.8.4", "fix extra dim/field"),
     ("0.8.5", "load less data"),
+    ("0.8.6", "fix bug"),
 )

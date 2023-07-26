@@ -97,9 +97,9 @@ class DataQuery:
         if len(case_ids) == 0:
             return []
         elif len(case_ids) == 1:
-            sql = f"select {answer_cols} from answers where case_id={case_ids[0]} and valid=1;"
+            sql = f"select {answer_cols} from answers where case_id={case_ids[0]} and valid=1"
         else:
-            sql = f"select {answer_cols} from answers where case_id in {tuple(case_ids)} and valid=1;"
+            sql = f"select {answer_cols} from answers where case_id in {tuple(case_ids)} and valid=1"
         if student_id:
             sql += f" and student_id={student_id};"
         with self.db.engine_conn() as conn:
