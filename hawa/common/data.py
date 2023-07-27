@@ -95,8 +95,6 @@ class CommonData(metaclass=MetaCommomData):
             for func in count_functions:
                 getattr(self, func)()
 
-            t3 = time.perf_counter()
-            print(f"count data cost: {t3 - t2:.2f}s")
         else:
             self.load_less_data()
             self._to_build_helper()

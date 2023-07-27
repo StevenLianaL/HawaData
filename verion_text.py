@@ -74,4 +74,5 @@ text = (
     ("0.8.4", "fix extra dim/field"),
     ("0.8.5", "load less data"),
     ("0.8.7", "add mongo params"),
+    ("0.8.8", "fix"),
 )
