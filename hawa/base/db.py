@@ -75,13 +75,16 @@ class DbUtil:
 
 class MongoUtil:
     @classmethod
-    def connect(self):
+    def connect(
+            cls, db: str = '', host: str = '', port: int = 0,
+            username: str = '', pswd: str = '', source: str = ''
+    ):
         mongoengine.connect(
-            project.MONGO_DB,
-            host=project.MONGO_HOST, port=project.MONGO_PORT,
-            username=project.MONGO_USER,
-            password=project.MONGO_PSWD,
-            authentication_source=project.MONGO_AUTH_DB
+            db or project.MONGO_DB,
+            host=host or project.MONGO_HOST, port=port or project.MONGO_PORT,
+            username=username or project.MONGO_USER,
+            password=pswd or project.MONGO_PSWD,
+            authentication_source=source or project.MONGO_AUTH_DB
         )
 
 

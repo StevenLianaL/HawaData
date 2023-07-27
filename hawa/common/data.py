@@ -85,16 +85,10 @@ class CommonData(metaclass=MetaCommomData):
     def __post_init__(self):
         # 初始化数据
         if self.is_load_all:
-            t0 = time.perf_counter()
             self.load_all_data()
-            t1 = time.perf_counter()
-            print(f"load all data cost: {t1 - t0:.2f}s")
 
             # 构建辅助工具
             self._to_build_helper()
-
-            t2 = time.perf_counter()
-            print(f"build helper cost: {t2 - t1:.2f}s")
 
             # 计算数据
             count_functions = [i for i in dir(self) if i.startswith('_to_count_')]
