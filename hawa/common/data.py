@@ -198,6 +198,8 @@ class CommonData(metaclass=MetaCommomData):
         # outer 时，数目相等，不过滤任何题目
         data = pd.merge(data, item_codes, left_on='item_id', right_on='item_id', how='inner')
 
+        project.logger.debug(f'merge success {data.shape}')
+
         data['cls'] = data['id_y'].apply(lambda x: int(str(x)[13:15]))
         data['grade'] = data['case_id'].apply(lambda x: x % 100)
         data['username'] = data['nickname']
