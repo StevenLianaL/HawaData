@@ -1,6 +1,5 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
 import json
-import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from typing import Optional, ClassVar, Any, Set
@@ -60,6 +59,7 @@ class CommonData(metaclass=MetaCommomData):
     case_project_ids: Counter = field(default_factory=Counter)
 
     answers: pd.DataFrame = field(default_factory=pd.DataFrame)
+    item_codes: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     students: pd.DataFrame = field(default_factory=pd.DataFrame)
     student_ids: list[int] = field(default_factory=list)
@@ -157,13 +157,17 @@ class CommonData(metaclass=MetaCommomData):
         self.student_ids = set(self.answers['student_id'].tolist())
         student_id_list = list(self.student_ids)
         self.students = self.query.query_students(student_id_list)
-        self.student_count = len(self.student_ids)
+        self.student_count = len(self.students)
         project.logger.debug(f'students: {self.student_count}')
 
     def _to_init_g_items(self):
         self.item_ids = set(self.answers['item_id'].drop_duplicates())
         self.items = self.query.query_items(self.item_ids)
         project.logger.debug(f'items: {len(self.items)}')
+
+    def _to_init_y_item_codes(self):
+        word_list = self.code_word_list | {'other'} if len(self.code_word_list) == 1 else self.code_word_list
+        self.item_codes = self.query.query_item_codes(self.item_ids, word_list)
 
     def _to_init_z_dim_field(self):
         cache_key = f"{project.PROJECT}:codebook"
@@ -181,10 +185,9 @@ class CommonData(metaclass=MetaCommomData):
     @log_func_time
     def _to_count_a_final_answers(self):
         items = {k: {} for k in self.code_word_list}
-        item_codes = self.query.query_item_codes(self.item_ids)
         # code-dimension/field  ~  item_id  ~ code   name
         project.logger.debug(f"{self.code_word_list=}")
-        for (item_id, category), codes in item_codes.groupby(['item_id', 'category']):
+        for (item_id, category), codes in self.item_codes.groupby(['item_id', 'category']):
             if category in self.code_word_list:
                 for _, code_data in codes.iterrows():
                     items[category][item_id] = code_data['name']
@@ -196,7 +199,7 @@ class CommonData(metaclass=MetaCommomData):
         project.logger.debug(f"ans merge students {len(data)}")
         # inner 时，final_answers 和 answers 数目不等：final_answers 过滤掉了 没有 code_word_list（维度领域或其他）的题目
         # outer 时，数目相等，不过滤任何题目
-        data = pd.merge(data, item_codes, left_on='item_id', right_on='item_id', how='inner')
+        data = pd.merge(data, self.item_codes, left_on='item_id', right_on='item_id', how='inner')
 
         project.logger.debug(f'merge success {data.shape}')
 
