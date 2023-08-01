@@ -77,4 +77,5 @@ text = (
     ("0.8.8", "fix"),
     ("0.8.9", "log"),
     ("0.9.0", "use less item codes to upper"),
+    ("0.9.1", "add no answers error"),
 )

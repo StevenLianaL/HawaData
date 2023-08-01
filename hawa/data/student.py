@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from hawa.base.errors import NoAnswersError
 from hawa.config import project
 from hawa.paper.health import HealthApiData
 
@@ -27,5 +28,8 @@ class StudentHealthApiData(StudentMixin, HealthApiData):
     def _to_init_e_answers(self):
         """筛选学生的答案"""
         self.answers = self.query.query_answers(case_ids=self.case_ids, student_id=self.meta_student_id)
+
+        if len(self.answers) == 0:
+            raise NoAnswersError(f"学生 {self.meta_student_id} 没有答题记录")
 
         project.logger.debug(f'student answers: {len(self.answers)}')
