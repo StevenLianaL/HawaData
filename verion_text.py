@@ -79,4 +79,5 @@ text = (
     ("0.9.0", "use less item codes to upper"),
     ("0.9.1", "add no answers error"),
     ("0.9.2", "fix when without gender"),
+    ("0.9.3", "fix nan"),
 )

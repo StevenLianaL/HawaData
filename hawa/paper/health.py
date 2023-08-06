@@ -474,6 +474,8 @@ class HealthReportData(HealthData):
         return res
 
     def count_cond(self, a: float, b: float, target: str = ''):
+        a = 0 if math.isnan(a) else a
+        b = 0 if math.isnan(b) else b
         if a == b:
             condition = f'等于{target}' if target else '等于'
         elif a - b >= 5:
