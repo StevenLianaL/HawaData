@@ -1,6 +1,7 @@
 """健康测评数据"""
 import itertools
 import json
+import math
 from collections import defaultdict, Counter
 from dataclasses import dataclass, field
 from typing import Union, Set, Optional
@@ -340,6 +341,8 @@ class HealthReportData(HealthData):
             fields = self._count_df_reverse(first_col='code', second_col='total', data=base_fields)
             a = base.loc[base.category == 'field', ['F']].mean().mean()
             b = base.loc[base.category == 'field', ['M']].mean().mean()
+            a = 0 if math.isnan(a) else a
+            b = 0 if math.isnan(b) else b
             records[grade] = {
                 'dimension': dimensions, 'field': fields,
                 'cond': self.count_cond(a, b, target='男生')
