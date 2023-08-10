@@ -26,7 +26,7 @@ class MetaCommomData(type):
 @dataclass
 class CommonData(metaclass=MetaCommomData):
     # 构造单位
-    meta_unit_type: Optional[str] = ''  # class/school/district/city/province/country
+    meta_unit_type: Optional[str] = ''  # class/school/group/district/city/province/country
     meta_unit_id: Optional[int] = None
     meta_unit: Optional[Any] = None
 
@@ -121,6 +121,8 @@ class CommonData(metaclass=MetaCommomData):
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id // 100)
                 case 'district' | 'school' | 'class' | 'student':
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id)
+                case 'group':
+                    self.schools = self.query.query_schools_by_group_id(group_id=self.meta_unit_id)
                 case _:
                     raise ValueError(f'unknown meta_unit_type: {self.meta_unit_type}')
             self.school_ids = self.schools['id'].tolist()

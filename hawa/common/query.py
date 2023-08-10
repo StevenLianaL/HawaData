@@ -23,6 +23,10 @@ class DataQuery:
                 sql = f"select id,name,short_name from schools where id={meta_unit_id};"
                 data = self.db.query_by_sql(sql=sql, mode='one')
                 meta_unit = MetaUnit(**data)
+            case 'group':
+                sql = f"select id,name,short_name from `groups` where id={meta_unit_id};"
+                data = self.db.query_by_sql(sql=sql, mode='one')
+                meta_unit = MetaUnit(**data)
             case 'district' | 'city' | 'province':
                 sql = f"select id,name from locations where id={meta_unit_id};"
                 data = self.db.query_by_sql(sql=sql, mode='one')
@@ -49,6 +53,12 @@ class DataQuery:
     def query_schools_by_startwith(self, startwith: int):
         param_len = len(str(startwith))
         sql = f"select id, name, short_name, created from schools where left(id,{param_len})={startwith};"
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
+
+    def query_schools_by_group_id(self, group_id: int):
+        sql = (f"select id, name, short_name from schools where id in "
+               f"(select school_id from group_schools where group_id = {group_id});")
         with self.db.engine_conn() as conn:
             return pd.read_sql(text(sql), conn)
 
