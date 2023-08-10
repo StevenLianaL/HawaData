@@ -383,9 +383,9 @@ class HealthReportData(HealthData):
 
         for grade, value in zip(tool.grade.grades, tool.grade_gender_distribution.values()):
             res[grade]['people'] = value
-        for grade, group in tool.code_scores.groupby(['grade']):
+        for grade, group in tool.code_scores.groupby('grade'):
             res[grade]['code'] = {}
-            for r in group.to_dict(orient='record'):
+            for r in group.to_dict(orient='records'):
                 res[grade]['code'][r['code']] = r
         for grade, value in tool.grade_rank_dis.items():
             res[grade]['rank'] = value

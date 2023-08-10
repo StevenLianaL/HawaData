@@ -19,5 +19,5 @@ def test_health_init():
 
 
 def test_cache_year_data():
-    # HealthReportData.cache_year_data(year=2022)
+    HealthReportData.cache_year_data(year=2020)
     pass
