@@ -18,8 +18,8 @@ def test_health_api_run():
         # {"meta_unit_id": 5134310010, "target_year": 2023},
         # {"meta_unit_id": 513400, "target_year": 2023, "meta_unit_type": "city"},
         # {"meta_unit_id": 513401, "target_year": 2023, "meta_unit_type": "district"},
-        {"meta_unit_id": 1, "target_year": 2023, "meta_unit_type": "group"},
-        # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
+        # {"meta_unit_id": 0, "target_year": 2023, "meta_unit_type": "country"},
+        {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
         # {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021, "grade": 3},
         # {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},
@@ -32,6 +32,9 @@ def test_health_api_run():
         # print(f"{dd.meta_unit_id}")
         # print(f"{dd.score_rank(grade=row['grade'])=}")
         print(dd.final_scores)
+        print(dd.final_scores.columns)
+        print(dd.final_answers.columns)
+        print(dd.grade_util.grades)
         # print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field',key_format='zh')=}")
         # print(f"{dd.get_class_scores()=}")
         # pprint(dd.get_cascade_schools_from_province())
@@ -74,6 +77,9 @@ def test_student_health_api_run():
     for row in data:
         logger.info(row)
         d = StudentHealthApiData(**row)
+        student_grade = d.count_student_grade(student_id=row['meta_student_id'])
+        focus_codes = d.get_grade_focus(grade=student_grade, gender='total')
+        print(focus_codes)
 
 
 def test_mht_school_api_run():

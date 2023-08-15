@@ -183,6 +183,8 @@ class CommonData(metaclass=MetaCommomData):
     def _to_build_helper(self):
         self.grade = GradeData(case_ids=self.case_ids)
         self.case = CaseData(cases=self.cases)
+        self.grade_util = GradeData(case_ids=self.case_ids)
+        self.case_util = CaseData(cases=self.cases)
 
     @log_func_time
     def _to_count_a_final_answers(self):

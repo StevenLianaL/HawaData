@@ -81,4 +81,5 @@ text = (
     ("0.9.2", "fix when without gender"),
     ("0.9.3", "fix nan"),
     ("0.10.1", "add health group data"),
+    ("0.10.2", "fix grade util"),
 )
