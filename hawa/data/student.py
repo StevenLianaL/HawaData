@@ -25,6 +25,9 @@ class StudentHealthApiData(StudentMixin, HealthApiData):
         self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_student_id))
         self.student_name = self.meta_unit.name
 
+    def _to_init_d_cases(self, is_cleared: bool = True):
+        super()._to_init_d_cases(is_cleared=False)
+
     def _to_init_e_answers(self):
         """筛选学生的答案"""
         self.answers = self.query.query_answers(case_ids=self.case_ids, student_id=self.meta_student_id)

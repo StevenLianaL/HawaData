@@ -35,9 +35,9 @@ class HealthApiData(HealthData):
     grade: Optional[int] = None  # 必填
     grade_final_scores: pd.DataFrame = field(default_factory=pd.DataFrame)
 
-    def _to_init_d_cases(self):
+    def _to_init_d_cases(self, is_cleared: bool = True):
         """如果有年级参数，则筛选年级数据"""
-        super()._to_init_d_cases()
+        super()._to_init_d_cases(is_cleared=is_cleared)
         if self.grade:
             self.cases = self.cases.loc[self.cases['id'] % 100 == self.grade, :]
             self.case_ids = self.cases['id'].tolist()

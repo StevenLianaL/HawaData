@@ -53,9 +53,9 @@ def test_query_cases():
     paper_ids = [i[1]['id'] for i in papers.iterrows()]
 
     school_ids = [3707850002, 3707030003]
-    res = dq.query_cases(school_ids, paper_ids, start_stamp_str, end_stamp_str)
+    res = dq.query_cases(school_ids, paper_ids, start_stamp_str, end_stamp_str, is_cleared=True)
     assert len(res) >= 1
-    res = dq.query_cases(school_ids[:1], paper_ids, start_stamp_str, end_stamp_str)
+    res = dq.query_cases(school_ids[:1], paper_ids, start_stamp_str, end_stamp_str, is_cleared=True)
     assert len(res) >= 1
 
 
@@ -82,5 +82,5 @@ def test_query_items():
 
 
 def test_query_item_codes():
-    res = dq.query_item_codes([1, 401])
+    res = dq.query_item_codes([1, 401], categories=['dimension', 'field'])
     assert len(res) >= 1

@@ -128,7 +128,7 @@ class CommonData(metaclass=MetaCommomData):
             self.school_ids = self.schools['id'].tolist()
         project.logger.debug(f'schools: {len(self.schools)}')
 
-    def _to_init_d_cases(self):
+    def _to_init_d_cases(self, is_cleared: bool = True):
         start_stamp = pendulum.datetime(self.target_year, 1, 1)
         end_stamp = pendulum.datetime(self.target_year + 1, 1, 1)
         start_stamp_str = start_stamp.format(project.format)
@@ -142,6 +142,7 @@ class CommonData(metaclass=MetaCommomData):
             paper_ids=paper_ids,
             valid_to_start=start_stamp_str,
             valid_to_end=end_stamp_str,
+            is_cleared=is_cleared
         )
         if self.cases.empty:
             raise NoCasesError(f'no cases:{self.meta_unit} {self.school_ids}')
@@ -169,7 +170,7 @@ class CommonData(metaclass=MetaCommomData):
 
     def _to_init_y_item_codes(self):
         word_list = self.code_word_list | {'other'} if len(self.code_word_list) == 1 else self.code_word_list
-        self.item_codes = self.query.query_item_codes(self.item_ids, word_list)
+        self.item_codes = self.query.query_item_codes(self.item_ids, categories=word_list)
 
     def _to_init_z_dim_field(self):
         cache_key = f"{project.PROJECT}:codebook"

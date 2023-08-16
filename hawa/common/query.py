@@ -75,14 +75,29 @@ class DataQuery:
 
     def query_cases(
             self, school_ids: list[int], paper_ids: list[int],
-            valid_to_start: str, valid_to_end: str,
+            valid_to_start: str, valid_to_end: str, is_cleared: bool = True
     ):
+        """
+
+        :param school_ids:
+        :param paper_ids:
+        :param valid_to_start:
+        :param valid_to_end:
+        :param is_cleared: True 仅查询已清洗的测评，other 查询所有
+        :return:
+        """
         if len(paper_ids) == 0:
             return pd.DataFrame()
         elif len(paper_ids) == 1:
             paper_sql = f"and c.paper_id={paper_ids[0]}"
         else:
             paper_sql = f"and c.paper_id in {tuple(paper_ids)}"
+
+        match is_cleared:
+            case True:
+                is_cleared_sql = f"c.is_cleared={is_cleared} and "
+            case _:
+                is_cleared_sql = ''
 
         if len(school_ids) == 0:
             return pd.DataFrame()
@@ -96,7 +111,7 @@ class DataQuery:
               f"from cases c " \
               f"inner join case_schools cs on c.id=cs.case_id " \
               f"inner join case_projects cp on c.project_id=cp.id " \
-              f"where  is_cleared=1 and valid_to between '{valid_to_start}' and '{valid_to_end}'" \
+              f"where {is_cleared_sql} valid_to between '{valid_to_start}' and '{valid_to_end}'" \
               f" {school_sql} {paper_sql};"
         with self.db.engine_conn() as conn:
             cases = pd.read_sql(text(sql), conn).drop_duplicates(subset=['id'])
