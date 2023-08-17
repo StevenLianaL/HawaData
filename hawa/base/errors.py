@@ -3,5 +3,9 @@ class NoCasesError(Exception):
     pass
 
 
+class NoSchoolIdsError(Exception):
+    pass
+
+
 class NoAnswersError(Exception):
     pass

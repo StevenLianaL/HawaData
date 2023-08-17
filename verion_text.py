@@ -83,4 +83,5 @@ text = (
     ("0.10.1", "add health group data"),
     ("0.10.2", "fix grade util"),
     ("0.10.3", "student case not need filter is_cleared"),
+    ("0.11.0", "add assemble data"),
 )

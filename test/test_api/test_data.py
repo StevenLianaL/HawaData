@@ -2,6 +2,7 @@ from pprint import pprint
 
 from loguru import logger
 
+from hawa.data.assemble import AssembleHealthApiData
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.province import ProvinceHealthApiDataLess
 from hawa.data.school import SchoolMhtApiData
@@ -29,13 +30,17 @@ def test_health_api_run():
     for row in rows:
         logger.info(row)
         dd = HealthApiData(**row)
-        # dd = SchoolHealthApiData(**row)
-        # print(f"{dd.meta_unit_id}")
-        # print(f"{dd.score_rank(grade=row['grade'])=}")
         print(dd.final_scores)
-        # print(f"{dd.dim_field_gender_compare(grade=row['grade'],item_code='field',key_format='zh')=}")
-        # print(f"{dd.get_class_scores()=}")
-        # pprint(dd.get_cascade_schools_from_province())
+
+
+def test_assemble_health_api_run():
+    rows = [
+        {'school_ids': [5134010006, 5134010005], "target_year": 2023}
+    ]
+    for row in rows:
+        logger.info(row)
+        dd = AssembleHealthApiData(**row)
+        print(dd.final_scores)
 
 
 def test_cascade_schools_from_province():
