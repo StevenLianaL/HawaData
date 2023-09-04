@@ -21,7 +21,7 @@ def test_health_api_run():
         # {"meta_unit_id": 513401, "target_year": 2023, "meta_unit_type": "district"},
         # {"meta_unit_id": 0, "target_year": 2023, "meta_unit_type": "country"},
         # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
-        {"meta_unit_id": 5134312345, "target_year": 2023, "meta_unit_type": "school"},
+        {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
         # {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021, "grade": 3},
         # {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},
@@ -30,7 +30,7 @@ def test_health_api_run():
     for row in rows:
         logger.info(row)
         dd = HealthApiData(**row)
-        print(dd.final_scores)
+        print(dd.get_class_scores())
 
 
 def test_assemble_health_api_run():
@@ -76,8 +76,8 @@ def test_student_health_api_run():
         #  "meta_student_id": 513401000102301216},
         # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "student",
         #  "meta_student_id": 513401000102301216, "grade": 3},
-        {"meta_unit_id": 5134312345, "target_year": 2023, "meta_unit_type": "student",
-         "meta_student_id": 513431234502370123, "grade": 3},
+        {"meta_unit_id": 5120210003, "target_year": 2023, "meta_unit_type": "student",
+         "meta_student_id": 512021000302302124, "grade": 3},
     ]
     for row in data:
         logger.info(row)

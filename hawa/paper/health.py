@@ -159,7 +159,9 @@ class HealthApiData(HealthData):
         scores = self.final_scores
         scores['cls'] = scores['student_id'].apply(lambda x: f"{int(str(x)[13:15])}班")
         res = scores.groupby('cls').score.mean().to_dict()
-        keys, values = res.keys(), [Util.format_num(i) for i in res.values()]
+        sorted_keys = sorted(res.keys(), key=lambda x: int(x[:-1]))
+        sorted_res = {k: res[k] for k in sorted_keys}
+        keys, values = sorted_res.keys(), [Util.format_num(i) for i in sorted_res.values()]
         return {'keys': list(keys), 'values': list(values)}
 
 

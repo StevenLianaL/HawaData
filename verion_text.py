@@ -85,4 +85,5 @@ text = (
     ("0.10.3", "student case not need filter is_cleared"),
     ("0.11.0", "add assemble data"),
     ("0.11.2", "move function"),
+    ("0.11.3", "sort class"),
 )
