@@ -94,6 +94,7 @@ class CommonData(metaclass=MetaCommomData):
             count_functions = [i for i in dir(self) if i.startswith('_to_count_')]
             for func in count_functions:
                 getattr(self, func)()
+                project.logger.info(f'count {func} success')
 
         else:
             self.load_less_data()
@@ -428,3 +429,4 @@ class CommonData(metaclass=MetaCommomData):
         init_functions = [i for i in dir(self) if i.startswith('_to_init_')]
         for func in init_functions:
             getattr(self, func)()
+            project.logger.info(f'load data {func} success')

@@ -86,4 +86,5 @@ text = (
     ("0.11.0", "add assemble data"),
     ("0.11.2", "move function"),
     ("0.11.3", "sort class"),
+    ("0.11.4", "add log"),
 )
