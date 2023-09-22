@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from hawa.base.errors import NoAnswersError
+from hawa.common.query import DataQuery
 from hawa.config import project
 from hawa.paper.health import HealthApiData
 
@@ -22,7 +23,12 @@ class StudentHealthApiData(StudentMixin, HealthApiData):
             raise ValueError("meta_student_id 必填")
 
     def _to_init_a_meta_unit(self):
-        self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_student_id))
+        try:
+            self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_student_id))
+        except TypeError as e:
+            project.logger.warning(f'query_unit error: {e}')
+            self.__class__.query = DataQuery()
+            self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
         self.student_name = self.meta_unit.name
 
     def _to_init_d_cases(self, is_cleared: bool = True):
