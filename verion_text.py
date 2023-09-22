@@ -87,4 +87,5 @@ text = (
     ("0.11.2", "move function"),
     ("0.11.3", "sort class"),
     ("0.11.4", "add log"),
+    ("0.11.5", "reload query when query unit failed"),
 )

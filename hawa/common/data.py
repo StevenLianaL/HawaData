@@ -101,7 +101,12 @@ class CommonData(metaclass=MetaCommomData):
             self._to_build_helper()
 
     def _to_init_a_meta_unit(self):
-        self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
+        try:
+            self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
+        except TypeError as e:
+            project.logger.warning(f'query_unit error: {e}')
+            self.__class__.query = DataQuery()
+            self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
 
     def _to_init_b_time(self):
         if not self.target_year:
