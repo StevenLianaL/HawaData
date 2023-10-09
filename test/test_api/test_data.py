@@ -87,6 +87,6 @@ def test_student_health_api_run():
 
 def test_mht_school_api_run():
     s = SchoolMhtApiData(
-        meta_unit_id=4107000032, target_year=2023, meta_unit_type='school'
+        meta_unit_id=53, target_year=2023, meta_unit_type='school'
     )
     print(f"{s.get_cascade_students()=}")

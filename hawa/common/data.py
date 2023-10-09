@@ -219,18 +219,9 @@ class CommonData(metaclass=MetaCommomData):
         data = pd.merge(data, self.item_codes, left_on='item_id', right_on='item_id', how='inner')
 
         project.logger.debug(f'merge success {data.shape}')
-        if self.different_mode == 'xx':
-            user_classes = {}
-            user_grades = {}
-            for _, row in self.students.iterrows():
-                extra = json.loads(row['extra'])
-                user_classes[row['id']] = extra.get('class', 0)
-                user_grades[row['id']] = extra.get('grade', 0)
-            self.answers['cls'] = self.answers['student_id'].apply(lambda x: user_classes.get(x, ''))
-            self.answers['grade'] = self.answers['student_id'].apply(lambda x: user_grades.get(x, ''))
-        else:
-            data['cls'] = data['id_y'].apply(lambda x: int(str(x)[13:15]))
-            data['grade'] = data['case_id'].apply(lambda x: x % 100)
+
+        self.set_data_extra(d=data, set_grade=True, set_class=True)
+
         data['username'] = data['nickname']
         for code_word in self.code_word_list:
             data[code_word] = data.item_id.apply(lambda x: items[code_word][x])
@@ -338,7 +329,7 @@ class CommonData(metaclass=MetaCommomData):
     def get_cascade_students(self):
         """年级/班级/学生嵌套"""
         data = self.final_scores
-        data['cls'] = data['student_id'].apply(lambda x: str(x)[:15])
+        self.set_data_extra(d=data, set_grade=False, set_class=True)
         res = []
         for grade, grade_group in data.groupby('grade'):
             grade_row = {
@@ -347,7 +338,7 @@ class CommonData(metaclass=MetaCommomData):
             }
             for cls, cls_group in grade_group.groupby('cls'):
                 cls_row = {
-                    'label': f'{cls[13:]}班', 'value': int(cls),
+                    'label': f'{cls}班', 'value': int(cls),
                     'children': [], "is_leaf": False
                 }
                 for _, student_g_row in cls_group.iterrows():
@@ -450,3 +441,22 @@ class CommonData(metaclass=MetaCommomData):
         for func in init_functions:
             getattr(self, func)()
             project.logger.info(f'load data {func} success')
+
+    def set_data_extra(self, d: pd.DataFrame, set_grade: bool = True, set_class: bool = True):
+        """为 数据 设置不同模式下的 extra 字段"""
+        if self.different_mode == 'xx':
+            user_classes = {}
+            user_grades = {}
+            for _, row in self.students.iterrows():
+                extra = json.loads(row['extra'])
+                user_grades[row['id']] = extra.get('grade', 0)
+                user_classes[row['id']] = extra.get('class', 0)
+            if set_grade:
+                d['grade'] = d['student_id'].apply(lambda x: user_grades.get(x, ''))
+            if set_class:
+                d['cls'] = d['student_id'].apply(lambda x: user_classes.get(x, ''))
+        else:
+            if set_grade:
+                d['grade'] = d['case_id'].apply(lambda x: x % 100)
+            if set_class:
+                d['cls'] = d['student_id'].apply(lambda x: int(str(x)[13:15]))
