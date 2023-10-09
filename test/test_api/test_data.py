@@ -21,7 +21,7 @@ def test_health_api_run():
         # {"meta_unit_id": 513401, "target_year": 2023, "meta_unit_type": "district"},
         # {"meta_unit_id": 0, "target_year": 2023, "meta_unit_type": "country"},
         # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
-        {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
+        {"meta_unit_id": 53, "target_year": 2023, "meta_unit_type": "school"},
         # {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021, "grade": 3},
         # {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},

@@ -89,4 +89,5 @@ text = (
     ("0.11.4", "add log"),
     ("0.11.5", "reload query when query unit failed"),
     ("0.11.6", "reload query when query unit failed"),
+    ("0.11.7", "for xx hawa"),
 )

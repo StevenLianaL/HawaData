@@ -30,6 +30,8 @@ class CommonData(metaclass=MetaCommomData):
     meta_unit_id: Optional[int] = None
     meta_unit: Optional[Any] = None
 
+    different_mode: Optional[str] = 'default'  # 用于区分数据的不同模式 default默认/xx新乡
+
     # 时间目标
     target_year: Optional[int] = None
     last_year_num: Optional[int] = None
@@ -107,6 +109,8 @@ class CommonData(metaclass=MetaCommomData):
             project.logger.warning(f'query_unit error: {e}')
             self.__class__.query = DataQuery()
             self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
+        if '百万' in self.meta_unit.name:
+            self.different_mode = 'xx'
 
     def _to_init_b_time(self):
         if not self.target_year:
@@ -125,8 +129,10 @@ class CommonData(metaclass=MetaCommomData):
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id // 10000)
                 case 'city':
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id // 100)
-                case 'district' | 'school' | 'class' | 'student':
+                case 'district' | 'class' | 'student':
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id)
+                case 'school':
+                    self.schools = self.query.query_schools_by_ids([self.meta_unit_id])
                 case 'group':
                     self.schools = self.query.query_schools_by_group_id(group_id=self.meta_unit_id)
                 case _:
@@ -213,9 +219,18 @@ class CommonData(metaclass=MetaCommomData):
         data = pd.merge(data, self.item_codes, left_on='item_id', right_on='item_id', how='inner')
 
         project.logger.debug(f'merge success {data.shape}')
-
-        data['cls'] = data['id_y'].apply(lambda x: int(str(x)[13:15]))
-        data['grade'] = data['case_id'].apply(lambda x: x % 100)
+        if self.different_mode == 'xx':
+            user_classes = {}
+            user_grades = {}
+            for _, row in self.students.iterrows():
+                extra = json.loads(row['extra'])
+                user_classes[row['id']] = extra.get('class', 0)
+                user_grades[row['id']] = extra.get('grade', 0)
+            self.answers['cls'] = self.answers['student_id'].apply(lambda x: user_classes.get(x, ''))
+            self.answers['grade'] = self.answers['student_id'].apply(lambda x: user_grades.get(x, ''))
+        else:
+            data['cls'] = data['id_y'].apply(lambda x: int(str(x)[13:15]))
+            data['grade'] = data['case_id'].apply(lambda x: x % 100)
         data['username'] = data['nickname']
         for code_word in self.code_word_list:
             data[code_word] = data.item_id.apply(lambda x: items[code_word][x])

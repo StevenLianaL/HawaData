@@ -136,7 +136,7 @@ class DataQuery:
         user_cols = "id, username, first_name, last_name, nickname, gender, role, source, created, " \
                     "unit_id, client_id, extra"
         student_ids.append(0)
-        sql = f"select {user_cols} from users where id in {tuple(student_ids)} and length(id)>=18;"
+        sql = f"select {user_cols} from users where id in {tuple(student_ids)}"
         with self.db.engine_conn() as conn:
             students = pd.read_sql(text(sql), conn).drop_duplicates(subset=['id'])
         return students
