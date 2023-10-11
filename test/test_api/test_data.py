@@ -6,7 +6,7 @@ from hawa.data.assemble import AssembleHealthApiData
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.province import ProvinceHealthApiDataLess
 from hawa.data.school import SchoolMhtApiData
-from hawa.data.student import StudentHealthApiData
+from hawa.data.student import StudentHealthApiData, StudentMhtApiData
 from hawa.paper.health import HealthApiData
 from test.mock import prepare_test
 
@@ -21,8 +21,7 @@ def test_health_api_run():
         # {"meta_unit_id": 513401, "target_year": 2023, "meta_unit_type": "district"},
         # {"meta_unit_id": 0, "target_year": 2023, "meta_unit_type": "country"},
         # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
-        {"meta_unit_id": 53, "target_year": 2023, "meta_unit_type": "school"},
-        # {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021, "grade": 3},
+        {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021, "grade": 3},
         # {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},
         # {"meta_unit_id": 4107000001, "target_year": 2023},
@@ -74,15 +73,26 @@ def test_student_health_api_run():
     data = [
         # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "student",
         #  "meta_student_id": 513401000102301216},
-        # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "student",
-        #  "meta_student_id": 513401000102301216, "grade": 3},
-        {"meta_unit_id": 5120210003, "target_year": 2023, "meta_unit_type": "student",
-         "meta_student_id": 512021000302302124, "grade": 3},
+        {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "student",
+         "meta_student_id": 513401000102301216, "grade": 3},
     ]
     for row in data:
         logger.info(row)
         d = StudentHealthApiData(**row)
         print(d.final_scores)
+
+
+def test_student_mht_api_run():
+    data = [
+        {"meta_unit_id": 4107000020, "target_year": 2023, "meta_unit_type": "student",
+         "meta_student_id": 410700002002301001, "grade": 7},
+        {"meta_unit_id": 53, "target_year": 2023, "meta_unit_type": "student",
+         "meta_student_id": 3451, "grade": 10},
+    ]
+    for row in data:
+        logger.info(row)
+        d = StudentMhtApiData(**row)
+        print(d.count_student_archive())
 
 
 def test_mht_school_api_run():

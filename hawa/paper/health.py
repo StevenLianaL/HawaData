@@ -2,15 +2,14 @@
 import itertools
 import json
 import math
-from collections import defaultdict, Counter
+from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Union, Set, Optional
+from typing import Union, Set
 
 import pandas as pd
 from munch import Munch
 from pingouin import cronbach_alpha
 
-from hawa.base.errors import NoCasesError
 from hawa.common.data import CommonData
 from hawa.common.utils import Util
 from hawa.config import project
@@ -32,19 +31,6 @@ class HealthData(CommonData):
 @dataclass
 class HealthApiData(HealthData):
     """为 yingde api 项目提供基类"""
-    grade: Optional[int] = None  # 必填
-    grade_final_scores: pd.DataFrame = field(default_factory=pd.DataFrame)
-
-    def _to_init_d_cases(self, is_cleared: bool = True):
-        """如果有年级参数，则筛选年级数据"""
-        super()._to_init_d_cases(is_cleared=is_cleared)
-        if self.grade:
-            self.cases = self.cases.loc[self.cases['id'] % 100 == self.grade, :]
-            self.case_ids = self.cases['id'].tolist()
-            self.case_project_ids = Counter(self.cases['project_id'].tolist())
-            project.logger.debug(f'cases: {len(self.cases)}')
-        if len(self.cases) == 0:
-            raise NoCasesError(f'grade {self.grade} cases is empty')
 
     def score_rank(self, grade: int, gender: str = ''):
         """

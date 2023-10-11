@@ -29,6 +29,7 @@ class CommonData(metaclass=MetaCommomData):
     meta_unit_type: Optional[str] = ''  # class/school/group/district/city/province/country
     meta_unit_id: Optional[int] = None
     meta_unit: Optional[Any] = None
+    grade: Optional[int] = None  # 必填
 
     different_mode: Optional[str] = 'default'  # 用于区分数据的不同模式 default默认/xx新乡
 
@@ -79,6 +80,7 @@ class CommonData(metaclass=MetaCommomData):
     # 计算数据
     final_answers: pd.DataFrame = field(default_factory=pd.DataFrame)
     final_scores: pd.DataFrame = field(default_factory=pd.DataFrame)
+    grade_final_scores: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     # 去年全国数据
     last_year = None
@@ -129,9 +131,9 @@ class CommonData(metaclass=MetaCommomData):
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id // 10000)
                 case 'city':
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id // 100)
-                case 'district' | 'class' | 'student':
+                case 'district':
                     self.schools = self.query.query_schools_by_startwith(self.meta_unit_id)
-                case 'school':
+                case 'school' | 'class' | 'student':
                     self.schools = self.query.query_schools_by_ids([self.meta_unit_id])
                 case 'group':
                     self.schools = self.query.query_schools_by_group_id(group_id=self.meta_unit_id)
@@ -163,6 +165,14 @@ class CommonData(metaclass=MetaCommomData):
         self.school_ids = self.cases['school_id'].unique().tolist()
         project.logger.debug(f'cases: {len(self.cases)}')
 
+        if self.grade:
+            self.cases = self.cases.loc[self.cases['id'] % 100 == self.grade, :]
+            self.case_ids = self.cases['id'].tolist()
+            self.case_project_ids = Counter(self.cases['project_id'].tolist())
+            project.logger.debug(f'cases: {len(self.cases)}')
+        if len(self.cases) == 0:
+            raise NoCasesError(f'grade {self.grade} cases is empty')
+
     @log_func_time
     def _to_init_e_answers(self):
         self.answers = self.query.query_answers(case_ids=self.case_ids)
@@ -171,7 +181,7 @@ class CommonData(metaclass=MetaCommomData):
     def _to_init_f_students(self):
         self.student_ids = set(self.answers['student_id'].tolist())
         student_id_list = list(self.student_ids)
-        self.students = self.query.query_students(student_id_list)
+        self.students = self.query.query_students(student_id_list, mode=self.different_mode)
         self.student_count = len(self.students)
         project.logger.debug(f'students: {self.student_count}')
 

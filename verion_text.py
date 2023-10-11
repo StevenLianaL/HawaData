@@ -91,4 +91,5 @@ text = (
     ("0.11.6", "reload query when query unit failed"),
     ("0.11.7", "for xx hawa"),
     ("0.11.8", "for xx mht"),
+    ("0.11.9", "for xx mht archive"),
 )

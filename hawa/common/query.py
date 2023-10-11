@@ -1,4 +1,4 @@
-from collections import namedtuple
+from dataclasses import dataclass
 
 import pandas as pd
 from sqlalchemy import text
@@ -6,7 +6,13 @@ from sqlalchemy import text
 from hawa.base.db import DbUtil
 from hawa.base.decos import singleton
 
-MetaUnit = namedtuple("MetaUnit", ["id", "name", "short_name"])
+
+@dataclass
+class MetaUnit:
+    id: int
+    name: str
+    short_name: str
+    client_id: int = 0
 
 
 @singleton
@@ -16,9 +22,10 @@ class DataQuery:
     def query_unit(self, meta_unit_type: str, meta_unit_id: str):
         match meta_unit_type:
             case 'student':
-                sql = f"select id,nickname from users where id={meta_unit_id};"
+                sql = f"select id,nickname,client_id from users where id={meta_unit_id};"
                 data = self.db.query_by_sql(sql=sql, mode='one')
-                meta_unit = MetaUnit(id=data['id'], name=data['nickname'], short_name=data['nickname'])
+                meta_unit = MetaUnit(id=data['id'], name=data['nickname'], short_name=data['nickname'],
+                                     client_id=data['client_id'])
             case 'school' | 'class':
                 sql = f"select id,name,short_name from schools where id={meta_unit_id};"
                 data = self.db.query_by_sql(sql=sql, mode='one')
@@ -132,11 +139,16 @@ class DataQuery:
                 subset=['case_id', 'student_id', 'item_id'])
         return answers
 
-    def query_students(self, student_ids: list[int]):
+    def query_students(self, student_ids: list[int], mode: str = 'default'):
         user_cols = "id, username, first_name, last_name, nickname, gender, role, source, created, " \
                     "unit_id, client_id, extra"
         student_ids.append(0)
-        sql = f"select {user_cols} from users where id in {tuple(student_ids)}"
+        match mode:
+            case 'default':
+                sql = f"select {user_cols} from users where id in {tuple(student_ids)} and length(id)>=18"
+            case 'xx':
+                sql = f"select {user_cols} from users where id in {tuple(student_ids)} and client_id=10"
+
         with self.db.engine_conn() as conn:
             students = pd.read_sql(text(sql), conn).drop_duplicates(subset=['id'])
         return students

@@ -1,7 +1,5 @@
 from dataclasses import dataclass
 
-from hawa.common.utils import Util
-from hawa.config import project
 from hawa.paper.health import HealthReportData, HealthApiData
 from hawa.paper.mht import MhtWebData, MhtApiData
 
