@@ -92,4 +92,5 @@ text = (
     ("0.11.7", "for xx hawa"),
     ("0.11.8", "for xx mht"),
     ("0.11.9", "for xx mht archive"),
+    ("0.12.1", "add new paper test type"),
 )

@@ -11,7 +11,7 @@ from hawa.config import project
 
 @dataclass
 class MhtData(CommonData):
-    test_types: list[str] = field(default_factory=lambda: ['mht', 'mhtPlus'])
+    test_types: list[str] = field(default_factory=lambda: ['mht', 'mhtPlus', 'XxMhtPlusQus'])
     code_word_list: Set[str] = field(default_factory=lambda: {'mht'})
 
     # 计算数据

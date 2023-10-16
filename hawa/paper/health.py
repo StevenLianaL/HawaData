@@ -18,7 +18,7 @@ from hawa.config import project
 @dataclass
 class HealthData(CommonData):
     """健康测评数据，不应直接使用，应向下继承 city/district/school 等"""
-    test_types: list[str] = field(default_factory=lambda: ['publicWelfare', 'ZjpublicWelfare'])
+    test_types: list[str] = field(default_factory=lambda: ['publicWelfare', 'ZjpublicWelfare', 'XxPublicWelfareQus'])
     code_word_list: Set[str] = field(default_factory=lambda: {'dimension', 'field'})
 
     def replace_hai(self, text: str, condition: list):

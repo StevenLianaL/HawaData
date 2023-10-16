@@ -88,6 +88,8 @@ def test_student_mht_api_run():
          "meta_student_id": 410700002002301001, "grade": 7},
         {"meta_unit_id": 53, "target_year": 2023, "meta_unit_type": "student",
          "meta_student_id": 3451, "grade": 10},
+        {"meta_unit_id": 53, "target_year": 2023, "meta_unit_type": "student",
+         "meta_student_id": 3451},
     ]
     for row in data:
         logger.info(row)
