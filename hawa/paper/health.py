@@ -97,7 +97,7 @@ class HealthApiData(HealthData):
     def count_student_grade(self, student_id: int):
         """计算指定学生的年级"""
         fa = self.final_answers
-        student_answers = fa.loc[fa['student_id'] == student_id, :]
+        student_answers = fa.loc[fa['student_id'] == int(student_id), :]
         case_ids = student_answers['case_id'].unique().tolist()
         return case_ids[0] % 100
 

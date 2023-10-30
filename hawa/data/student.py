@@ -216,10 +216,6 @@ class StudentMhtApiData(StudentMixin, MhtApiData):
                 "detail": get_mht_code_describe(code=code, level=code_describe)
             }
             mht_code_records.append(record)
-        try:
-            grade = extra['grade']
-        except KeyError:
-            grade = extra['case_id'][-2:]
         return {
             "student": {
                 "school": school['name'],
