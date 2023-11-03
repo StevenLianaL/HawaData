@@ -221,8 +221,8 @@ class StudentMhtApiData(StudentMixin, MhtApiData):
                 "school": school['name'],
                 "gender": student.gender,
                 "name": student.nickname,
-                "grade": extra.get('grade') or extra.get('case_id', '')[-2:],
-                "klass": extra.get('cls') or extra.get('class'),
+                "grade": extra['grade'] if extra.get('grade') else extra['case_id'][-2:],
+                "klass": extra.get('class', extra.get('klass', extra.get('cls', 0)))
             },
             "score": {
                 "ph9": ph9_score,

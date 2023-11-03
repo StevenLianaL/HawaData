@@ -94,4 +94,5 @@ text = (
     ("0.11.9", "for xx mht archive"),
     ("0.12.1", "add new paper test type"),
     ("0.12.2", "fix student_id type"),
+    ("0.12.3", "fix archive grade/class"),
 )
