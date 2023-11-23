@@ -136,5 +136,10 @@ class MhtWebData(MhtData):
 
 
 @dataclass
-class MhtApiData(MhtData):
-    pass
+class MhtPlusApiData(MhtData):
+    code_word_list: Set[str] = field(default_factory=lambda: {'mht', 'psy'})
+
+
+@dataclass
+class MhtPlusQusApiData(MhtData):
+    code_word_list: Set[str] = field(default_factory=lambda: {'mht', 'psy', 'mgarbage'})

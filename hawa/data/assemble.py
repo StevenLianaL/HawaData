@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from hawa.base.errors import NoSchoolIdsError
 from hawa.common.query import MetaUnit
 from hawa.paper.health import HealthApiData
+from hawa.paper.mht import MhtPlusQusApiData, MhtPlusApiData
 
 
 @dataclass
@@ -27,3 +28,13 @@ class AssembleHealthApiData(AssembleMixin, HealthApiData):
         if not self.school_ids:
             raise NoSchoolIdsError("Assemble 参数 school_Ids 不能为空")
         super()._to_init_c_schools()
+
+
+@dataclass
+class AssembleMhtPlusPlusApiData(AssembleMixin, MhtPlusApiData):
+    """依赖 school_ids 工作"""
+
+
+@dataclass
+class AssembleMhtPlusQusPlusApiData(AssembleMixin, MhtPlusQusApiData):
+    """依赖 school_ids 工作"""

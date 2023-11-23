@@ -7,7 +7,7 @@ from hawa.base.errors import NoAnswersError
 from hawa.common.query import DataQuery
 from hawa.config import project
 from hawa.paper.health import HealthApiData
-from hawa.paper.mht import MhtApiData
+from hawa.paper.mht import MhtPlusApiData
 
 
 @dataclass
@@ -106,7 +106,7 @@ def get_mht_code_describe(code: str, level: str):
 
 
 @dataclass
-class StudentMhtApiData(StudentMixin, MhtApiData):
+class StudentMhtPlusApiData(StudentMixin, MhtPlusApiData):
     """"""
     meta_student_id: Optional[int] = None  # 必填
     student_name: Optional[str] = ''

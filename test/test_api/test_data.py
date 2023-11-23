@@ -2,11 +2,11 @@ from pprint import pprint
 
 from loguru import logger
 
-from hawa.data.assemble import AssembleHealthApiData
+from hawa.data.assemble import AssembleHealthApiData, AssembleMhtPlusQusPlusApiData, AssembleMhtPlusPlusApiData
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.province import ProvinceHealthApiDataLess
-from hawa.data.school import SchoolMhtApiData
-from hawa.data.student import StudentHealthApiData, StudentMhtApiData
+from hawa.data.school import SchoolMhtPlusApiData
+from hawa.data.student import StudentHealthApiData, StudentMhtPlusApiData
 from hawa.paper.health import HealthApiData
 from test.mock import prepare_test
 
@@ -79,26 +79,34 @@ def test_student_health_api_run():
     for row in data:
         logger.info(row)
         d = StudentHealthApiData(**row)
-        print(d.final_scores)
+        print(f"{d.score_rank(grade=3)=}")
+        print(
+            f"{d.count_dim_or_field_scores_by_answers(answers=d.final_answers,item_code='dimension',res_format='list')=}")
+        print(f"{d.count_dim_or_field_scores_by_answers(answers=d.final_answers,item_code='field')=}")
 
 
 def test_student_mht_api_run():
     data = [
         {"meta_unit_id": 4107000020, "target_year": 2023, "meta_unit_type": "student",
          "meta_student_id": 410700002002301001, "grade": 7},
-        {"meta_unit_id": 53, "target_year": 2023, "meta_unit_type": "student",
-         "meta_student_id": 3451, "grade": 10},
-        {"meta_unit_id": 53, "target_year": 2023, "meta_unit_type": "student",
-         "meta_student_id": 3451},
+        {"meta_unit_id": 4107820676, "target_year": 2023, "meta_unit_type": "student",
+         "meta_student_id": 1652332, "grade": 10},
+        {"meta_unit_id": 4107820676, "target_year": 2023, "meta_unit_type": "student",
+         "meta_student_id": 1652332},
     ]
     for row in data:
         logger.info(row)
-        d = StudentMhtApiData(**row)
-        print(d.count_student_archive())
+        d = StudentMhtPlusApiData(**row)
+        d.count_student_archive()
 
 
-def test_mht_school_api_run():
-    s = SchoolMhtApiData(
-        meta_unit_id=53, target_year=2023, meta_unit_type='school'
+def test_mht_plus_assemble_run():
+    s = AssembleMhtPlusPlusApiData(
+        school_ids=[4107820676], target_year=2023, different_mode='xx'
     )
-    print(f"{s.get_cascade_students()=}")
+
+
+def test_mht_assemble_api_run():
+    s = AssembleMhtPlusQusPlusApiData(
+        school_ids=[4107210104, 4107810203], target_year=2023, different_mode='xx'
+    )

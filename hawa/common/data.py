@@ -234,7 +234,8 @@ class CommonData(metaclass=MetaCommomData):
 
         data['username'] = data['nickname']
         for code_word in self.code_word_list:
-            data[code_word] = data.item_id.apply(lambda x: items[code_word][x])
+            data[code_word] = data.item_id.apply(
+                lambda x: self.get_code_name_items(item_id=x, word=code_word, items=items))
         self.final_answers = data.drop_duplicates(subset=['case_id', 'student_id', 'item_id'])
         project.logger.debug(f'final_answers: {len(self.final_answers)}')
 
@@ -242,6 +243,12 @@ class CommonData(metaclass=MetaCommomData):
     def _to_count_b_final_scores(self):
         self.final_scores = self.count_final_score(answers=self.final_answers)
         project.logger.debug(f'final_scores: {len(self.final_scores)}')
+
+    def get_code_name_items(self, item_id, word: str, items: dict):
+        try:
+            return items[word][item_id]
+        except KeyError:
+            return ''
 
     @staticmethod
     def count_level(score, mode: str = 'f'):
