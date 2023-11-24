@@ -160,6 +160,16 @@ class DataQuery:
         with self.db.engine_conn() as conn:
             return pd.read_sql(text(sql), conn)
 
+    def query_phq_items(self):
+        sql = f"select * from items where source='psy';"
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
+
+    def query_mgarbage_items(self):
+        sql = f"select * from items where source='mgarbage';"
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
+
     def query_item_codes(self, item_ids: list[int], categories: list[str]):
         item_code_sql = f'select ic.item_id,ic.code,ic.category,c.name ' \
                         f'from item_codes ic left join codebook c on ic.code = c.code ' \

@@ -25,7 +25,11 @@ class MhtData(CommonData):
     invalid_student_count: int = 0
     unused_student_count: int = 0
     unused_student_ids: list[int] = field(default_factory=list)
-    mht_final_answers: pd.DataFrame = field(default_factory=pd.DataFrame)
+
+    mht_final_answers: pd.DataFrame = field(default_factory=pd.DataFrame)  # 去除社会期许效应后的 mht 数据
+    psy_final_answers: pd.DataFrame = field(default_factory=pd.DataFrame)  # phq 9 道题
+    mgarbage_final_answers: pd.DataFrame = field(default_factory=pd.DataFrame)  # mgarbage 问卷数据
+    mht_8_final_answers: pd.DataFrame = field(default_factory=pd.DataFrame)  # 移除效度数据
 
     def _to_count_a_final_answers(self):
         super()._to_count_a_final_answers()
@@ -43,12 +47,19 @@ class MhtData(CommonData):
         self.unused_student_count = len(unused_student_ids)
         self.total_student_count = self.student_count + self.unused_student_count
 
-        self.final_answers = old_answers[~old_answers['student_id'].isin(unused_student_ids)]
+        self.mht_final_answers = old_answers[~old_answers['student_id'].isin(unused_student_ids)]
+        psy_item_ids = self.psy_item_ids
+        self.psy_final_answers = old_answers.loc[old_answers['item_id'].isin(psy_item_ids), :]
+        mgarbage_item_ids = self.mgarbage_item_ids
+        self.mgarbage_final_answers = old_answers.loc[old_answers['item_id'].isin(mgarbage_item_ids), :]
 
-        project.logger.debug(f'final_answers: {len(self.final_answers)}')
+        project.logger.debug(f'mht_final_answers: {len(self.mht_final_answers)}')
+        project.logger.debug(f'phq_final_answers: {len(self.psy_final_answers)}')
+        project.logger.debug(f'mgarbage_final_answers: {len(self.mgarbage_final_answers)}')
 
     def _to_count_c_mht_ans_score(self):
-        self.mht_final_answers = self.final_answers.loc[self.final_answers['mht'] != '效度', :]
+        ans = self.mht_final_answers
+        self.mht_8_final_answers = ans.loc[ans['mht'] != '效度', :]
 
     def _to_count_d_scale_student_score(self):
         """学生总量表得分图数据，横轴分数，纵轴人数 （总 及 各年级）"""
@@ -57,7 +68,7 @@ class MhtData(CommonData):
     def _to_count_e_sub_scale_code_score(self):
         """在 8 个子量表上的得分图，横轴量表，纵轴分数"""
         self.sub_scale_score = self._tool_count_sub_code_score(
-            answers=self.mht_final_answers
+            answers=self.mht_8_final_answers
         )
 
     def _to_count_f_grade_student_score(self):
@@ -71,7 +82,7 @@ class MhtData(CommonData):
     def _to_count_g_grade_sub_scale_code_score(self):
         """在 8 个子量表上的得分图，横轴量表，纵轴分数"""
         res = {}
-        for grade, grade_ans_group in self.mht_final_answers.groupby('grade'):
+        for grade, grade_ans_group in self.mht_8_final_answers.groupby('grade'):
             grade_data = self._tool_count_sub_code_score(answers=grade_ans_group)
             res[grade] = grade_data
         self.grade_sub_scale_score = res
@@ -79,7 +90,7 @@ class MhtData(CommonData):
     def _to_count_h_grade_special_students(self):
         """计算各年级 某量表超过8分的学生"""
         res = defaultdict(list)
-        for grade, grade_ans_group in self.final_answers.groupby('grade'):
+        for grade, grade_ans_group in self.mht_final_answers.groupby('grade'):
             for student_id, student_group in grade_ans_group.groupby('student_id'):
                 student_name = student_group['username'].tolist()[0]
                 student_score = Util.format_num(student_group['score'].sum(), precision=project.precision)

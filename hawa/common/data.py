@@ -477,3 +477,13 @@ class CommonData(metaclass=MetaCommomData):
                 d['grade'] = d['case_id'].apply(lambda x: x % 100)
             if set_class:
                 d['cls'] = d['student_id'].apply(lambda x: int(str(x)[13:15]))
+
+    @property
+    def psy_item_ids(self):
+        items = self.query.query_phq_items()
+        return set(items['id'].tolist())
+
+    @property
+    def mgarbage_item_ids(self):
+        items = self.query.query_mgarbage_items()
+        return set(items['id'].tolist())
