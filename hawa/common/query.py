@@ -161,7 +161,7 @@ class DataQuery:
             return pd.read_sql(text(sql), conn)
 
     def query_phq_items(self):
-        sql = f"select * from items where source='psy';"
+        sql = f"select * from items where source='2021浙江心理';"
         with self.db.engine_conn() as conn:
             return pd.read_sql(text(sql), conn)
 
