@@ -549,11 +549,11 @@ class HealthReportData(HealthData):
         res = ''
         if bigger:
             local_codes = self._build_codes(bigger)
-            res += f"{local_codes}{self.meta_unit.short_name}{project.category_map[gender]}分数" \
+            res += f"{local_codes}{project.category_map[gender]}分数" \
                    f"明显高于全国{project.grade_simple[grade]}年级{project.category_map[gender]}平均分数，"
         if smaller:
             local_codes = self._build_codes(smaller)
-            res += f"{local_codes}{self.meta_unit.short_name}{project.category_map[gender]}分数" \
+            res += f"{local_codes}{project.category_map[gender]}分数" \
                    f"明显低于全国{project.grade_simple[grade]}年级{project.category_map[gender]}平均分数，"
         if not bigger and not smaller:
             res += '所有维度和领域都没有明显差异。'
@@ -596,7 +596,7 @@ class HealthReportData(HealthData):
         else:
             grade_text = ''
         title_text = f"{grade_text}各年级生命与健康素养{cond}全国平均水平"
-        describe_text = f"{grade_text}{self.meta_unit.short_name}各年级的健康素养水平{cond}{self.last_year_num}年的全国平均水平"
+        describe_text = f"{grade_text}各年级的健康素养水平{cond}{self.last_year_num}年的全国平均水平"
         return title_text, describe_text
 
     def describe_grade_text(self, category: str):
@@ -621,7 +621,7 @@ class HealthReportData(HealthData):
         res = ''
         if bigger:
             local_codes = self._build_codes(bigger)
-            res += f"{self.meta_unit.short_name}{local_codes}"
+            res += f"{local_codes}"
             match category:
                 case 'total':
                     res += '分数明显高于全国平均分数，'
@@ -630,15 +630,14 @@ class HealthReportData(HealthData):
 
         if smaller:
             local_codes = self._build_codes(smaller)
-            res += f"{self.meta_unit.short_name}{local_codes}"
+            res += f"{local_codes}"
             match category:
                 case 'total':
                     res += "分数明显低于全国平均分数，"
                 case 'gender':
                     res += "男生分数明显低于女生分数，"
         if (bigger or smaller) and ((len(bigger) + len(smaller)) < len(self.grade.grades)):
-            local_codes = self._build_codes(others)
-            res += f'{local_codes}没有明显差异。'
+            res += f'其他年级分数没有明显差异。'
         if not bigger and not smaller:
-            res = f'{self.meta_unit.short_name}分数对比无明显差异。'
+            res = f'分数对比无明显差异。'
         return res
