@@ -99,4 +99,5 @@ text = (
     ("0.13.2", "divide the answers into 3 parts"),
     ("0.13.3", "fix psy source"),
     ("0.13.4", "update text"),
+    ("0.13.5", "add method for rank counts"),
 )

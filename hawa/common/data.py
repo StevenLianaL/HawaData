@@ -487,3 +487,9 @@ class CommonData(metaclass=MetaCommomData):
     def mgarbage_item_ids(self):
         items = self.query.query_mgarbage_items()
         return set(items['id'].tolist())
+
+    def count_rank_students(self):
+        """计算各等级人数"""
+        base_ranks = {k: 0 for k in project.ranks['FEEDBACK_LEVEL'].values()}
+        count_ranks = self.final_scores['level'].value_counts().to_dict()
+        return base_ranks | count_ranks

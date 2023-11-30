@@ -29,7 +29,8 @@ def test_health_api_run():
     for row in rows:
         logger.info(row)
         dd = HealthApiData(**row)
-        print(dd.get_class_scores())
+        print(dd.count_rank_students())
+        print(dd.final_scores.level.unique())
 
 
 def test_assemble_health_api_run():
