@@ -161,14 +161,12 @@ class CommonData(metaclass=MetaCommomData):
         if self.cases.empty:
             raise NoCasesError(f'no cases:{self.meta_unit} {self.school_ids}')
         self.case_ids = self.cases['id'].tolist()
-        self.case_project_ids = Counter(self.cases['project_id'].tolist())
         self.school_ids = self.cases['school_id'].unique().tolist()
         project.logger.debug(f'cases: {len(self.cases)}')
 
         if self.grade:
             self.cases = self.cases.loc[self.cases['id'] % 100 == self.grade, :]
             self.case_ids = self.cases['id'].tolist()
-            self.case_project_ids = Counter(self.cases['project_id'].tolist())
             project.logger.debug(f'cases: {len(self.cases)}')
         if len(self.cases) == 0:
             raise NoCasesError(f'grade {self.grade} cases is empty')

@@ -114,10 +114,9 @@ class DataQuery:
             school_sql = f"and cs.school_id in {tuple(school_ids)}"
 
         sql = f"select c.id,c.name,c.valid_from,c.valid_to,c.client_id,c.created," \
-              f"c.paper_id,c.is_cleared, cp.name project_name, c.project_id, cs.school_id " \
+              f"c.paper_id,c.is_cleared, cs.school_id " \
               f"from cases c " \
               f"inner join case_schools cs on c.id=cs.case_id " \
-              f"inner join case_projects cp on c.project_id=cp.id " \
               f"where {is_cleared_sql} valid_to between '{valid_to_start}' and '{valid_to_end}'" \
               f" {school_sql} {paper_sql};"
         with self.db.engine_conn() as conn:
