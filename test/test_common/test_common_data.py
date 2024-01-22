@@ -31,8 +31,8 @@ def test_gen_year_data():
 
 def test_a_case():
     rows = [
-        {"meta_unit_type": "school", "meta_unit_id": 3101129001,
-         "target_year": 2015, "test_type": 'old'},
+        {"meta_unit_type": "school", "meta_unit_id": 1101059001,
+         "target_year": 2017, "test_type": 'old'},
     ]
     for row in rows:
         logger.info(row)
@@ -40,3 +40,4 @@ def test_a_case():
             **row, code_word_list={'dimension', 'field'}
         )
         print(c.final_answers)
+        print(c.final_scores)

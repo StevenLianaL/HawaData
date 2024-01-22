@@ -3,6 +3,10 @@ class NoCasesError(Exception):
     pass
 
 
+class NoValidAnswers(Exception):
+    pass
+
+
 class NoSchoolIdsError(Exception):
     pass
 

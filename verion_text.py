@@ -101,4 +101,5 @@ text = (
     ("0.13.4", "update text"),
     ("0.13.5", "add method for rank counts"),
     ("0.13.6", "add old test_type"),
+    ("0.13.7", "add no valid answers error"),
 )

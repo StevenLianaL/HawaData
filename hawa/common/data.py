@@ -9,7 +9,7 @@ import pendulum
 
 from hawa.base.db import DbUtil, RedisUtil
 from hawa.base.decos import log_func_time
-from hawa.base.errors import NoCasesError
+from hawa.base.errors import NoCasesError, NoValidAnswers
 from hawa.common.query import DataQuery
 from hawa.common.utils import GradeData, CaseData, Measurement, Util
 from hawa.config import project
@@ -175,6 +175,8 @@ class CommonData(metaclass=MetaCommomData):
     def _to_init_e_answers(self):
         self.answers = self.query.query_answers(case_ids=self.case_ids)
         project.logger.debug(f'answers: {len(self.answers)}')
+        if self.answers.empty:
+            raise NoValidAnswers(f"{self.meta_unit.id} no valid answers")
 
     def _to_init_f_students(self):
         self.student_ids = set(self.answers['student_id'].tolist())
