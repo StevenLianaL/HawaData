@@ -646,18 +646,20 @@ class HealthReportData(HealthData):
     def grade_class_student_table(self):
         scores = self.final_scores
         records = []
-        for grade, grade_group in scores.groupby("grade"):
+        grade_key, cls_key, gender_key = 'grade', 'cls', 'gender'
+        for grade, grade_group in scores.groupby(grade_key):
             grade_base = {
-                "grade": grade,
-                "grade_count": len(grade_group),
+                grade_key: grade,
+                f"{grade_key}_count": len(grade_group),
+                f"{grade_key}_{cls_key}_count": len(grade_group.groupby(cls_key)),
             }
-            for cls, grade_cls_group in grade_group.groupby("cls"):
+            for cls, grade_cls_group in grade_group.groupby(cls_key):
                 class_count = len(grade_cls_group)
                 class_base = {
-                    "cls": cls,
-                    "class_count": class_count,
+                    cls_key: cls,
+                    f"{cls_key}_count": class_count,
                 }
-                for gender, grade_cls_gender_group in grade_cls_group.groupby('gender'):
+                for gender, grade_cls_gender_group in grade_cls_group.groupby(gender_key):
                     gender_count = len(grade_cls_gender_group)
                     class_base[f"{gender}_count"] = gender_count
                     class_base[f"{gender}_percent"] = round(gender_count / class_count * 100, 1)
