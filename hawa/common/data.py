@@ -270,11 +270,12 @@ class CommonData(metaclass=MetaCommomData):
             score = group.score.mean() * 100
             record = {
                 "student_id": student_id,
-                "username": group['username'].tolist()[0],
-                "grade": group['grade'].tolist()[0],
-                "gender": group['gender'].tolist()[0],
+                "username": self.get_col_value(group['username']),
+                "grade": self.get_col_value(group['grade']),
+                "gender": self.get_col_value(group['gender']),
                 "score": score,
                 "level": self.count_level(score),
+                "cls": self.get_col_value(group['cls']),
             }
             records.append(record)
         return pd.DataFrame.from_records(records)
@@ -493,3 +494,7 @@ class CommonData(metaclass=MetaCommomData):
         base_ranks = {k: 0 for k in project.ranks['FEEDBACK_LEVEL'].values()}
         count_ranks = self.final_scores['level'].value_counts().to_dict()
         return base_ranks | count_ranks
+
+    @staticmethod
+    def get_col_value(col):
+        return col.tolist()[0]

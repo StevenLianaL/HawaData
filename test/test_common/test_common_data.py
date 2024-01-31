@@ -1,6 +1,7 @@
 from loguru import logger
 
 from hawa.common.data import CommonData
+from hawa.paper.health import HealthReportData
 from test.mock import prepare_test
 
 prepare_test()
@@ -31,13 +32,17 @@ def test_gen_year_data():
 
 def test_a_case():
     rows = [
-        {"meta_unit_type": "school", "meta_unit_id": 1101059001,
-         "target_year": 2017, "test_type": 'old'},
+        {"meta_unit_type": "school", "meta_unit_id": 5134010001,
+         "target_year": 2023},
     ]
     for row in rows:
         logger.info(row)
-        c = CommonData(
+        c = HealthReportData(
             **row, code_word_list={'dimension', 'field'}
         )
-        print(c.final_answers)
-        print(c.final_scores)
+        print(f"{c.final_scores.columns=}")
+        print(f"{c.final_answers.columns=}")
+
+        for r in c.grade_class_student_table:
+            print(r)
+            print('---')

@@ -5,7 +5,6 @@ from loguru import logger
 from hawa.data.assemble import AssembleHealthApiData, AssembleMhtPlusQusPlusApiData, AssembleMhtPlusPlusApiData
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.province import ProvinceHealthApiDataLess
-from hawa.data.school import SchoolMhtPlusApiData
 from hawa.data.student import StudentHealthApiData, StudentMhtPlusApiData
 from hawa.paper.health import HealthApiData
 from test.mock import prepare_test

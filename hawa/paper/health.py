@@ -641,3 +641,26 @@ class HealthReportData(HealthData):
         if not bigger and not smaller:
             res = f'分数对比无明显差异。'
         return res
+
+    @property
+    def grade_class_student_table(self):
+        scores = self.final_scores
+        records = []
+        for grade, grade_group in scores.groupby("grade"):
+            grade_base = {
+                "grade": grade,
+                "grade_count": len(grade_group),
+            }
+            for cls, grade_cls_group in grade_group.groupby("cls"):
+                class_count = len(grade_cls_group)
+                class_base = {
+                    "cls": cls,
+                    "class_count": class_count,
+                }
+                for gender, grade_cls_gender_group in grade_cls_group.groupby('gender'):
+                    gender_count = len(grade_cls_gender_group)
+                    class_base[f"{gender}_count"] = gender_count
+                    class_base[f"{gender}_percent"] = round(gender_count / class_count * 100, 1)
+                records.append(class_base | grade_base)
+        records.sort(key=lambda x: (int(x['grade']) * 100 + int(x['cls'])))
+        return records
