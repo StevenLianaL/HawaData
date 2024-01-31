@@ -42,6 +42,9 @@ def test_a_case():
         )
         print(f"{c.final_scores.columns=}")
         print(f"{c.final_answers.columns=}")
+        # c.final_answers['student_id'] = c.final_answers['student_id'].astype('str')
+        # c.final_answers.to_excel('final_answers.xlsx')
+        print(f"{len(c.final_answers.student_id.unique())=}")
 
         for r in c.grade_class_student_table:
             print(r)

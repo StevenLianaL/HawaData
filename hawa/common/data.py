@@ -39,6 +39,7 @@ class CommonData(metaclass=MetaCommomData):
     is_load_last: bool = True  # 仅计算往年数据时 为 False
 
     is_load_all: bool = True  # 加载全部数据
+    is_filter_cls_less10:bool = True
 
     # 卷子
     test_type: str = ''
@@ -237,6 +238,12 @@ class CommonData(metaclass=MetaCommomData):
             data[code_word] = data.item_id.apply(
                 lambda x: self.get_code_name_items(item_id=x, word=code_word, items=items))
         self.final_answers = data.drop_duplicates(subset=['case_id', 'student_id', 'item_id'])
+
+        if self.is_filter_cls_less10:
+
+            self.final_answers = self.filter_answers_cls_less10(ans=self.final_answers)
+            self.student_ids = set(self.final_answers['student_id'].tolist())
+
         project.logger.debug(f'final_answers: {len(self.final_answers)}')
 
     @log_func_time
@@ -498,3 +505,20 @@ class CommonData(metaclass=MetaCommomData):
     @staticmethod
     def get_col_value(col):
         return col.tolist()[0]
+
+    def filter_answers_cls_less10(self, ans: pd.DataFrame):
+        """过滤班级学生数小于10的班级"""
+
+        # 步骤2: 对student_id去重，然后根据grade和cls分组，计数每组的学生数量
+        grouped_data = ans.drop_duplicates(subset='student_id').groupby(['grade', 'cls']).size().reset_index(
+            name='student_count')
+
+        # 步骤3: 过滤出学生人数大于或等于10的年级和班级
+        filtered_groups = grouped_data[grouped_data['student_count'] >= 10]
+
+        # 步骤4: 使用过滤后的数据过滤原始数据集
+        filtered_data = ans[
+            ans.set_index(['grade', 'cls']).index.isin(filtered_groups.set_index(['grade', 'cls']).index)]
+
+        # 显示过滤后的数据
+        return filtered_data

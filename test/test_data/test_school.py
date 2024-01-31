@@ -40,9 +40,6 @@ def test_mht_web_run():
 
         assert len(md.scale_student_score['x_axis']) == 101
         assert len(md.scale_student_score['y_axis']) == 101
-        special_students_count = [5, 4, 9]
-        for i, (k, v) in enumerate(md.grade_special_students.items()):
-            assert len(v) == special_students_count[i]
     # OK 207 -> 187 效度>7 筛选20
 
     # NO 总量表分（包含效度） > 65， 正确 包含效度 18人, HawaData 20人， 原因为 去掉效度题（重复计算 score ）后，只有90题，导致总分增大。

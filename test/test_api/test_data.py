@@ -78,7 +78,7 @@ def test_student_health_api_run():
     ]
     for row in data:
         logger.info(row)
-        d = StudentHealthApiData(**row)
+        d = StudentHealthApiData(**row, is_filter_cls_less10=False)
         print(f"{d.score_rank(grade=3)=}")
         print(
             f"{d.count_dim_or_field_scores_by_answers(answers=d.final_answers,item_code='dimension',res_format='list')=}")
@@ -96,7 +96,7 @@ def test_student_mht_api_run():
     ]
     for row in data:
         logger.info(row)
-        d = StudentMhtPlusApiData(**row)
+        d = StudentMhtPlusApiData(**row, is_filter_cls_less10=False)
         d.count_student_archive()
 
 
