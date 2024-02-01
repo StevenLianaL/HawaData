@@ -95,15 +95,22 @@ class GradeData:
 
     @property
     def grade_periods(self):
-        res = set()
+        res = []
         for g in self.grades:
             if g <= 6:
-                res.add('小学')
+                word = '小学'
+
             elif g <= 9:
-                res.add('初中')
+                word = '初中'
             else:
-                res.add('高中')
+                word = '高中'
+            if word not in res:
+                res.append(word)
         return res
+
+    @property
+    def grade_period_text(self):
+        return ''.join(self.grade_periods)
 
     @property
     def grade_name_list(self) -> list[str]:

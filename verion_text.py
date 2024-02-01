@@ -105,4 +105,5 @@ text = (
     ("0.13.8", "count grade cls gender table for report"),
     ("0.14.1", "filter cls less10 students"),
     ("0.14.2", "add class count to table"),
+    ("0.14.3", "update grade periods"),
 )
