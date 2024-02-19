@@ -106,4 +106,5 @@ text = (
     ("0.14.1", "filter cls less10 students"),
     ("0.14.2", "add class count to table"),
     ("0.14.3", "update grade periods"),
+    ("0.14.4", "add default less10 for student"),
 )

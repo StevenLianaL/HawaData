@@ -39,7 +39,7 @@ class CommonData(metaclass=MetaCommomData):
     is_load_last: bool = True  # 仅计算往年数据时 为 False
 
     is_load_all: bool = True  # 加载全部数据
-    is_filter_cls_less10:bool = True
+    is_filter_cls_less10: bool = True
 
     # 卷子
     test_type: str = ''
@@ -240,7 +240,6 @@ class CommonData(metaclass=MetaCommomData):
         self.final_answers = data.drop_duplicates(subset=['case_id', 'student_id', 'item_id'])
 
         if self.is_filter_cls_less10:
-
             self.final_answers = self.filter_answers_cls_less10(ans=self.final_answers)
             self.student_ids = set(self.final_answers['student_id'].tolist())
 

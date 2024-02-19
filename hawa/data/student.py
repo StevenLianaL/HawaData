@@ -24,6 +24,7 @@ class StudentMixin:
 
 @dataclass
 class StudentHealthApiData(StudentMixin, HealthApiData):
+    is_filter_cls_less10: bool = False
 
     def _to_init_a_meta_unit(self):
         try:
@@ -110,6 +111,7 @@ class StudentMhtPlusApiData(StudentMixin, MhtPlusApiData):
     """"""
     meta_student_id: Optional[int] = None  # 必填
     student_name: Optional[str] = ''
+    is_filter_cls_less10: bool = False
 
     def _to_init_a_meta_unit(self):
         try:
