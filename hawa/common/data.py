@@ -544,7 +544,7 @@ class CommonData(metaclass=MetaCommomData):
                 values = [mapping[k] for k in keys]
                 return keys, values
 
-    def get_grade_focus(self):
+    def get_grade_focus(self, limit: int = 60):
         """获取所有年级的优先关注点"""
         res = {}
         for grade, grade_answers in self.final_answers.groupby('grade'):
@@ -554,6 +554,14 @@ class CommonData(metaclass=MetaCommomData):
             fields = self.count_dim_or_field_scores_by_answers(
                 answers=grade_answers, item_code='field', res_format='dict'
             )
-            grade_res = [k for k, v in (dimensions | fields).items() if v < 60]
+            grade_res = self.get_limit_focus_recu_res(dimensions=dimensions, fields=fields, limit=limit, step=3)
             res[grade] = grade_res
+        return res
+
+    def get_limit_focus_recu_res(self, dimensions: dict, fields: dict, limit: int, step: int = 2):
+        res = [k for k, v in (dimensions | fields).items() if v < limit]
+        if res:
+            return res
+        if not res:
+            return self.get_limit_focus_recu_res(dimensions, fields, limit + step, step)
         return res

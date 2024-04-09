@@ -109,4 +109,6 @@ text = (
     ("0.14.4", "add default less10 for student"),
     ("0.14.6", "get all grade focus"),
     ("0.14.7", "move functions"),
+    ("0.14.8", "get focus recu"),
+    ("0.14.9", "get focus recu add step"),
 )
