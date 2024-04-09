@@ -107,4 +107,5 @@ text = (
     ("0.14.2", "add class count to table"),
     ("0.14.3", "update grade periods"),
     ("0.14.4", "add default less10 for student"),
+    ("0.14.5", "get all grade focus"),
 )

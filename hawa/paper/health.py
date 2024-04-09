@@ -101,15 +101,18 @@ class HealthApiData(HealthData):
         case_ids = student_answers['case_id'].unique().tolist()
         return case_ids[0] % 100
 
-    def get_grade_focus(self, grade: int, gender: str = 'total'):
-        """获取年级的优先关注点"""
-        dimensions = self.count_dim_or_field_scores_by_answers(
-            answers=self.final_answers, item_code='dimension', res_format='dict'
-        )
-        fields = self.count_dim_or_field_scores_by_answers(
-            answers=self.final_answers, item_code='field', res_format='dict'
-        )
-        res = [k for k, v in (dimensions | fields).items() if v < 60]
+    def get_grade_focus(self):
+        """获取所有年级的优先关注点"""
+        res = {}
+        for grade, grade_answers in self.final_answers.groupby('grade'):
+            dimensions = self.count_dim_or_field_scores_by_answers(
+                answers=grade_answers, item_code='dimension', res_format='dict'
+            )
+            fields = self.count_dim_or_field_scores_by_answers(
+                answers=grade_answers, item_code='field', res_format='dict'
+            )
+            grade_res = [k for k, v in (dimensions | fields).items() if v < 60]
+            res[grade] = grade_res
         return res
 
     def __get_grade_final_answers(self, grade: int):
