@@ -101,47 +101,11 @@ class HealthApiData(HealthData):
         case_ids = student_answers['case_id'].unique().tolist()
         return case_ids[0] % 100
 
-    def get_grade_focus(self):
-        """获取所有年级的优先关注点"""
-        res = {}
-        for grade, grade_answers in self.final_answers.groupby('grade'):
-            dimensions = self.count_dim_or_field_scores_by_answers(
-                answers=grade_answers, item_code='dimension', res_format='dict'
-            )
-            fields = self.count_dim_or_field_scores_by_answers(
-                answers=grade_answers, item_code='field', res_format='dict'
-            )
-            grade_res = [k for k, v in (dimensions | fields).items() if v < 60]
-            res[grade] = grade_res
-        return res
-
     def __get_grade_final_answers(self, grade: int):
         return self.final_answers[self.final_answers['grade'] == grade]
 
     def __get_grade_final_scores(self, grade: int):
         return self.final_scores[self.final_scores['grade'] == grade]
-
-    def count_dim_or_field_scores_by_answers(self, answers, item_code, res_format: str = 'dict'):
-        """
-        计算维度或领域得分
-        :param answers: 由 final answers 中取出的部分数据，属于某一主体
-        :param item_code: dimension/field
-        :return:
-        """
-        keys, values, mapping = [], [], {}
-        for code, code_group in answers.groupby(item_code):
-            score = Util.format_num(code_group.score.mean() * 100, project.precision)
-            keys.append(code)
-            values.append(score)
-            mapping[code] = score
-        match res_format:
-            case 'dict':
-                return mapping
-            case 'list':
-                code_map = self.get_dim_field_order(key=item_code)
-                keys = sorted(keys, key=lambda x: code_map[x])
-                values = [mapping[k] for k in keys]
-                return keys, values
 
     def get_class_scores(self):
         """获取年级各班级的分数 仅可在 school/assemble 中使用"""
