@@ -111,4 +111,5 @@ text = (
     ("0.14.7", "move functions"),
     ("0.14.8", "get focus recu"),
     ("0.14.9", "get focus recu add step"),
+    ("0.14.10", "set step"),
 )

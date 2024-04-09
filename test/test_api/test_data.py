@@ -28,7 +28,7 @@ def test_health_api_run():
     for row in rows:
         logger.info(row)
         dd = HealthApiData(**row)
-        print(dd.get_grade_focus())
+        print(dd.get_grade_focus(limit=60, step=2))
 
 
 def test_assemble_health_api_run():
