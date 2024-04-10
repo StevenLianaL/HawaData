@@ -15,7 +15,7 @@ from hawa.common.utils import GradeData, CaseData, Measurement, Util
 from hawa.config import project
 
 
-class MetaCommomData(type):
+class MetaCommonData(type):
     def __new__(cls, name, bases, attrs):
         attrs['db'] = DbUtil()
         attrs['redis'] = RedisUtil()
@@ -24,7 +24,7 @@ class MetaCommomData(type):
 
 
 @dataclass
-class CommonData(metaclass=MetaCommomData):
+class CommonData(metaclass=MetaCommonData):
     # 构造单位
     meta_unit_type: Optional[str] = ''  # class/school/group/district/city/province/country
     meta_unit_id: Optional[int] = None

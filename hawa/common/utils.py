@@ -38,7 +38,8 @@ class Measurement:
         return self._get_fields(category='dimension')
 
     def _get_fields(self, category: str):
-        sql = f"select code, category, name from codebook where category='{category}' and name<>'其他'"
+        sql = (f"select code, category, name from codebook "
+               f"where category='{category}' and name<>'其他' order by `order`;")
         with self.db.engine_conn() as conn:
             data = pd.read_sql(text(sql), conn)
         return data['name'].to_list()
