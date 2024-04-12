@@ -565,3 +565,60 @@ class CommonData(metaclass=MetaCommonData):
         if not res:
             return self.get_limit_focus_recu_res(dimensions, fields, limit + step, step)
         return res
+
+    @staticmethod
+    def count_mean_score_by_final_scores(scores: pd.DataFrame):
+        return round(scores.score.mean(), 1)
+
+    def count_11scores_by_answers(self, ans: pd.DataFrame):
+        """通过传入的 answers 计算 11 个得分 6f 4d 1total"""
+        res = {
+            "total": self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=ans))
+        }
+        for f, field_ans in ans.groupby('field'):
+            field_score = self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=field_ans))
+            res[f] = field_score
+        for dim, dim_ans in ans.groupby('dimension'):
+            dim_score = self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=dim_ans))
+            res[dim] = dim_score
+        return res
+
+    def count_gender_scores33(self, ans: pd.DataFrame, grade: Optional[int] = None, cls: Optional[int] = None):
+        """计算 total/M/F 11 共 33 个得分"""
+        res = {
+            "total": self.count_11scores_by_answers(ans=ans) | {
+                'gender': 'total', 'grade': grade, 'cls': cls,
+                'group': self.count_group_name(cls=cls, gender='total')
+            }
+        }
+        for gender, gender_ans in ans.groupby('gender'):
+            res[gender] = self.count_11scores_by_answers(gender_ans) | {
+                'gender': gender, 'grade': grade, 'cls': cls,
+                'group': self.count_group_name(cls=cls, gender=str(gender))
+            }
+        return res
+
+    @staticmethod
+    def count_group_name(cls: int, gender: str = 'total'):
+        """计算 11 33 组别名称"""
+        prefix = f'{cls}班' if cls else ''
+        suffix_map = {'total': '全体', 'M': '男生', 'F': '女生'}
+        return f'{prefix}{suffix_map[gender]}'
+
+    def count_class_detail_scores11(self):
+        """
+        计算学校的全部年级、班级维度领域得分 每单位 11 3组 共33个
+        列：年级 组别 班级（无/年级 有/具体班级）性别（total/M/F） 6领域列 4维度列 总分列
+        """
+        rows33 = []
+        for grade, grade_ans in self.final_answers.groupby('grade'):
+            grade_gender_scores = self.count_gender_scores33(ans=grade_ans, grade=grade, cls=None)
+            rows33.append(grade_gender_scores)
+            for cls, grade_cls_ans in grade_ans.groupby('cls'):
+                grade_cls_gender_scores = self.count_gender_scores33(ans=grade_cls_ans, grade=grade, cls=cls)
+                rows33.append(grade_cls_gender_scores)
+        base_res = []
+        for row33 in rows33:
+            for k, v in row33.items():
+                base_res.append(v)
+        return base_res
