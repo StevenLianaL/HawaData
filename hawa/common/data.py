@@ -629,6 +629,20 @@ class CommonData(metaclass=MetaCommonData):
                 base_res.append(v)
         return base_res
 
+    @staticmethod
+    def _count_point_name(row, point_map):
+        name = point_map.get(row['code'].rsplit('.', 1)[0].replace('target1', 'point'), '')
+        code_split = row['code'].split('.')
+        order = f"{int(code_split[2])}.{int(code_split[3])}"
+        return f"{order} {name}"
+
+    @staticmethod
+    def _count_field_name(row, field_map):
+        name = field_map.get(row['code'].rsplit('.', 2)[0].replace("target1", "domain"), '')
+        code_split = row['code'].split('.')
+        order = f"{int(code_split[2])}"
+        return f"{order} {name}"
+
     def count_field_point_target(self, page_limit: int = 38):
         periods = tuple(self.grade_util.grade_periods + ['-'])
         codes_sql = f"select * from code_guide where period in {periods}"
@@ -639,10 +653,8 @@ class CommonData(metaclass=MetaCommonData):
         target1_points_map = {i['code']: i['name'] for _, i in target1_points.iterrows()}
         fields = codes.loc[codes['category'] == 'G.domain', :]
         fields_map = {i['code']: i['name'] for _, i in fields.iterrows()}
-        targets['point'] = targets.apply(
-            lambda x: target1_points_map.get(x['code'].rsplit('.', 1)[0].replace('target1', 'point'), ''), axis=1)
-        targets['field'] = targets.apply(
-            lambda x: fields_map.get(x['code'].rsplit('.', 2)[0].replace("target1", "domain"), ''), axis=1)
+        targets['point'] = targets.apply(lambda x: self._count_point_name(x, target1_points_map), axis=1)
+        targets['field'] = targets.apply(lambda x: self._count_field_name(x, fields_map), axis=1)
         field_count_map = targets['field'].value_counts().to_dict()
         point_count_map = targets['point'].value_counts().to_dict()
         targets['field_count'] = targets['field'].apply(lambda x: field_count_map.get(x, 0))
@@ -659,7 +671,6 @@ class CommonData(metaclass=MetaCommonData):
             the_target_count = TargetsCount()
 
             for point, point_group in field_group.groupby('point'):
-                print(f"{the_field=} {point=} {the_target_count=}")
                 point_count = point_group['point_count'].values[0]
 
                 # 单段终止条件
@@ -678,5 +689,4 @@ class CommonData(metaclass=MetaCommonData):
         targets['field_count'] = targets.apply(lambda x: new_target_counts.get(x['target'], 0), axis=1)
 
         res = targets.loc[:, cols]
-
         return res.to_dict(orient='records')
