@@ -24,6 +24,12 @@ class MetaCommonData(type):
 
 
 @dataclass
+class TargetsCount:
+    targets: set[str] = field(default_factory=set)
+    count: int = 0
+
+
+@dataclass
 class CommonData(metaclass=MetaCommonData):
     # 构造单位
     meta_unit_type: Optional[str] = ''  # class/school/group/district/city/province/country
@@ -623,7 +629,7 @@ class CommonData(metaclass=MetaCommonData):
                 base_res.append(v)
         return base_res
 
-    def count_field_point_target(self):
+    def count_field_point_target(self, page_limit: int = 38):
         periods = tuple(self.grade_util.grade_periods + ['-'])
         codes_sql = f"select * from code_guide where period in {periods}"
         codes = self.query.raw_query(codes_sql)
@@ -642,4 +648,35 @@ class CommonData(metaclass=MetaCommonData):
         targets['field_count'] = targets['field'].apply(lambda x: field_count_map.get(x, 0))
         targets['point_count'] = targets['point'].apply(lambda x: point_count_map.get(x, 0))
         cols = ['field', 'point', 'target', 'field_count', 'point_count']
-        return targets.loc[:, cols].to_dict(orient='records')
+
+        new_target_counts = {row['target']: row['field_count'] for _, row in targets.iterrows()}
+        target_counts = []
+        for the_field, field_group in targets.groupby('field'):
+            field_count = field_group['field_count'].values[0]
+            if field_count < page_limit:
+                continue
+
+            the_target_count = TargetsCount()
+
+            for point, point_group in field_group.groupby('point'):
+                print(f"{the_field=} {point=} {the_target_count=}")
+                point_count = point_group['point_count'].values[0]
+
+                # 单段终止条件
+                if the_target_count.count + point_count > page_limit:
+                    target_counts.append(the_target_count)
+                    the_target_count = TargetsCount()
+
+                the_target_count.count += point_count
+                the_target_count.targets |= set(point_group['target'].tolist())
+            else:
+                target_counts.append(the_target_count)
+
+        for the_tc in target_counts:
+            new_target_counts |= {k: the_tc.count for k in the_tc.targets}
+
+        targets['field_count'] = targets.apply(lambda x: new_target_counts.get(x['target'], 0), axis=1)
+
+        res = targets.loc[:, cols]
+
+        return res.to_dict(orient='records')

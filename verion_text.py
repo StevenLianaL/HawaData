@@ -117,4 +117,5 @@ text = (
     ("0.14.13", "count field/point/target"),
     ("0.14.14", "fix"),
     ("0.14.15", "add count"),
+    ("0.14.16", "add page limit"),
 )
