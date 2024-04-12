@@ -659,7 +659,9 @@ class CommonData(metaclass=MetaCommonData):
         point_count_map = targets['point'].value_counts().to_dict()
         targets['field_count'] = targets['field'].apply(lambda x: field_count_map.get(x, 0))
         targets['point_count'] = targets['point'].apply(lambda x: point_count_map.get(x, 0))
-        cols = ['field', 'point', 'target', 'field_count', 'point_count']
+        targets['field_prefix'] = targets['code'].apply(lambda x: x.split('.')[2])
+        targets['point_prefix'] = targets['code'].apply(lambda x: f"{x.split('.')[2]}.{x.split('.')[3]}")
+        cols = ['field', 'point', 'target', 'field_count', 'point_count', 'field_prefix', 'point_prefix']
 
         new_target_counts = {row['target']: row['field_count'] for _, row in targets.iterrows()}
         target_counts = []
