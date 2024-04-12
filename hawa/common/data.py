@@ -634,7 +634,7 @@ class CommonData(metaclass=MetaCommonData):
         fields = codes.loc[codes['category'] == 'G.domain', :]
         fields_map = {i['code']: i['name'] for _, i in fields.iterrows()}
         targets['point'] = targets.apply(
-            lambda x: target1_points_map.get(x['code'][:-3].replace('target1', 'point'), ''), axis=1)
+            lambda x: target1_points_map.get(x['code'].rsplit('.', 1)[0].replace('target1', 'point'), ''), axis=1)
         targets['field'] = targets.apply(
-            lambda x: fields_map.get(x['code'][:-6].replace("target1", "domain"), ''), axis=1)
+            lambda x: fields_map.get(x['code'].rsplit('.', 2)[0].replace("target1", "domain"), ''), axis=1)
         return targets.loc[:, ['field', 'point', 'target']].to_dict(orient='records')
