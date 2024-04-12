@@ -622,3 +622,19 @@ class CommonData(metaclass=MetaCommonData):
             for k, v in row33.items():
                 base_res.append(v)
         return base_res
+
+    def count_field_point_target(self):
+        periods = tuple(self.grade_util.grade_periods + ['-'])
+        codes_sql = f"select * from code_guide where period in {periods}"
+        codes = self.query.raw_query(codes_sql)
+        targets = codes.loc[codes['category'] == 'G.target1', :]
+        targets['target'] = targets['name']
+        target1_points = codes.loc[codes['category'] == 'G.point', :]
+        target1_points_map = {i['code']: i['name'] for _, i in target1_points.iterrows()}
+        fields = codes.loc[codes['category'] == 'G.domain', :]
+        fields_map = {i['code']: i['name'] for _, i in fields.iterrows()}
+        targets['point'] = targets.apply(
+            lambda x: target1_points_map.get(x['code'][:-3].replace('target1', 'point'), ''), axis=1)
+        targets['field'] = targets.apply(
+            lambda x: fields_map.get(x['code'][:-6].replace("target1", "domain"), ''), axis=1)
+        return targets.loc[:, ['field', 'point', 'target']].to_dict(orient='records')

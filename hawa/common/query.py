@@ -19,6 +19,10 @@ class MetaUnit:
 class DataQuery:
     db = DbUtil()
 
+    def raw_query(self, sql: str):
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
+
     def query_unit(self, meta_unit_type: str, meta_unit_id: str):
         match meta_unit_type:
             case 'student':

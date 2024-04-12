@@ -114,4 +114,5 @@ text = (
     ("0.14.10", "set step"),
     ("0.14.11", "re order field"),
     ("0.14.12", "count 11/33 scores"),
+    ("0.14.13", "count field/point/target"),
 )
