@@ -28,7 +28,7 @@ def test_health_api_run():
     for row in rows:
         logger.info(row)
         dd = HealthApiData(**row)
-        print(dd.count_field_point_target())
+        dd.count_field_point_target()
 
 
 def test_assemble_health_api_run():

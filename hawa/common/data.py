@@ -666,7 +666,8 @@ class CommonData(metaclass=MetaCommonData):
 
             the_target_count = TargetsCount()
 
-            for point, point_group in field_group.groupby('point'):
+
+            for point_prefix, point_group in field_group.groupby('point_prefix'):
                 point_count = point_group['point_count'].values[0]
 
                 # 单段终止条件
