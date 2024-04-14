@@ -28,6 +28,7 @@ class TargetsCount:
     targets: set[str] = field(default_factory=set)
     count: int = 0
     field_extra: str = ''
+    field_extra_count: int = 0
 
 
 @dataclass
@@ -674,7 +675,9 @@ class CommonData(metaclass=MetaCommonData):
                 # 单段终止条件
                 if the_target_count.count + point_count > page_limit:
                     target_counts.append(the_target_count)
-                    the_target_count = TargetsCount(field_extra=f'{the_field}extra')
+                    new_extra_count = the_target_count.field_extra_count + 1
+                    the_target_count = TargetsCount(
+                        field_extra=f'{the_field}extra{new_extra_count}', field_extra_count=new_extra_count)
 
                 the_target_count.count += point_count
                 the_target_count.targets |= set(point_group['target'].tolist())
@@ -689,4 +692,5 @@ class CommonData(metaclass=MetaCommonData):
         targets['field_extra'] = targets.apply(lambda x: new_target_field_extra.get(x['target'], ''), axis=1)
 
         res = targets.loc[:, cols]
+        res.to_excel('field_point_target.xlsx', index=False)
         return res.to_dict(orient='records')
