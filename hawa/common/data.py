@@ -27,6 +27,7 @@ class MetaCommonData(type):
 class TargetsCount:
     targets: set[str] = field(default_factory=set)
     count: int = 0
+    field_extra: str = ''
 
 
 @dataclass
@@ -655,17 +656,17 @@ class CommonData(metaclass=MetaCommonData):
         targets['point_count'] = targets['point'].apply(lambda x: point_count_map.get(x, 0))
         targets['field_prefix'] = targets['code'].apply(lambda x: x.split('.')[2])
         targets['point_prefix'] = targets['code'].apply(lambda x: f"{x.split('.')[2]}.{x.split('.')[3]}")
-        cols = ['field', 'point', 'target', 'field_count', 'point_count', 'field_prefix', 'point_prefix']
+        cols = ['field', 'point', 'target', 'field_count', 'point_count', 'field_prefix', 'point_prefix', 'field_extra']
 
         new_target_counts = {row['target']: row['field_count'] for _, row in targets.iterrows()}
+        new_target_field_extra = {row['target']: row['field'] for _, row in targets.iterrows()}
         target_counts = []
         for the_field, field_group in targets.groupby('field'):
             field_count = field_group['field_count'].values[0]
             if field_count < page_limit:
                 continue
 
-            the_target_count = TargetsCount()
-
+            the_target_count = TargetsCount(field_extra=the_field)
 
             for point_prefix, point_group in field_group.groupby('point_prefix'):
                 point_count = point_group['point_count'].values[0]
@@ -673,7 +674,7 @@ class CommonData(metaclass=MetaCommonData):
                 # 单段终止条件
                 if the_target_count.count + point_count > page_limit:
                     target_counts.append(the_target_count)
-                    the_target_count = TargetsCount()
+                    the_target_count = TargetsCount(field_extra=f'{the_field}extra')
 
                 the_target_count.count += point_count
                 the_target_count.targets |= set(point_group['target'].tolist())
@@ -682,8 +683,10 @@ class CommonData(metaclass=MetaCommonData):
 
         for the_tc in target_counts:
             new_target_counts |= {k: the_tc.count for k in the_tc.targets}
+            new_target_field_extra |= {k: the_tc.field_extra for k in the_tc.targets}
 
         targets['field_count'] = targets.apply(lambda x: new_target_counts.get(x['target'], 0), axis=1)
+        targets['field_extra'] = targets.apply(lambda x: new_target_field_extra.get(x['target'], ''), axis=1)
 
         res = targets.loc[:, cols]
         return res.to_dict(orient='records')
