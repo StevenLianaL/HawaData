@@ -631,17 +631,11 @@ class CommonData(metaclass=MetaCommonData):
 
     @staticmethod
     def _count_point_name(row, point_map):
-        name = point_map.get(row['code'].rsplit('.', 1)[0].replace('target1', 'point'), '')
-        code_split = row['code'].split('.')
-        order = f"{int(code_split[2])}.{int(code_split[3])}"
-        return f"{order} {name}"
+        return point_map.get(row['code'].rsplit('.', 1)[0].replace('target1', 'point'), '')
 
     @staticmethod
     def _count_field_name(row, field_map):
-        name = field_map.get(row['code'].rsplit('.', 2)[0].replace("target1", "domain"), '')
-        code_split = row['code'].split('.')
-        order = f"{int(code_split[2])}"
-        return f"{order} {name}"
+        return field_map.get(row['code'].rsplit('.', 2)[0].replace("target1", "domain"), '')
 
     def count_field_point_target(self, page_limit: int = 38):
         periods = tuple(self.grade_util.grade_periods + ['-'])
