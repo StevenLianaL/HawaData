@@ -738,3 +738,13 @@ class CommonData(metaclass=MetaCommonData):
                 grade_data.append(record)
             res[grade] = grade_data
         return res
+
+    def grade_class_map(self):
+        """生成年级/班级映射"""
+        res = {}
+        for grade, grade_ans in self.final_answers.groupby('grade'):
+            max_cls, min_cls = grade_ans['cls'].max(), grade_ans['cls'].min()
+            res[grade] = {
+                "max_cls": max_cls, "min_cls": min_cls
+            }
+        return res
