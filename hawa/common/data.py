@@ -692,5 +692,4 @@ class CommonData(metaclass=MetaCommonData):
         targets['field_extra'] = targets.apply(lambda x: new_target_field_extra.get(x['target'], ''), axis=1)
 
         res = targets.loc[:, cols]
-        res.to_excel('field_point_target.xlsx', index=False)
         return res.to_dict(orient='records')
