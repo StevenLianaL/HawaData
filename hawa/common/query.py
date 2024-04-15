@@ -173,10 +173,12 @@ class DataQuery:
         with self.db.engine_conn() as conn:
             return pd.read_sql(text(sql), conn)
 
-    def query_item_codes(self, item_ids: list[int], categories: list[str]):
+    def query_item_codes(self, item_ids: list[int], categories: list[str] = None):
         item_code_sql = f'select ic.item_id,ic.code,ic.category,c.name ' \
                         f'from item_codes ic left join codebook c on ic.code = c.code ' \
-                        f'where ic.item_id in {tuple(item_ids)} and ic.category in {tuple(categories)};'
+                        f'where ic.item_id in {tuple(item_ids)}'
+        if categories:
+            item_code_sql += f' and ic.category in {tuple(categories)};'
         with self.db.engine_conn() as conn:
             item_codes = pd.read_sql(text(item_code_sql), conn)
         return item_codes
@@ -189,5 +191,10 @@ class DataQuery:
 
     def query_codebook(self):
         sql = f"select code,category,name,`order` from codebook;"
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
+
+    def query_code_guides(self):
+        sql = f"select code,category,name,`period` from code_guide;"
         with self.db.engine_conn() as conn:
             return pd.read_sql(text(sql), conn)

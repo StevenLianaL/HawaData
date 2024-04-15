@@ -693,3 +693,48 @@ class CommonData(metaclass=MetaCommonData):
 
         res = targets.loc[:, cols]
         return res.to_dict(orient='records')
+
+    @staticmethod
+    def count_rank_by_score(score: float):
+        if score >= 90:
+            level = 'A'
+        elif score >= 80:
+            level = 'B'
+        elif score >= 60:
+            level = 'C'
+        else:
+            level = 'D'
+        return project.ranks['FEEDBACK_LEVEL'][level]
+
+    def count_grade_class_item_target(self):
+        """计算各年级各班级 top3/last3 item target 相对优势/优先关注点"""
+        all_item_codes = self.query.query_item_codes(item_ids=list(self.item_ids), categories=None)
+        all_code_guides = self.query.query_code_guides()
+        res = {}
+        for grade, grade_ans in self.final_answers.groupby('grade'):
+            grade_data = []
+            for cls, grade_cls_ans in grade_ans.groupby('cls'):
+                cls_score = self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=grade_cls_ans))
+                cls_rank = self.count_rank_by_score(score=cls_score)
+                item_scores = grade_cls_ans.groupby('item_id').score.mean()
+                # get top3/last3 item_ids
+                top3_item_ids = item_scores.nlargest(3).index.tolist()
+                last3_item_ids = item_scores.nsmallest(3).index.tolist()
+                code_category = 'G.target1'
+                top3_conditions = (all_item_codes['item_id'].isin(top3_item_ids) &
+                                   (all_item_codes['category'] == code_category))
+                last3_conditions = (all_item_codes['item_id'].isin(last3_item_ids) &
+                                    (all_item_codes['category'] == code_category))
+                top3_item_targets = all_item_codes.loc[top3_conditions, :]
+                last3_item_targets = all_item_codes.loc[last3_conditions, :]
+                top3_targets = all_code_guides.merge(top3_item_targets, on='code', how='inner', suffixes=('', '_y'))
+                last3_targets = all_code_guides.merge(last3_item_targets, on='code', how='inner', suffixes=('', '_y'))
+                top3_names = top3_targets['name'].tolist()
+                last3_names = last3_targets['name'].tolist()
+                record = {
+                    "cls": cls, "grade": grade, "score": cls_score, "rank": cls_rank,
+                    "top3": top3_names, "last3": last3_names
+                }
+                grade_data.append(record)
+            res[grade] = grade_data
+        return res
