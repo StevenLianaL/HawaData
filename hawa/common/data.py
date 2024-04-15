@@ -729,8 +729,8 @@ class CommonData(metaclass=MetaCommonData):
                 last3_item_targets = all_item_codes.loc[last3_conditions, :]
                 top3_targets = all_code_guides.merge(top3_item_targets, on='code', how='inner', suffixes=('', '_y'))
                 last3_targets = all_code_guides.merge(last3_item_targets, on='code', how='inner', suffixes=('', '_y'))
-                top3_names = top3_targets['name'].tolist()
-                last3_names = last3_targets['name'].tolist()
+                top3_names = top3_targets['name'].unique().tolist()
+                last3_names = last3_targets['name'].unique().tolist()
                 record = {
                     "cls": cls, "grade": grade, "score": cls_score, "rank": cls_rank,
                     "top3": top3_names, "last3": last3_names
