@@ -793,6 +793,9 @@ class CommonData(metaclass=MetaCommonData):
                 cls_girl_count = len(girl_ans['student_id'].unique())
                 cls_rank = self.count_rank_dis_by_final_scores(scores=student_scores)
                 cls_reverse_rank = self._count_reverse_sorted_rank(cls_rank)
+                cls_11_scores = self.count_11scores_by_answers(cls_ans)
+                del cls_11_scores['total']
+                reverse_dim_field_scores = self._count_reverse_sorted_rank(cls_11_scores)
                 cls_record = {
                     "cls": cls, "student_count": cls_student_count,
                     "boy_count": cls_boy_count, "girl_count": cls_girl_count,
@@ -804,7 +807,7 @@ class CommonData(metaclass=MetaCommonData):
                     "rank": cls_rank,
                     "boy_rank": self.count_rank_dis_by_final_scores(scores=self.count_final_score(answers=boy_ans)),
                     "girl_rank": self.count_rank_dis_by_final_scores(scores=self.count_final_score(answers=girl_ans)),
-                    "reverse_rank": cls_reverse_rank,
+                    "reverse_rank": cls_reverse_rank, "reverse_dim_fields": cls_11_scores
                 }
                 res[grade]["cls"].append(cls_record)
             sort_cls_scores = sorted(max_min_score_class[grade], key=lambda x: x[1])

@@ -30,7 +30,7 @@ def test_health_api_run():
         logger.info(row)
         dd = HealthReportData(**row)
         # dd.count_field_point_target()
-        pprint(dd.count_grade_class_item_target())
+        # pprint(dd.count_grade_class_item_target())
 
 
 def test_assemble_health_api_run():
