@@ -786,6 +786,8 @@ class CommonData(metaclass=MetaCommonData):
 
                     "min_score": round(student_scores['score'].min(), 1),
                     "rank": cls_rank,
+                    "boy_rank": self.count_rank_dis_by_final_scores(scores=self.count_final_score(answers=boy_ans)),
+                    "girl_rank": self.count_rank_dis_by_final_scores(scores=self.count_final_score(answers=girl_ans)),
                     "reverse_rank": cls_reverse_rank,
                 }
                 res[grade]["cls"].append(cls_record)
