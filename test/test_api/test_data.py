@@ -6,7 +6,7 @@ from hawa.data.assemble import AssembleHealthApiData, AssembleMhtPlusQusPlusApiD
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.province import ProvinceHealthApiDataLess
 from hawa.data.student import StudentHealthApiData, StudentMhtPlusApiData
-from hawa.paper.health import HealthApiData
+from hawa.paper.health import HealthApiData, HealthReportData
 from test.mock import prepare_test
 
 prepare_test()
@@ -28,9 +28,9 @@ def test_health_api_run():
     ]
     for row in rows:
         logger.info(row)
-        dd = HealthApiData(**row)
+        dd = HealthReportData(**row)
         # dd.count_field_point_target()
-        print(dd.grade_class_high_low_score)
+        # pprint(dd.grade_class_map)
 
 
 def test_assemble_health_api_run():

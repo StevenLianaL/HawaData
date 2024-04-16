@@ -639,6 +639,25 @@ class CommonData(metaclass=MetaCommonData):
     def _count_field_name(row, field_map):
         return field_map.get(row['code'].rsplit('.', 2)[0].replace("target1", "domain"), '')
 
+    @staticmethod
+    def _retain_prec(n: float, prec: int = 1):
+        n = n * 100
+        return int(n) if n in (0, 0.0, 100.0, 100) else round(n, prec)
+
+    @staticmethod
+    def _count_reverse_sorted_rank(rank_data: dict):
+        base = [(v, k) for k, v in rank_data.items()]
+        res = [b for b in sorted(base, key=lambda x: x[0], reverse=True)]
+        return res
+
+    def count_rank_dis_by_final_scores(self, scores: pd.DataFrame):
+        """计算 scores 的 rank 分布比例"""
+        base = dict(
+            zip(project.ranks['FEEDBACK_LEVEL'].values(),
+                [0] * len(project.ranks['FEEDBACK_LEVEL'])))
+        count = base | scores.level.value_counts().to_dict()
+        return {k: self._retain_prec(v / sum(count.values())) for k, v in count.items()}
+
     def count_field_point_target(self, page_limit: int = 38):
         periods = tuple(self.grade_util.grade_periods + ['-'])
         codes_sql = f"select * from code_guide where period in {periods}"
@@ -739,27 +758,33 @@ class CommonData(metaclass=MetaCommonData):
             res[grade] = grade_data
         return res
 
+    @property
     def grade_class_map(self):
         """生成年级/班级映射"""
         res = {}
+        max_min_score_class = defaultdict(list)
         for grade, grade_ans in self.final_answers.groupby('grade'):
+            res[grade] = {"cls": []}
             max_cls, min_cls = grade_ans['cls'].max(), grade_ans['cls'].min()
-            res[grade] = {
-                "max_cls": max_cls, "min_cls": min_cls
-            }
-        return res
-
-    @property
-    def grade_class_high_low_score(self):
-        """各年级 得分高的班级 得分低的班级"""
-        res = defaultdict(list)
-        for (grade, cls), ans in self.final_answers.groupby(['grade', 'cls']):
-            gc_score = self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=ans))
-            res[grade].append((cls, gc_score))
-        final_res = {}
-        for grade, cls_scores in res.items():
-            sort_cls_scores = sorted(cls_scores, key=lambda x: x[1])
-            final_res[grade] = {
+            for cls, cls_ans in grade_ans.groupby('cls'):
+                student_scores = self.count_final_score(answers=cls_ans)
+                gc_score = self.count_mean_score_by_final_scores(scores=student_scores)
+                max_min_score_class[grade].append((cls, gc_score))
+                cls_student_count = len(cls_ans['student_id'].unique())
+                cls_boy_count = len(cls_ans.loc[cls_ans['gender'] == 'M', 'student_id'].unique())
+                cls_girl_count = len(cls_ans.loc[cls_ans['gender'] == 'F', 'student_id'].unique())
+                cls_record = {
+                    "cls": cls, "student_count": cls_student_count,
+                    "boy_count": cls_boy_count, "girl_count": cls_girl_count,
+                    "avg_score": gc_score, "max_score": round(student_scores['score'].max(), 1),
+                    "min_score": round(student_scores['score'].min(), 1)
+                }
+                res[grade]["cls"].append(cls_record)
+            sort_cls_scores = sorted(max_min_score_class[grade], key=lambda x: x[1])
+            res[grade] |= {
+                # 班级顺序的最大最小值
+                "max_cls": max_cls, "min_cls": min_cls,
+                # 得分最高最低的班级
                 "high": sort_cls_scores[-1][0], "low": sort_cls_scores[0][0]
             }
-        return final_res
+        return res

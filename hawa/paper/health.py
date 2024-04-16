@@ -4,6 +4,7 @@ import json
 import math
 from collections import defaultdict
 from dataclasses import dataclass, field
+from pprint import pprint
 from typing import Union, Set
 
 import pandas as pd
@@ -265,18 +266,14 @@ class HealthReportData(HealthData):
 
     def _to_count_j_grade_rank_dis(self):
         records = {}
-        base = dict(
-            zip(project.ranks['FEEDBACK_LEVEL'].values(),
-                [0] * len(project.ranks['FEEDBACK_LEVEL'])))
         for grade, group in self.final_scores.groupby('grade'):
-            count = base | group.level.value_counts().to_dict()
+            count = self.count_rank_dis_by_final_scores(scores=group)
             records[grade] = Munch()
             for gender, g in group.groupby('gender'):
-                gender_count = base | g.level.value_counts().to_dict()
-                records[grade][gender] = \
-                    {k: self._retain_prec(v / sum(gender_count.values()))
-                     for k, v in gender_count.items()}
-            records[grade].total = {k: self._retain_prec(v / sum(count.values())) for k, v in count.items()}
+                gender_count = self.count_rank_dis_by_final_scores(scores=g)
+                records[grade][gender] = gender_count
+            records[grade].total = count
+        pprint(records)
         self.grade_rank_dis = records
 
     def _to_count_k_grade_reverse_rank_dis(self):
@@ -287,8 +284,7 @@ class HealthReportData(HealthData):
                 here = rank_dis[g].total
             except KeyError:
                 continue
-            base = [(v, k) for k, v in here.items()]
-            records[g] = [b for b in sorted(base, key=lambda x: x[0], reverse=True)]
+            records[g] = self._count_reverse_sorted_rank(rank_data=here)
         self.grade_reverse_rank_dis = records
 
     def _to_count_l_grade_code_score(self):
@@ -397,10 +393,6 @@ class HealthReportData(HealthData):
             return f"{project.grade_simple[row['grade']]}({int(row['cls'])})班"
         else:
             return f"{project.grade_simple[row['grade']]}年级"
-
-    def _retain_prec(self, n: float, prec: int = 1):
-        n = n * 100
-        return int(n) if n in (0, 0.0, 100.0, 100) else round(n, prec)
 
     @staticmethod
     def _get_value(v, k):
