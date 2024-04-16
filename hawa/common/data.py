@@ -773,11 +773,14 @@ class CommonData(metaclass=MetaCommonData):
                 cls_student_count = len(cls_ans['student_id'].unique())
                 cls_boy_count = len(cls_ans.loc[cls_ans['gender'] == 'M', 'student_id'].unique())
                 cls_girl_count = len(cls_ans.loc[cls_ans['gender'] == 'F', 'student_id'].unique())
+                cls_rank = self.count_rank_dis_by_final_scores(scores=student_scores)
+                cls_reverse_rank = self._count_reverse_sorted_rank(cls_rank)
                 cls_record = {
                     "cls": cls, "student_count": cls_student_count,
                     "boy_count": cls_boy_count, "girl_count": cls_girl_count,
                     "avg_score": gc_score, "max_score": round(student_scores['score'].max(), 1),
-                    "min_score": round(student_scores['score'].min(), 1)
+                    "min_score": round(student_scores['score'].min(), 1),
+                    "reverse_rank": cls_reverse_rank
                 }
                 res[grade]["cls"].append(cls_record)
             sort_cls_scores = sorted(max_min_score_class[grade], key=lambda x: x[1])

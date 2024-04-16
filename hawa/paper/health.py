@@ -273,7 +273,6 @@ class HealthReportData(HealthData):
                 gender_count = self.count_rank_dis_by_final_scores(scores=g)
                 records[grade][gender] = gender_count
             records[grade].total = count
-        pprint(records)
         self.grade_rank_dis = records
 
     def _to_count_k_grade_reverse_rank_dis(self):
