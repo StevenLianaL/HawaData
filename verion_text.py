@@ -129,4 +129,5 @@ text = (
     ("0.14.25", "unique"),
     ("0.14.26", "high/low class"),
     ("0.14.27", "add cls rank"),
+    ("0.14.30", "add cls rank 2"),
 )

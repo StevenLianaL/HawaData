@@ -780,7 +780,8 @@ class CommonData(metaclass=MetaCommonData):
                     "boy_count": cls_boy_count, "girl_count": cls_girl_count,
                     "avg_score": gc_score, "max_score": round(student_scores['score'].max(), 1),
                     "min_score": round(student_scores['score'].min(), 1),
-                    "reverse_rank": cls_reverse_rank
+                    "rank": cls_rank,
+                    "reverse_rank": cls_reverse_rank,
                 }
                 res[grade]["cls"].append(cls_record)
             sort_cls_scores = sorted(max_min_score_class[grade], key=lambda x: x[1])
