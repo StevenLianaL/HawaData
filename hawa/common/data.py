@@ -748,3 +748,18 @@ class CommonData(metaclass=MetaCommonData):
                 "max_cls": max_cls, "min_cls": min_cls
             }
         return res
+
+    @property
+    def grade_class_high_low_score(self):
+        """各年级 得分高的班级 得分低的班级"""
+        res = defaultdict(list)
+        for (grade, cls), ans in self.final_answers.groupby(['grade', 'cls']):
+            gc_score = self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=ans))
+            res[grade].append((cls, gc_score))
+        final_res = {}
+        for grade, cls_scores in res.items():
+            sort_cls_scores = sorted(cls_scores, key=lambda x: x[1])
+            final_res[grade] = {
+                "high": sort_cls_scores[-1][0], "low": sort_cls_scores[0][0]
+            }
+        return final_res
