@@ -135,4 +135,5 @@ text = (
     ("0.14.33", "add top/last percent"),
     ("0.14.34", "add dim/field reverse score"),
     ("0.14.35", "fix"),
+    ("0.14.36", "add gender 33 to grade class map"),
 )

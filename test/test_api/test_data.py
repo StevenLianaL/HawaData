@@ -31,6 +31,8 @@ def test_health_api_run():
         dd = HealthReportData(**row)
         # dd.count_field_point_target()
         # pprint(dd.count_grade_class_item_target())
+        pprint(dd.grade_class_map)
+        # pprint(dd.code_scores)
 
 
 def test_assemble_health_api_run():
