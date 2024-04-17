@@ -260,7 +260,9 @@ class HealthReportData(HealthData):
             record = Munch(
                 avg=self._retain_prec(score.mean().mean()),
                 min=self._retain_prec(score.mean().min()),
-                max=self._retain_prec(score.mean().max()))
+                max=self._retain_prec(score.mean().max()),
+                rank=self.count_rank_by_score(score.mean().mean())
+            )
             records[grade] = record
         self.grade_score = records
 
@@ -273,6 +275,7 @@ class HealthReportData(HealthData):
                 gender_count = self.count_rank_dis_by_final_scores(scores=g)
                 records[grade][gender] = gender_count
             records[grade].total = count
+
         self.grade_rank_dis = records
 
     def _to_count_k_grade_reverse_rank_dis(self):
