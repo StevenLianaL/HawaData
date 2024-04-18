@@ -780,8 +780,8 @@ class CommonData(metaclass=MetaCommonData):
     def count_str_rank(rank: dict):
         """"""
         rank = deepcopy(rank)
-        rank['素养'] = rank['优秀'] + rank['良好']
-        rank['基础'] = rank['待提高'] + rank['中等']
+        rank['素养'] = round(rank['优秀'] + rank['良好'], 1)
+        rank['基础'] = round(rank['待提高'] + rank['中等'], 1)
         res = {k: str(v) for k, v in rank.items()}
         return res
 
