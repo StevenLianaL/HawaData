@@ -137,4 +137,5 @@ text = (
     ("0.14.35", "fix"),
     ("0.14.36", "add gender 33 to grade class map"),
     ("0.14.37", "add rank to grade_score"),
+    ("0.14.38", "add rank 素养"),
 )

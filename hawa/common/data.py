@@ -656,6 +656,7 @@ class CommonData(metaclass=MetaCommonData):
             zip(project.ranks['FEEDBACK_LEVEL'].values(),
                 [0] * len(project.ranks['FEEDBACK_LEVEL'])))
         count = base | scores.level.value_counts().to_dict()
+        count['素养'] = count['优秀'] + count['良好']
         return {k: self._retain_prec(v / sum(count.values())) for k, v in count.items()}
 
     def count_field_point_target(self, page_limit: int = 38):
