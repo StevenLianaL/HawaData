@@ -1,6 +1,7 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
 import json
 from collections import Counter, defaultdict
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Optional, ClassVar, Any, Set
 
@@ -657,9 +658,6 @@ class CommonData(metaclass=MetaCommonData):
                 [0] * len(project.ranks['FEEDBACK_LEVEL'])))
         count = base | scores.level.value_counts().to_dict()
         count = {k: v / sum(count.values()) for k, v in count.items()}
-        count['素养'] = count['优秀'] + count['良好']
-        count['基础'] = count['待提高'] + count['中等']
-
         return {k: self._retain_prec(v) for k, v in count.items()}
 
     def count_field_point_target(self, page_limit: int = 38):
@@ -778,6 +776,15 @@ class CommonData(metaclass=MetaCommonData):
             res[grade] = grade_data
         return res
 
+    @staticmethod
+    def count_str_rank(rank: dict):
+        """"""
+        rank = deepcopy(rank)
+        rank['素养'] = rank['优秀'] + rank['良好']
+        rank['基础'] = rank['待提高'] + rank['中等']
+        res = {k: str(v) for k, v in rank.items()}
+        return res
+
     @property
     def grade_class_map(self):
         """生成年级/班级映射"""
@@ -809,11 +816,14 @@ class CommonData(metaclass=MetaCommonData):
 
                     "min_score": round(student_scores['score'].min(), 1),
                     "rank": cls_rank,
+                    "str_rank": {},
                     "boy_rank": self.count_rank_dis_by_final_scores(scores=self.count_final_score(answers=boy_ans)),
                     "girl_rank": self.count_rank_dis_by_final_scores(scores=self.count_final_score(answers=girl_ans)),
                     "reverse_rank": cls_reverse_rank, "reverse_dim_fields": reverse_dim_field_scores,
                     "gender_codes_score": self.count_gender_scores33(ans=cls_ans),
                 }
+                for k in ('rank', 'boy_rank', 'girl_rank'):
+                    cls_record['str_rank'][k] = self.count_str_rank(rank=cls_record[k])
                 res[grade]["cls"].append(cls_record)
             sort_cls_scores = sorted(max_min_score_class[grade], key=lambda x: x[1])
             res[grade] |= {
