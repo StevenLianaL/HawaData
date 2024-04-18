@@ -139,4 +139,5 @@ text = (
     ("0.14.38", "add rank 素养"),
     ("0.14.39", "add rank 基础"),
     ("0.14.40", "add str rank for class"),
+    ("0.14.41", "add str rank for grade"),
 )

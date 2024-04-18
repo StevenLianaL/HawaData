@@ -127,6 +127,7 @@ class HealthReportData(HealthData):
     grade_good_bad = None  # 优势 优先关注点
 
     grade_rank_dis = None  # 年级、性别、水平学生分布占比
+    grade_str_rank_dis = None  # 年级、性别、水平学生分布占比
     grade_reverse_rank_dis = None  # 占比由高到低的年级分布水平
     grade_gender_distribution = None
     grade_score = None  # 年级最高、最低、平均分
@@ -268,15 +269,20 @@ class HealthReportData(HealthData):
 
     def _to_count_j_grade_rank_dis(self):
         records = {}
+        str_records = {}
         for grade, group in self.final_scores.groupby('grade'):
             count = self.count_rank_dis_by_final_scores(scores=group)
             records[grade] = Munch()
+            str_records[grade] = Munch()
             for gender, g in group.groupby('gender'):
                 gender_count = self.count_rank_dis_by_final_scores(scores=g)
                 records[grade][gender] = gender_count
+                str_records[grade][gender] = self.count_str_rank(rank=gender_count)
             records[grade].total = count
+            str_records[grade].total = self.count_str_rank(rank=count)
 
         self.grade_rank_dis = records
+        self.grade_str_rank_dis = str_records
 
     def _to_count_k_grade_reverse_rank_dis(self):
         records = {}
