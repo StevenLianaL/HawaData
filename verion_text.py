@@ -133,9 +133,9 @@ text = (
     ("0.14.31", "add gender score"),
     ("0.14.32", "add gender rank"),
     ("0.14.33", "add top/last percent"),
-    ("0.14.34", "add dim/field reverse score"),
-    ("0.14.35", "fix"),
+    ("0.14.34", "add dim/field reverse score"), ("0.14.35", "fix"),
     ("0.14.36", "add gender 33 to grade class map"),
     ("0.14.37", "add rank to grade_score"),
     ("0.14.38", "add rank 素养"),
+    ("0.14.39", "add rank 基础"),
 )
