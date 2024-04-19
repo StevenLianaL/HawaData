@@ -6,7 +6,7 @@ from hawa.data.assemble import AssembleHealthApiData, AssembleMhtPlusQusPlusApiD
 from hawa.data.klass import ClassHealthApiData
 from hawa.data.province import ProvinceHealthApiDataLess
 from hawa.data.student import StudentHealthApiData, StudentMhtPlusApiData
-from hawa.paper.health import HealthApiData, HealthReportData
+from hawa.paper.health import HealthReportData
 from test.mock import prepare_test
 
 prepare_test()
@@ -32,7 +32,8 @@ def test_health_api_run():
         # dd.count_field_point_target()
         # pprint(dd.count_grade_class_item_target())
         # pprint(dd.grade_class_map)
-        pprint(dd.grade_score)
+        # pprint(dd.measurement.fields)
+        print(dd.measurement.dimension_names,dd.measurement.field_names)
 
 
 def test_assemble_health_api_run():

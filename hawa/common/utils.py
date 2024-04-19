@@ -46,7 +46,7 @@ class Measurement:
 
     def _get_field_names(self, category: str):
         codes = self._get_fields(category=category)
-        return '、'.join(codes[:len(codes) - 1]) + f'与{codes[-1]}'
+        return '、'.join(codes)
 
 
 @dataclass
