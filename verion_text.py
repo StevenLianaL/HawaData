@@ -143,4 +143,5 @@ text = (
     ("0.14.42", "round 素养"),
     ("0.14.43", "update code names"),
     ("0.14.44", "update code names"),
+    ("0.14.45", "fix"),
 )

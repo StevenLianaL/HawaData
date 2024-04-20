@@ -241,10 +241,6 @@ class HealthReportData(HealthData):
         """年级性别分布"""
         data = self.case_gender_counts
         records = {}
-        if len(self.case_ids) == 1:
-            for row in data:
-                if '年级' in row['cls']:
-                    records[row['cls']] = Munch(row)
         for row in data:
             records[row['grade']] = Munch(row)
         self.grade_gender_distribution = records
