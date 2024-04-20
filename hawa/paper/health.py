@@ -223,11 +223,8 @@ class HealthReportData(HealthData):
         records = pd.DataFrame.from_records(records).fillna(0)
         records['M'] = records.M.astype('int')
         records['F'] = records.F.astype('int')
-        if len(self.case_ids) == 1:
-            records['cls'] = records.apply(self._count_cls, axis=1)
-        else:
-            records['grade'] = records.grade.apply(lambda x: f"{project.grade_simple[x]}年级")
-            records = records.loc[records.cls == 0, :]
+        records['grade'] = records.grade.apply(lambda x: f"{project.grade_simple[x]}年级")
+        records = records.loc[records.cls == 0, :]
         self.case_gender_counts = records.to_dict(orient='records')
 
     def _to_count_g_cronbach_alpha(self):
