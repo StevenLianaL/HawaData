@@ -488,10 +488,16 @@ class HealthReportData(HealthData):
         grade_rank_dis_f = self.grade_rank_dis[grade].F
         level_m = Util.format_num(sum([grade_rank_dis_m['优秀'], grade_rank_dis_m['良好']]), project.precision)
         level_f = Util.format_num(sum([grade_rank_dis_f['优秀'], grade_rank_dis_f['良好']]), project.precision)
-        if level_m - level_f >= 5:
-            return '男生明显高于女生'
-        elif level_m - level_f <= -5:
-            return '男生明显低于女生'
+        if abs(level_m - level_f) >= 5:
+            if level_m > level_f:
+                return '男生明显高于女生'
+            else:
+                return '男生明显低于女生'
+        elif abs(level_m - level_f) >= 3:
+            if level_m > level_f:
+                return '男生略高于女生'
+            else:
+                return '男生略低于女生'
         else:
             return '男生与女生不存在明显差异'
 
