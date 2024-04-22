@@ -146,4 +146,5 @@ text = (
     ("0.14.45", "fix"),
     ("0.14.46", "update gender compare text"),
     ("0.14.47", "fix grade score rank"),
+    ("0.14.48", "recount top3/last3"),
 )

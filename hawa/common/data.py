@@ -1,8 +1,10 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
+import decimal
 import json
 from collections import Counter, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
+from decimal import Decimal, ROUND_HALF_UP
 from typing import Optional, ClassVar, Any, Set
 
 import pandas as pd
@@ -728,16 +730,39 @@ class CommonData(metaclass=MetaCommonData):
         return project.ranks['FEEDBACK_LEVEL'][level]
 
     @staticmethod
-    def _count_item_targets(item_ids: list, score_map: dict, ascending: bool, all_item_codes: pd.DataFrame,
-                            all_code_guides: pd.DataFrame):
+    def _count_item_targets(percent_item_id_map, all_item_codes: pd.DataFrame, all_code_guides: pd.DataFrame):
         code_category = 'G.target1'
-        conditions = (all_item_codes['item_id'].isin(item_ids) &
-                      (all_item_codes['category'] == code_category))
-        item_targets = all_item_codes.loc[conditions, :]
-        merge_targets = all_code_guides.merge(item_targets, on='code', how='inner', suffixes=('', '_y'))
-        merge_targets['percent'] = merge_targets['item_id'].apply(lambda x: score_map.get(x, 0))
-        sort_merge_targets = merge_targets.sort_values(by='percent', ascending=ascending)
-        return sort_merge_targets.loc[:, ['name', 'percent']]
+        res = []
+        for percent, item_ids in percent_item_id_map.items():
+            conditions = (all_item_codes['item_id'].isin(item_ids) &
+                          (all_item_codes['category'] == code_category))
+            item_targets = all_item_codes.loc[conditions, :]
+            merge_targets = all_code_guides.merge(item_targets, on='code', how='inner', suffixes=('', '_y'))
+            merge_targets['percent'] = percent
+            record = {
+                "name": '，'.join(merge_targets['name'].unique().tolist()),
+                "percent": percent
+            }
+            res.append(record)
+        df = pd.DataFrame.from_records(res)
+        return df
+
+    @staticmethod
+    def _count_top_last_item_ids(item_scores: pd.Series, key: str = 'top'):
+        res = defaultdict(list)
+        score_filter = set()
+        func_map = {
+            "top": item_scores.nlargest,
+            "last": item_scores.nsmallest
+        }
+        for k, v in func_map[key](n=len(item_scores)).items():
+            decimal_number = Decimal(v).quantize(Decimal('0.001'), rounding=ROUND_HALF_UP)
+            if len(score_filter) < 3:
+                score_filter.add(decimal_number)
+                res[decimal_number].append(k)
+            else:
+                break
+        return res
 
     def count_grade_class_item_target(self):
         """计算各年级各班级 top3/last3 item target 相对优势/优先关注点"""
@@ -750,18 +775,17 @@ class CommonData(metaclass=MetaCommonData):
                 cls_score = self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=grade_cls_ans))
                 cls_rank = self.count_rank_by_score(score=cls_score)
                 item_scores = grade_cls_ans.groupby('item_id').score.mean()
+                self._count_top_last_item_ids(item_scores=item_scores)
                 # get top3/last3 item_ids
-                top3_item_ids = item_scores.nlargest(3).index.tolist()
-                last3_item_ids = item_scores.nsmallest(3).index.tolist()
-                item_score_map = {k: round(v * 100, 1) for k, v in item_scores.items() if
-                                  k in top3_item_ids + last3_item_ids}
+                top3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='top')
+                last3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='last')
 
                 top3_targets = self._count_item_targets(
-                    item_ids=top3_item_ids, score_map=item_score_map, ascending=False,
+                    percent_item_id_map=top3_item_ids,
                     all_item_codes=all_item_codes, all_code_guides=all_code_guides
                 )
                 last3_targets = self._count_item_targets(
-                    item_ids=last3_item_ids, score_map=item_score_map, ascending=True,
+                    percent_item_id_map=last3_item_ids,
                     all_item_codes=all_item_codes, all_code_guides=all_code_guides
                 )
 
