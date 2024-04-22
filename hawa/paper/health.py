@@ -255,7 +255,7 @@ class HealthReportData(HealthData):
                 avg=self._retain_prec(score.mean().mean()),
                 min=self._retain_prec(score.mean().min()),
                 max=self._retain_prec(score.mean().max()),
-                rank=self.count_rank_by_score(score.mean().mean())
+                rank=self.count_rank_by_score(score.mean().mean()*100)
             )
             records[grade] = record
         self.grade_score = records

@@ -145,4 +145,5 @@ text = (
     ("0.14.44", "update code names"),
     ("0.14.45", "fix"),
     ("0.14.46", "update gender compare text"),
+    ("0.14.47", "fix grade score rank"),
 )

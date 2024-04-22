@@ -33,7 +33,7 @@ def test_health_api_run():
         # pprint(dd.count_grade_class_item_target())
         # pprint(dd.grade_class_map)
         # pprint(dd.measurement.fields)
-        print(dd.measurement.dimension_names,dd.measurement.field_names)
+        print(dd.grade_score)
 
 
 def test_assemble_health_api_run():
