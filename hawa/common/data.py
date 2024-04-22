@@ -757,7 +757,7 @@ class CommonData(metaclass=MetaCommonData):
             "last": item_scores.nsmallest
         }
         for k, v in func_map[key](n=len(item_scores)).items():
-            decimal_number = Decimal(v).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP) * 100
+            decimal_number = Decimal(v).quantize(Decimal('0.001'), rounding=ROUND_HALF_UP) * 100
             if len(score_filter) < 3:
                 score_filter.add(decimal_number)
                 res[decimal_number].append(k)

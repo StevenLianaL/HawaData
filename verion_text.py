@@ -150,4 +150,5 @@ text = (
     ("0.14.49", "upper/lower codes"),
     ("0.14.50", "fix"),
     ("0.14.51", "fix decimal"),
+    ("0.14.52", "fix decimal 2"),
 )
