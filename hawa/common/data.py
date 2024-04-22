@@ -796,7 +796,7 @@ class CommonData(metaclass=MetaCommonData):
                     answers=grade_cls_ans, item_code='field', res_format='dict'
                 )
                 upper_codes, lower_codes = [], []
-                for k, v in dimensions | fields.items():
+                for k, v in (dimensions | fields).items():
                     if v >= 80:
                         upper_codes.append(k)
                     elif v <= 60:

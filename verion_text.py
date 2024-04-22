@@ -148,4 +148,5 @@ text = (
     ("0.14.47", "fix grade score rank"),
     ("0.14.48", "recount top3/last3"),
     ("0.14.49", "upper/lower codes"),
+    ("0.14.50", "fix"),
 )
