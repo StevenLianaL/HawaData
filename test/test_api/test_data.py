@@ -1,3 +1,4 @@
+import json
 from pprint import pprint
 
 from loguru import logger
@@ -34,7 +35,10 @@ def test_health_api_run():
         # pprint(dd.count_grade_class_item_target())
         # pprint(dd.grade_class_map)
         # pprint(dd.measurement.fields)
-        pprint(dd.count_field_point_target())
+        r = dd.count_field_point_target()
+        # write r to json
+        with open('error.json', 'w') as f:
+            json.dump(r, f, ensure_ascii=False, indent=4)
 
 
 def test_assemble_health_api_run():

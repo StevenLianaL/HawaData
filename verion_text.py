@@ -152,4 +152,5 @@ text = (
     ("0.14.51", "fix decimal"),
     ("0.14.52", "fix decimal 2"),
     ("0.14.53", "fix point/target"),
+    ("0.14.54", "fix point/target 2"),
 )
