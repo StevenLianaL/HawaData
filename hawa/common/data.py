@@ -665,7 +665,7 @@ class CommonData(metaclass=MetaCommonData):
 
     def count_field_point_target(self, page_limit: int = 38):
         periods = tuple(self.grade_util.grade_periods + ['-'])
-        codes_sql = f"select * from code_guide where period in {periods}"
+        codes_sql = f"select * from code_guide where period in {periods} or category='G.domain';"
         codes = self.query.raw_query(codes_sql)
         targets = codes.loc[codes['category'] == 'G.target1', :]
         targets['target'] = targets['name']
