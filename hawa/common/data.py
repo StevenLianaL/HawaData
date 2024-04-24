@@ -556,26 +556,38 @@ class CommonData(metaclass=MetaCommonData):
                 values = [mapping[k] for k in keys]
                 return keys, values
 
-    def get_grade_focus(self, limit: int = 60, step: int = 5):
-        """获取所有年级的优先关注点"""
+    def get_grade_focus(self, limit: int = 60, step: int = 5, mode: str = 'all'):
+        """
+        获取所有年级的优先关注点
+        mode:all/dimension/field
+        """
         res = {}
         for grade, grade_answers in self.final_answers.groupby('grade'):
+
             dimensions = self.count_dim_or_field_scores_by_answers(
                 answers=grade_answers, item_code='dimension', res_format='dict'
             )
             fields = self.count_dim_or_field_scores_by_answers(
                 answers=grade_answers, item_code='field', res_format='dict'
             )
-            grade_res = self.get_limit_focus_recu_res(dimensions=dimensions, fields=fields, limit=limit, step=step)
+            match mode:
+                case 'all':
+                    grade_res = self.get_limit_focus_recu_res(data=dimensions | fields, limit=limit, step=step)
+                case 'dimension':
+                    grade_res = self.get_limit_focus_recu_res(data=dimensions, limit=limit, step=step)
+                case 'field':
+                    grade_res = self.get_limit_focus_recu_res(data=fields, limit=limit, step=step)
+                case _:
+                    raise
             res[grade] = grade_res
         return res
 
-    def get_limit_focus_recu_res(self, dimensions: dict, fields: dict, limit: int, step: int = 2):
-        res = [k for k, v in (dimensions | fields).items() if v < limit]
+    def get_limit_focus_recu_res(self, data: dict, limit: int, step: int = 2):
+        res = [k for k, v in data.items() if v < limit]
         if res:
             return res
         if not res:
-            return self.get_limit_focus_recu_res(dimensions, fields, limit + step, step)
+            return self.get_limit_focus_recu_res(data, limit + step, step)
         return res
 
     @staticmethod
@@ -665,7 +677,7 @@ class CommonData(metaclass=MetaCommonData):
 
     def count_field_point_target(self, page_limit: int = 38):
         periods = tuple(self.grade_util.grade_periods + ['-'])
-        codes_sql = f"select * from code_guide where period in {periods} or category in ('G.domain','G.point');"
+        codes_sql = f"select * from code_guide where period in {periods} or category in ('G.domain','G.point');get_grade_focus"
         codes = self.query.raw_query(codes_sql)
         targets = codes.loc[codes['category'] == 'G.target1', :]
         targets['target'] = targets['name']
