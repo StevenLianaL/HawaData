@@ -1,6 +1,7 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
 
 import json
+import string
 from collections import Counter, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
@@ -516,7 +517,8 @@ class CommonData(metaclass=MetaCommonData):
     def get_col_value(col):
         return col.tolist()[0]
 
-    def filter_answers_cls_less10(self, ans: pd.DataFrame):
+    @staticmethod
+    def filter_answers_cls_less10(ans: pd.DataFrame):
         """过滤班级学生数小于10的班级"""
 
         # 步骤2: 对student_id去重，然后根据grade和cls分组，计数每组的学生数量
@@ -743,18 +745,18 @@ class CommonData(metaclass=MetaCommonData):
         return project.ranks['FEEDBACK_LEVEL'][level]
 
     @staticmethod
-    def _count_item_targets(percent_item_id_map, all_item_codes: pd.DataFrame, all_code_guides: pd.DataFrame):
-        code_category = 'G.target1'
+    def _count_item_targets(percent_item_id_map, all_item_codes: pd.DataFrame, all_code_guides: pd.DataFrame,
+                            category: str = 'G.target1'):
         res = []
         for percent, item_ids in percent_item_id_map.items():
             conditions = (all_item_codes['item_id'].isin(item_ids) &
-                          (all_item_codes['category'] == code_category))
+                          (all_item_codes['category'] == category))
             item_targets = all_item_codes.loc[conditions, :]
             merge_targets = all_code_guides.merge(item_targets, on='code', how='inner', suffixes=('', '_y'))
             merge_targets['percent'] = percent
             record = {
                 "name": '，'.join(merge_targets['name'].unique().tolist()),
-                "percent": percent
+                "percent": percent,
             }
             res.append(record)
         df = pd.DataFrame.from_records(res)
@@ -821,8 +823,10 @@ class CommonData(metaclass=MetaCommonData):
                     "top3": top3_names, "last3": last3_names,
                     "top3_data": top3_targets.to_dict(orient='records'),
                     "last3_data": last3_targets.to_dict(orient='records'),
-                    "upper_codes": upper_codes, "lower_codes": lower_codes
+                    "upper_codes": upper_codes, "lower_codes": lower_codes,
+                    "top3_item_ids": top3_item_ids, "last3_item_ids": last3_item_ids
                 }
+                # 通过 item_ids, 查询 题干、选项、答案、dim、field、target1、target2
                 grade_data.append(record)
             res[grade] = grade_data
         return res
@@ -883,4 +887,60 @@ class CommonData(metaclass=MetaCommonData):
                 # 得分最高最低的班级
                 "high": sort_cls_scores[-1][0], "low": sort_cls_scores[0][0]
             }
+        return res
+
+    def temp_school_grade_class_data(self):
+        """学校、年级、班级、答对率、题干、选项a、选项b、选项c、选项d、答案、健康领域、健康维度、一级目标内容、二级目标内容"""
+        all_item_codes = self.query.query_item_codes(item_ids=list(self.item_ids), categories=None)
+        all_code_guides = self.query.query_code_guides()
+        all_code_book = self.codebook
+        codebook_name_map = {i['code']: i['name'] for _, i in all_code_book.iterrows()}
+        code_guide_name_map = {i['code']: i['name'] for _, i in all_code_guides.iterrows()}
+        all_code_name_map = codebook_name_map | code_guide_name_map
+
+        res = []
+        for grade, grade_ans in self.final_answers.groupby('grade'):
+            for cls, grade_cls_ans in grade_ans.groupby('cls'):
+                item_scores = grade_cls_ans.groupby('item_id').score.mean()
+                item_score_map = item_scores.to_dict()
+                self._count_top_last_item_ids(item_scores=item_scores)
+                # get top3/last3 item_ids
+                top3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='top')
+                last3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='last')
+                this_item_ids = list(top3_item_ids.values()) + list(last3_item_ids.values())
+                that_item_ids = []
+                for i in this_item_ids:
+                    that_item_ids.extend(i)
+                this_items = self.items.loc[self.items['id'].isin(that_item_ids), :]
+                codebook_codes = ['dimension', 'field', 'G.target1', 'G.target2']
+                base = {'学校': self.meta_unit.name, '年级': grade, '班级': f"{cls}班"}
+                for _, item in this_items.iterrows():
+                    item_id = item['id']
+                    item_code_map = {
+                        "题干": item['item_text'], "答案": item['item_key'],
+                        "答对率": round(item_score_map.get(item_id, 0) * 100, 1)
+                    }
+                    choices = item['choices'].split(";")
+                    for c, t in zip(string.ascii_uppercase, choices):
+                        item_code_map[f"选项{c}"] = t[3:]
+                    for code in codebook_codes:
+                        conditions = (all_item_codes['item_id'] == item_id) & (all_item_codes['category'] == code)
+                        local_record = all_item_codes.loc[conditions, :]
+                        item_code_code = local_record['code'].values[0] if len(local_record) else ''
+                        if item_code_code:
+                            item_code_map[code] = all_code_name_map.get(item_code_code, '')
+                        else:
+                            item_code_map[code] = ''
+                    row = base | item_code_map
+                    res.append(row)
+        df_res = pd.DataFrame.from_records(res)
+        df_res.sort_values(by=['学校', '年级', '班级', '答对率'], ascending=[True, True, True, False], inplace=True)
+        index1 = ['学校', '年级', '班级', '答对率', '题干']
+        index2 = [i for i in df_res.columns if '选项' in i]
+        index3 = ['答案', 'field', 'dimension', 'G.target1', 'G.target2']
+        res = df_res.loc[:, index1 + index2 + index3]
+        res = res.rename(columns={
+            "field": "健康领域", "dimension": "健康维度", "G.target1": "一级目标内容", "G.target2": "二级目标内容"
+        }).set_index("学校")
+        res.to_excel(f'{self.meta_unit.name}_0425数据.xlsx')
         return res

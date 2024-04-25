@@ -32,13 +32,10 @@ def test_health_api_run():
         logger.info(row)
         dd = HealthReportData(**row)
         # dd.count_field_point_target()
-        # pprint(dd.count_grade_class_item_target())
+        pprint(dd.temp_school_grade_class_data())
         # pprint(dd.grade_class_map)
         # pprint(dd.measurement.fields)
-        r = dd.count_field_point_target()
-        # write r to json
-        with open('error.json', 'w') as f:
-            json.dump(r, f, ensure_ascii=False, indent=4)
+        # dd.get_grade_focus(limit=60, step=1, mode='field')
 
 
 def test_assemble_health_api_run():
