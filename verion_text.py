@@ -155,4 +155,5 @@ text = (
     ("0.14.54", "fix point/target 2"),
     ("0.14.55", "update get focus"),
     ("0.14.56", "fix precision"),
+    ("0.14.57", "fix precision 2"),
 )
