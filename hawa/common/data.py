@@ -836,7 +836,7 @@ class CommonData(metaclass=MetaCommonData):
         """"""
         rank = deepcopy(rank)
         rank['素养'] = round(rank['优秀'] + rank['良好'], 1)
-        rank['基础'] = round(rank['待提高'] + rank['中等'], 1)
+        rank['基础'] = round(100 - rank['素养'], 1)
         res = {k: str(v) for k, v in rank.items()}
         return res
 

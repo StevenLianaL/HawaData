@@ -28,7 +28,11 @@ def test_health_api_run():
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},
         # {"meta_unit_id": 4107000001, "target_year": 2023},
     ]
-    for row in rows:
+    school_ids = [1101019056]
+    # for row in rows:
+
+    for school_id in school_ids:
+        row = {"meta_unit_id": school_id, "target_year": 2024, "meta_unit_type": "school"}
         logger.info(row)
         dd = HealthReportData(**row)
         # dd.count_field_point_target()
