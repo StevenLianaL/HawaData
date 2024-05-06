@@ -157,4 +157,5 @@ text = (
     ("0.14.56", "fix precision"),
     ("0.14.57", "fix precision 2"),
     ("0.14.58", "fix precision 3"),
+    ("0.14.59", "fix precision 4"),
 )

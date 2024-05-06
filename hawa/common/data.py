@@ -824,7 +824,7 @@ class CommonData(metaclass=MetaCommonData):
                     "top3_data": top3_targets.to_dict(orient='records'),
                     "last3_data": last3_targets.to_dict(orient='records'),
                     "upper_codes": upper_codes, "lower_codes": lower_codes,
-                    "top3_item_ids": top3_item_ids, "last3_item_ids": last3_item_ids
+                    # "top3_item_ids": top3_item_ids, "last3_item_ids": last3_item_ids
                 }
                 # 通过 item_ids, 查询 题干、选项、答案、dim、field、target1、target2
                 grade_data.append(record)
