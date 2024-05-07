@@ -196,6 +196,10 @@ class CommonData(metaclass=MetaCommonData):
         student_id_list = list(self.student_ids)
         self.students = self.query.query_students(student_id_list, mode=self.different_mode)
         self.student_count = len(self.students)
+        try:
+            self.students['student_grade'] = self.students['extra'].apply(lambda x: json.loads(x)['grade'])
+        except KeyError:
+            self.students['student_grade'] = None
         project.logger.debug(f'students: {self.student_count}')
 
     def _to_init_g_items(self):
@@ -233,7 +237,7 @@ class CommonData(metaclass=MetaCommonData):
                     items[category][item_id] = code_data['name']
 
         data = pd.merge(
-            self.answers, self.students.loc[:, ['id', 'gender', 'nickname']],
+            self.answers, self.students.loc[:, ['id', 'gender', 'nickname', 'student_grade']],
             left_on='student_id', right_on='id'
         )
         project.logger.debug(f"ans merge students {len(data)}")
@@ -246,6 +250,12 @@ class CommonData(metaclass=MetaCommonData):
         self.set_data_extra(d=data, set_grade=True, set_class=True)
 
         data['username'] = data['nickname']
+
+        # clear user.grade != case.grade
+        temp_compare_data = data.loc[data['grade'] == data['student_grade'], :]
+        if not temp_compare_data.empty:
+            data = temp_compare_data
+
         for code_word in self.code_word_list:
             data[code_word] = data.item_id.apply(
                 lambda x: self.get_code_name_items(item_id=x, word=code_word, items=items))
@@ -284,18 +294,19 @@ class CommonData(metaclass=MetaCommonData):
 
     def count_final_score(self, answers: pd.DataFrame):
         records = []
-        for student_id, group in answers.groupby('student_id'):
-            score = group.score.mean() * 100
-            record = {
-                "student_id": student_id,
-                "username": self.get_col_value(group['username']),
-                "grade": self.get_col_value(group['grade']),
-                "gender": self.get_col_value(group['gender']),
-                "score": score,
-                "level": self.count_level(score),
-                "cls": self.get_col_value(group['cls']),
-            }
-            records.append(record)
+        for case_id, group in answers.groupby('case_id'):
+            for student_id, student_group in group.groupby('student_id'):
+                score = student_group.score.mean() * 100
+                record = {
+                    "student_id": student_id,
+                    "username": self.get_col_value(student_group['username']),
+                    "grade": self.get_col_value(student_group['grade']),
+                    "gender": self.get_col_value(student_group['gender']),
+                    "score": score,
+                    "level": self.count_level(score),
+                    "cls": self.get_col_value(student_group['cls']),
+                }
+                records.append(record)
         return pd.DataFrame.from_records(records)
 
     def get_last_year_miss(self, grade: int):
@@ -847,6 +858,7 @@ class CommonData(metaclass=MetaCommonData):
         res = {}
         max_min_score_class = defaultdict(list)
         for grade, grade_ans in self.final_answers.groupby('grade'):
+            grade_scores = self.count_final_score(answers=grade_ans)
             res[grade] = {"cls": []}
             max_cls, min_cls = grade_ans['cls'].max(), grade_ans['cls'].min()
             for cls, cls_ans in grade_ans.groupby('cls'):

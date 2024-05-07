@@ -22,22 +22,19 @@ def test_health_api_run():
         # {"meta_unit_id": 0, "target_year": 2023, "meta_unit_type": "country"},
         # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
         # {"meta_unit_id": 1101088012, "target_year": 2023, "meta_unit_type": "school"},
-        {"meta_unit_id": 3308250001, "target_year": 2024, "meta_unit_type": "school"},
+        # {"meta_unit_id": 3308250001, "target_year": 2024, "meta_unit_type": "school"},
+        {"meta_unit_id": 1101019056, "target_year": 2024, "meta_unit_type": "school"},
         # {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021},
         # {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},
         # {"meta_unit_id": 4107000001, "target_year": 2023},
     ]
-    school_ids = [1101019056]
-    # for row in rows:
-
-    for school_id in school_ids:
-        row = {"meta_unit_id": school_id, "target_year": 2024, "meta_unit_type": "school"}
+    for row in rows:
         logger.info(row)
         dd = HealthReportData(**row)
         # dd.count_field_point_target()
-        pprint(dd.temp_school_grade_class_data())
-        # pprint(dd.grade_class_map)
+        # pprint(dd.temp_school_grade_class_data())
+        a = (dd.grade_class_map, dd.grade_class_student_table)
         # pprint(dd.measurement.fields)
         # dd.get_grade_focus(limit=60, step=1, mode='field')
 
