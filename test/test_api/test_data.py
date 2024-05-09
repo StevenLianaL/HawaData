@@ -37,8 +37,8 @@ def test_health_api_run():
         # pprint(dd.measurement.fields)
         # dd.get_grade_focus(limit=60, step=1, mode='field')
         # pprint(dd.grade_class_map)
-        print(dd.case.join_date, dd.case.start_date, dd.case.end_date)
-
+        # print(dd.case.join_date, dd.case.start_date, dd.case.end_date)
+        pprint(dd.count_grade_class_item_target())
 
 def test_assemble_health_api_run():
     rows = [

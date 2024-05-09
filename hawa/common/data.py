@@ -808,11 +808,19 @@ class CommonData(metaclass=MetaCommonData):
 
                 top3_targets = self._count_item_targets(
                     percent_item_id_map=top3_item_ids,
-                    all_item_codes=all_item_codes, all_code_guides=all_code_guides
+                    all_item_codes=all_item_codes, all_code_guides=all_code_guides, category='G.target1'
                 )
                 last3_targets = self._count_item_targets(
                     percent_item_id_map=last3_item_ids,
-                    all_item_codes=all_item_codes, all_code_guides=all_code_guides
+                    all_item_codes=all_item_codes, all_code_guides=all_code_guides, category='G.target1'
+                )
+                top3_points = self._count_item_targets(
+                    percent_item_id_map=top3_item_ids,
+                    all_item_codes=all_item_codes, all_code_guides=all_code_guides, category='G.point'
+                )
+                last3_points = self._count_item_targets(
+                    percent_item_id_map=last3_item_ids,
+                    all_item_codes=all_item_codes, all_code_guides=all_code_guides, category='G.point'
                 )
                 dimensions = self.count_dim_or_field_scores_by_answers(
                     answers=grade_cls_ans, item_code='dimension', res_format='dict'
@@ -827,14 +835,17 @@ class CommonData(metaclass=MetaCommonData):
                     elif v <= 60:
                         lower_codes.append(k)
 
-                top3_names = top3_targets['name'].unique().tolist()
-                last3_names = last3_targets['name'].unique().tolist()
+                top3_target_names = top3_targets['name'].unique().tolist()
+                last3_target_names = last3_targets['name'].unique().tolist()
+                top3_point_names = top3_points['name'].unique().tolist()[:3]
+                last3_point_names = last3_points['name'].unique().tolist()[:3]
                 record = {
                     "cls": cls, "grade": grade, "score": cls_score, "rank": cls_rank,
-                    "top3": top3_names, "last3": last3_names,
+                    "top3": top3_target_names, "last3": last3_target_names,
                     "top3_data": top3_targets.to_dict(orient='records'),
                     "last3_data": last3_targets.to_dict(orient='records'),
                     "upper_codes": upper_codes, "lower_codes": lower_codes,
+                    "top3_point_names": top3_point_names, "last3_point_names": last3_point_names,
                     # "top3_item_ids": top3_item_ids, "last3_item_ids": last3_item_ids
                 }
                 # 通过 item_ids, 查询 题干、选项、答案、dim、field、target1、target2
