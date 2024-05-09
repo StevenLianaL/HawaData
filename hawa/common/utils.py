@@ -60,7 +60,7 @@ class CaseData:
         if (valid_from.month, valid_from.day) == (valid_to.month, valid_to.day):
             join_date = f"参测日期：{valid_from:%Y年%m月%d日}"
         else:
-            join_date = f"参测日期：{valid_from:%Y年%m月%d日}~{valid_to:%m月%d日}"
+            join_date = f"参测日期：{valid_from:%Y年%m月%d日}~{valid_to:%Y年%m月%d日}"
         return join_date
 
     @property

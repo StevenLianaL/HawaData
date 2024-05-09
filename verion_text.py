@@ -159,4 +159,5 @@ text = (
     ("0.14.58", "fix precision 3"),
     ("0.14.59", "fix precision 4"),
     ("0.15.1", "filter grade match"),
+    ("0.15.2", "top/bottom3 only desc"),
 )

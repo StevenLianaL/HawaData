@@ -779,7 +779,7 @@ class CommonData(metaclass=MetaCommonData):
         score_filter = set()
         func_map = {
             "top": item_scores.nlargest,
-            "last": item_scores.nsmallest
+            "last": item_scores.nlargest
         }
         for k, v in func_map[key](n=len(item_scores)).items():
             decimal_number = Decimal(v).quantize(Decimal('0.001'), rounding=ROUND_HALF_UP) * 100
@@ -849,7 +849,7 @@ class CommonData(metaclass=MetaCommonData):
         level_score = round(rank['优秀'] + rank['良好'], 1)
         rank['素养'] = level_score
         rank['基础'] = round(100 - level_score, 1)
-        res = {k: str(v) for k, v in rank.items()}
+        res = {k: str(Decimal(v).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP)) for k, v in rank.items()}
         return res
 
     @property

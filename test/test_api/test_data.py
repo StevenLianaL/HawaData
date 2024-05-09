@@ -1,4 +1,3 @@
-import json
 from pprint import pprint
 
 from loguru import logger
@@ -34,9 +33,11 @@ def test_health_api_run():
         dd = HealthReportData(**row)
         # dd.count_field_point_target()
         # pprint(dd.temp_school_grade_class_data())
-        a = (dd.grade_class_map, dd.grade_class_student_table)
+        # a = (dd.grade_class_map, dd.grade_class_student_table)
         # pprint(dd.measurement.fields)
         # dd.get_grade_focus(limit=60, step=1, mode='field')
+        # pprint(dd.grade_class_map)
+        print(dd.case.join_date, dd.case.start_date, dd.case.end_date)
 
 
 def test_assemble_health_api_run():
