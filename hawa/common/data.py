@@ -774,18 +774,14 @@ class CommonData(metaclass=MetaCommonData):
         return df
 
     @staticmethod
-    def _count_top_last_item_ids(item_scores: pd.Series, key: str = 'top'):
+    def _count_top_last_item_ids(item_scores: pd.DataFrame, ascending: bool = True):
         res = defaultdict(list)
         score_filter = set()
-        func_map = {
-            "top": item_scores.nlargest,
-            "last": item_scores.nsmallest
-        }
-        for k, v in func_map[key](n=len(item_scores)).items():
-            decimal_number = Decimal(v).quantize(Decimal('0.001'), rounding=ROUND_HALF_UP) * 100
+        for _, row in item_scores.sort_values(by='score', ascending=ascending).iterrows():
+            decimal_number = Decimal(row['score']).quantize(Decimal('0.001'), rounding=ROUND_HALF_UP) * 100
             if len(score_filter) < 3:
                 score_filter.add(decimal_number)
-                res[decimal_number].append(k)
+                res[decimal_number].append(row['item_id'])
             else:
                 break
         return res
@@ -793,6 +789,8 @@ class CommonData(metaclass=MetaCommonData):
     def count_grade_class_item_target(self):
         """计算各年级各班级 top3/last3 item target 相对优势/优先关注点"""
         all_item_codes = self.query.query_item_codes(item_ids=list(self.item_ids), categories=None)
+        item_target2_map_data = all_item_codes.loc[all_item_codes['category'] == 'G.target2', ['code', 'item_id']]
+        item_target2_map = {r['item_id']: r['code'] for _, r in item_target2_map_data.iterrows()}
         all_code_guides = self.query.query_code_guides()
         res = {}
         for grade, grade_ans in self.final_answers.groupby('grade'):
@@ -815,11 +813,13 @@ class CommonData(metaclass=MetaCommonData):
 
                 cls_score = self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=grade_cls_ans))
                 cls_rank = self.count_rank_by_score(score=cls_score)
-                item_scores = grade_cls_ans.groupby('item_id').score.mean()
-                self._count_top_last_item_ids(item_scores=item_scores)
+                item_scores = grade_cls_ans.groupby('item_id').score.mean().to_frame().reset_index()
+                item_scores['target2'] = item_scores.item_id.map(item_target2_map)
+                item_scores.dropna(subset=['target2'], inplace=True)
+
                 # get top3/last3 item_ids
-                top3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='top')
-                last3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='last')
+                top3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, ascending=False)
+                last3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, ascending=True)
 
                 record = {
                     "cls": cls, "grade": grade, "score": cls_score, "rank": cls_rank,
