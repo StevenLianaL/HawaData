@@ -40,6 +40,7 @@ def test_health_api_run():
         # print(dd.case.join_date, dd.case.start_date, dd.case.end_date)
         pprint(dd.count_grade_class_item_target())
 
+
 def test_assemble_health_api_run():
     rows = [
         {'school_ids': [5134010006, 5134010005], "target_year": 2023}

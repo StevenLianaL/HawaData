@@ -1,5 +1,5 @@
 """通用的 report data 构造器，支持 校、区、市、省、全国级别的通用报告数据构造"""
-
+import itertools
 import json
 import string
 from collections import Counter, defaultdict
@@ -690,7 +690,7 @@ class CommonData(metaclass=MetaCommonData):
 
     def count_field_point_target(self, page_limit: int = 38):
         periods = tuple(self.grade_util.grade_periods + ['-'])
-        codes_sql = f"select * from code_guide where period in {periods} or category in ('G.domain','G.point');get_grade_focus"
+        codes_sql = f"select * from code_guide where period in {periods} or category in ('G.domain','G.point');"
         codes = self.query.raw_query(codes_sql)
         targets = codes.loc[codes['category'] == 'G.target1', :]
         targets['target'] = targets['name']
@@ -779,7 +779,7 @@ class CommonData(metaclass=MetaCommonData):
         score_filter = set()
         func_map = {
             "top": item_scores.nlargest,
-            "last": item_scores.nlargest
+            "last": item_scores.nsmallest
         }
         for k, v in func_map[key](n=len(item_scores)).items():
             decimal_number = Decimal(v).quantize(Decimal('0.001'), rounding=ROUND_HALF_UP) * 100
@@ -798,30 +798,8 @@ class CommonData(metaclass=MetaCommonData):
         for grade, grade_ans in self.final_answers.groupby('grade'):
             grade_data = []
             for cls, grade_cls_ans in grade_ans.groupby('cls'):
-                cls_score = self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=grade_cls_ans))
-                cls_rank = self.count_rank_by_score(score=cls_score)
-                item_scores = grade_cls_ans.groupby('item_id').score.mean()
-                self._count_top_last_item_ids(item_scores=item_scores)
-                # get top3/last3 item_ids
-                top3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='top')
-                last3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='last')
 
-                top3_targets = self._count_item_targets(
-                    percent_item_id_map=top3_item_ids,
-                    all_item_codes=all_item_codes, all_code_guides=all_code_guides, category='G.target1'
-                )
-                last3_targets = self._count_item_targets(
-                    percent_item_id_map=last3_item_ids,
-                    all_item_codes=all_item_codes, all_code_guides=all_code_guides, category='G.target1'
-                )
-                top3_points = self._count_item_targets(
-                    percent_item_id_map=top3_item_ids,
-                    all_item_codes=all_item_codes, all_code_guides=all_code_guides, category='G.point'
-                )
-                last3_points = self._count_item_targets(
-                    percent_item_id_map=last3_item_ids,
-                    all_item_codes=all_item_codes, all_code_guides=all_code_guides, category='G.point'
-                )
+                # 计算正常的相对优势、优先关注点
                 dimensions = self.count_dim_or_field_scores_by_answers(
                     answers=grade_cls_ans, item_code='dimension', res_format='dict'
                 )
@@ -835,20 +813,38 @@ class CommonData(metaclass=MetaCommonData):
                     elif v <= 60:
                         lower_codes.append(k)
 
-                top3_target_names = top3_targets['name'].unique().tolist()
-                last3_target_names = last3_targets['name'].unique().tolist()
-                top3_point_names = top3_points['name'].unique().tolist()[:3]
-                last3_point_names = last3_points['name'].unique().tolist()[:3]
+                cls_score = self.count_mean_score_by_final_scores(scores=self.count_final_score(answers=grade_cls_ans))
+                cls_rank = self.count_rank_by_score(score=cls_score)
+                item_scores = grade_cls_ans.groupby('item_id').score.mean()
+                self._count_top_last_item_ids(item_scores=item_scores)
+                # get top3/last3 item_ids
+                top3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='top')
+                last3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='last')
+
                 record = {
                     "cls": cls, "grade": grade, "score": cls_score, "rank": cls_rank,
-                    "top3": top3_target_names, "last3": last3_target_names,
-                    "top3_data": top3_targets.to_dict(orient='records'),
-                    "last3_data": last3_targets.to_dict(orient='records'),
                     "upper_codes": upper_codes, "lower_codes": lower_codes,
-                    "top3_point_names": top3_point_names, "last3_point_names": last3_point_names,
                     # "top3_item_ids": top3_item_ids, "last3_item_ids": last3_item_ids
                 }
-                # 通过 item_ids, 查询 题干、选项、答案、dim、field、target1、target2
+
+                categories = ['G.target1', 'G.point', 'G.target2']
+                use_item_ids = {
+                    "top3": top3_item_ids, "last3": last3_item_ids
+                }
+
+                for c, uk in itertools.product(categories, use_item_ids.keys()):
+                    the_code_guide = self._count_item_targets(
+                        percent_item_id_map=use_item_ids[uk],
+                        all_item_codes=all_item_codes, all_code_guides=all_code_guides, category=c
+                    )
+
+                    match uk:
+                        case 'top3':
+                            record[f"{c}_{uk}_data"] = the_code_guide.to_dict(orient='records')
+                        case 'last3':
+                            record[f"{c}_{uk}_data"] = list(reversed(the_code_guide.to_dict(orient='records')))
+                    record[f"{c}_{uk}_names"] = the_code_guide['name'].unique().tolist()[:3]
+
                 grade_data.append(record)
             res[grade] = grade_data
         return res
