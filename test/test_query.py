@@ -77,10 +77,10 @@ def test_query_students():
 
 
 def test_query_items():
-    res = dq.query_items([1, 401])
+    res = dq.query_items({1, 401})
     assert len(res) >= 1
 
 
 def test_query_item_codes():
-    res = dq.query_item_codes([1, 401], categories=['dimension', 'field'])
+    res = dq.query_item_codes({1, 401}, categories=['dimension', 'field'])
     assert len(res) >= 1

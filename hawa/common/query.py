@@ -151,12 +151,14 @@ class DataQuery:
                 sql = f"select {user_cols} from users where id in {tuple(student_ids)} and length(id)>=18"
             case 'xx':
                 sql = f"select {user_cols} from users where id in {tuple(student_ids)} and client_id=10"
+            case _:
+                raise ValueError(f"mode {mode} not support")
 
         with self.db.engine_conn() as conn:
             students = pd.read_sql(text(sql), conn).drop_duplicates(subset=['id'])
         return students
 
-    def query_items(self, item_ids: list[int]):
+    def query_items(self, item_ids: set[int]):
         item_cols = "id, item_text, choices, item_key, item_type, grade, test_type, pattern, " \
                     "`source`, created"
         sql = f"select {item_cols} from items where id in {tuple(item_ids)};"
@@ -173,7 +175,7 @@ class DataQuery:
         with self.db.engine_conn() as conn:
             return pd.read_sql(text(sql), conn)
 
-    def query_item_codes(self, item_ids: list[int], categories: list[str] = None):
+    def query_item_codes(self, item_ids: set[int], categories: list[str] = None):
         item_code_sql = f'select ic.item_id,ic.code,ic.category,c.name ' \
                         f'from item_codes ic left join codebook c on ic.code = c.code ' \
                         f'where ic.item_id in {tuple(item_ids)}'

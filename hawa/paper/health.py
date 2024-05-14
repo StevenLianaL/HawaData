@@ -4,7 +4,6 @@ import json
 import math
 from collections import defaultdict
 from dataclasses import dataclass, field
-from pprint import pprint
 from typing import Union, Set
 
 import pandas as pd
@@ -22,7 +21,8 @@ class HealthData(CommonData):
     test_types: list[str] = field(default_factory=lambda: ['publicWelfare', 'ZjpublicWelfare', 'XxPublicWelfareQus'])
     code_word_list: Set[str] = field(default_factory=lambda: {'dimension', 'field'})
 
-    def replace_hai(self, text: str, condition: list):
+    @staticmethod
+    def replace_hai(text: str, condition: list):
         if condition:
             return text
         else:
@@ -233,7 +233,7 @@ class HealthReportData(HealthData):
         for grade, group in self.final_answers.groupby('grade'):
             base = group.loc[:, cols]
             data = pd.pivot_table(base, index='item_id', columns='student_id', values='score')
-            c: tuple = cronbach_alpha(data)
+            c = cronbach_alpha(data)
             res.append(c[0])
         self.cronbach_alpha = [round(i, 3) for i in res]
 
@@ -374,8 +374,7 @@ class HealthReportData(HealthData):
         ans = self.final_answers
         local_ans = ans.loc[(ans.grade == grade) & (ans[category] == code), :]
         student_score = local_ans.groupby('student_id').score.mean().mean() * 100
-        gender_score = local_ans.groupby(['gender', 'student_id']) \
-                           .score.mean().reset_index().groupby(
+        gender_score = local_ans.groupby(['gender', 'student_id']).score.mean().reset_index().groupby(
             'gender').score.mean() * 100
         res = Munch(
             total=student_score, grade=grade, code=code, category=category,
@@ -389,7 +388,8 @@ class HealthReportData(HealthData):
         field_score = group.loc[group.category == 'field', :][key].mean()
         return (dim_score + field_score) / 2
 
-    def _count_cls(self, row):
+    @staticmethod
+    def _count_cls(row):
         if row['cls']:
             return f"{project.grade_simple[row['grade']]}({int(row['cls'])})班"
         else:
@@ -429,7 +429,8 @@ class HealthReportData(HealthData):
         res = [(self._retain_prec(k), reverse_middle[k]) for k in sorted(reverse_middle.keys(), reverse=True)]
         return res
 
-    def count_cond(self, a: float, b: float, target: str = ''):
+    @staticmethod
+    def count_cond(a: float, b: float, target: str = ''):
         a = 0 if math.isnan(a) else a
         b = 0 if math.isnan(b) else b
         if a == b:
@@ -472,7 +473,7 @@ class HealthReportData(HealthData):
         school_code_score = sch_scores.loc[sch_scores.grade == grade, :]
         data = pd.merge(
             year_code_score, school_code_score, left_on='code', right_on='code',
-            suffixes=['_year', '_sch']
+            suffixes=('_year', '_sch')
         )
         return data
 
@@ -527,7 +528,8 @@ class HealthReportData(HealthData):
             res += '其余维度和领域没有明显差异。'
         return res
 
-    def _build_codes(self, codes: list[str]):
+    @staticmethod
+    def _build_codes(codes: list[str]):
         if len(codes) == 1:
             return f'“{codes[0]}”'
         elif len(codes) > 1:

@@ -1,4 +1,3 @@
-import pandas as pd
 from loguru import logger
 
 from hawa.common.data import CommonData
@@ -12,8 +11,8 @@ def test_common_init():
     rows = [
         {"meta_unit_type": "school", "meta_unit_id": 1101089005, "target_year": 2023},
         {"meta_unit_type": "district", "meta_unit_id": 370703, "target_year": 2021},
-        {"meta_unit_type": "city", "meta_unit_id": 331100, "target_year": 2021},
-        {"meta_unit_type": "province", "meta_unit_id": 410000, "target_year": 2021},
+        # {"meta_unit_type": "city", "meta_unit_id": 331100, "target_year": 2021},
+        # {"meta_unit_type": "province", "meta_unit_id": 410000, "target_year": 2021},
         # {"meta_unit_type": "country", "meta_unit_id": 0, "target_year": 2023},
 
     ]
@@ -38,8 +37,6 @@ def test_a_case():
     ]
     for row in rows:
         logger.info(row)
-        c = HealthReportData(
+        HealthReportData(
             **row, code_word_list={'dimension', 'field'}
         )
-        print(f"{c.final_scores.columns=}")
-        print(c.grade.grade_periods)

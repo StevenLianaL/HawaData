@@ -30,7 +30,8 @@ class DbUtil:
         yield self._engine_conn
         self._engine_conn.close()
 
-    def connect(self):
+    @staticmethod
+    def connect():
         return MySQLdb.connect(
             host=project.DB_HOST,
             port=project.DB_PORT,

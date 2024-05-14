@@ -110,12 +110,12 @@ def test_student_mht_api_run():
 
 
 def test_mht_plus_assemble_run():
-    s = AssembleMhtPlusPlusApiData(
+    AssembleMhtPlusPlusApiData(
         school_ids=[4107820676], target_year=2023, different_mode='xx'
     )
 
 
 def test_mht_assemble_api_run():
-    s = AssembleMhtPlusQusPlusApiData(
+    AssembleMhtPlusQusPlusApiData(
         school_ids=[4107210104, 4107810203], target_year=2023, different_mode='xx'
     )

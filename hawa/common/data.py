@@ -6,6 +6,7 @@ from collections import Counter, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from decimal import Decimal, ROUND_HALF_UP
+from json import JSONDecodeError
 from typing import Optional, ClassVar, Any, Set
 
 import pandas as pd
@@ -41,7 +42,7 @@ class CommonData(metaclass=MetaCommonData):
     meta_unit_type: Optional[str] = ''  # class/school/group/district/city/province/country
     meta_unit_id: Optional[int] = None
     meta_unit: Optional[Any] = None
-    grade: Optional[int] = None  # 必填
+    grade: Optional[GradeData] = None  # 必填
 
     different_mode: Optional[str] = 'default'  # 用于区分数据的不同模式 default默认/xx新乡
 
@@ -78,7 +79,7 @@ class CommonData(metaclass=MetaCommonData):
     item_codes: pd.DataFrame = field(default_factory=pd.DataFrame)
 
     students: pd.DataFrame = field(default_factory=pd.DataFrame)
-    student_ids: list[int] = field(default_factory=list)
+    student_ids: set[int] = field(default_factory=set)
     student_count: Optional[int] = None
 
     item_ids: Optional[set[int]] = None
@@ -198,7 +199,7 @@ class CommonData(metaclass=MetaCommonData):
         self.student_count = len(self.students)
         try:
             self.students['student_grade'] = self.students['extra'].apply(lambda x: json.loads(x)['grade'])
-        except KeyError:
+        except (KeyError, JSONDecodeError):
             self.students['student_grade'] = None
         project.logger.debug(f'students: {self.student_count}')
 
@@ -209,7 +210,7 @@ class CommonData(metaclass=MetaCommonData):
 
     def _to_init_y_item_codes(self):
         word_list = self.code_word_list | {'other'} if len(self.code_word_list) == 1 else self.code_word_list
-        self.item_codes = self.query.query_item_codes(self.item_ids, categories=word_list)
+        self.item_codes = self.query.query_item_codes(self.item_ids, categories=list(word_list))
 
     def _to_init_z_dim_field(self):
         cache_key = f"{project.PROJECT}:codebook"
@@ -272,7 +273,8 @@ class CommonData(metaclass=MetaCommonData):
         self.final_scores = self.count_final_score(answers=self.final_answers)
         project.logger.debug(f'final_scores: {len(self.final_scores)}')
 
-    def get_code_name_items(self, item_id, word: str, items: dict):
+    @staticmethod
+    def get_code_name_items(item_id, word: str, items: dict):
         try:
             return items[word][item_id]
         except KeyError:
@@ -385,7 +387,7 @@ class CommonData(metaclass=MetaCommonData):
             }
             for cls, cls_group in grade_group.groupby('cls'):
                 cls_row = {
-                    'label': f'{cls}班', 'value': int(cls),
+                    'label': f'{cls}班', 'value': int(str(cls)),
                     'children': [], "is_leaf": False
                 }
                 for _, student_g_row in cls_group.iterrows():
@@ -649,10 +651,11 @@ class CommonData(metaclass=MetaCommonData):
         """
         rows33 = []
         for grade, grade_ans in self.final_answers.groupby('grade'):
-            grade_gender_scores = self.count_gender_scores33(ans=grade_ans, grade=grade, cls=None)
+            grade_gender_scores = self.count_gender_scores33(ans=grade_ans, grade=int(str(grade)), cls=None)
             rows33.append(grade_gender_scores)
             for cls, grade_cls_ans in grade_ans.groupby('cls'):
-                grade_cls_gender_scores = self.count_gender_scores33(ans=grade_cls_ans, grade=grade, cls=cls)
+                grade_cls_gender_scores = self.count_gender_scores33(
+                    ans=grade_cls_ans, grade=int(str(grade)), cls=cls)
                 rows33.append(grade_cls_gender_scores)
         base_res = []
         for row33 in rows33:
@@ -788,7 +791,7 @@ class CommonData(metaclass=MetaCommonData):
 
     def count_grade_class_item_target(self):
         """计算各年级各班级 top3/last3 item target 相对优势/优先关注点"""
-        all_item_codes = self.query.query_item_codes(item_ids=list(self.item_ids), categories=None)
+        all_item_codes = self.query.query_item_codes(item_ids=self.item_ids, categories=None)
         item_target2_map_data = all_item_codes.loc[all_item_codes['category'] == 'G.target2', ['code', 'item_id']]
         item_target2_map = {r['item_id']: r['code'] for _, r in item_target2_map_data.iterrows()}
         all_code_guides = self.query.query_code_guides()
@@ -865,7 +868,6 @@ class CommonData(metaclass=MetaCommonData):
         res = {}
         max_min_score_class = defaultdict(list)
         for grade, grade_ans in self.final_answers.groupby('grade'):
-            grade_scores = self.count_final_score(answers=grade_ans)
             res[grade] = {"cls": []}
             max_cls, min_cls = grade_ans['cls'].max(), grade_ans['cls'].min()
             for cls, cls_ans in grade_ans.groupby('cls'):
@@ -911,7 +913,7 @@ class CommonData(metaclass=MetaCommonData):
 
     def temp_school_grade_class_data(self):
         """学校、年级、班级、答对率、题干、选项a、选项b、选项c、选项d、答案、健康领域、健康维度、一级目标内容、二级目标内容"""
-        all_item_codes = self.query.query_item_codes(item_ids=list(self.item_ids), categories=None)
+        all_item_codes = self.query.query_item_codes(item_ids=self.item_ids, categories=None)
         all_code_guides = self.query.query_code_guides()
         all_code_book = self.codebook
         codebook_name_map = {i['code']: i['name'] for _, i in all_code_book.iterrows()}
@@ -925,8 +927,8 @@ class CommonData(metaclass=MetaCommonData):
                 item_score_map = item_scores.to_dict()
                 self._count_top_last_item_ids(item_scores=item_scores)
                 # get top3/last3 item_ids
-                top3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='top')
-                last3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, key='last')
+                top3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, ascending=False)
+                last3_item_ids = self._count_top_last_item_ids(item_scores=item_scores, ascending=True)
                 this_item_ids = list(top3_item_ids.values()) + list(last3_item_ids.values())
                 that_item_ids = []
                 for i in this_item_ids:

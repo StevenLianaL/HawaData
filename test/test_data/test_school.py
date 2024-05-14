@@ -16,7 +16,7 @@ def test_health_report_run():
     ]
     for row in rows:
         logger.info(row)
-        d = SchoolHealthReportData(**row)
+        SchoolHealthReportData(**row)
 
 
 def test_mht_web_run():
