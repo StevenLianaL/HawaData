@@ -517,11 +517,11 @@ class HealthReportData(HealthData):
         if bigger:
             local_codes = self._build_codes(bigger)
             res += f"{local_codes}{project.category_map[gender]}分数" \
-                   f"明显高于全国{project.grade_simple[grade]}年级{project.category_map[gender]}平均分数，"
+                   f"高于全国{project.grade_simple[grade]}年级{project.category_map[gender]}平均分数，"
         if smaller:
             local_codes = self._build_codes(smaller)
             res += f"{local_codes}{project.category_map[gender]}分数" \
-                   f"明显低于全国{project.grade_simple[grade]}年级{project.category_map[gender]}平均分数，"
+                   f"低于全国{project.grade_simple[grade]}年级{project.category_map[gender]}平均分数，"
         if not bigger and not smaller:
             res += '所有维度和领域都没有明显差异。'
         else:

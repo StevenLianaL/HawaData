@@ -163,4 +163,5 @@ text = (
     ("0.15.3", "add points names"),
     ("0.15.4", "count all code guides"),
     ("0.15.5", "refactor code"),
+    ("0.15.6", "refactor code"),
 )
