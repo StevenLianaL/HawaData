@@ -522,10 +522,12 @@ class HealthReportData(HealthData):
             local_codes = self._build_codes(smaller)
             res += f"{local_codes}{project.category_map[gender]}分数" \
                    f"低于全国{project.grade_simple[grade]}年级{project.category_map[gender]}平均分数，"
-        if not bigger and not smaller:
-            res += '所有维度和领域都没有明显差异。'
+        if len(bigger) + len(smaller) == 0:
+            res += '所有维度/领域都没有明显差异。'
+        elif len(bigger) + len(smaller) < 10:
+            res += '其余维度/领域没有明显差异。'
         else:
-            res += '其余维度和领域没有明显差异。'
+            pass
         return res
 
     @staticmethod
@@ -534,7 +536,7 @@ class HealthReportData(HealthData):
             return f'“{codes[0]}”'
         elif len(codes) > 1:
             code_text = '、'.join([f'“{i}”' for i in codes[:-1]]) + f'和“{codes[-1]}”'
-            return f"在{code_text}维度和领域，"
+            return f"在{code_text}维度/领域，"
         else:
             return ''
 
@@ -572,6 +574,11 @@ class HealthReportData(HealthData):
         :param category: total/gender  total：总体比全国 / gender：男生比女生。
         """
         bigger, smaller, others = [], [], []
+        match category:
+            case 'total':
+                subs = ['学生', '全国同年级学生', '学生分数与全国同年级学生', '学生']
+            case _:
+                subs = ['男生', '女生', '男女生分数', '男女生']
         for grade in self.grade.grades:
             if category == 'total':
                 first = self.grade_score[grade].avg
@@ -586,28 +593,25 @@ class HealthReportData(HealthData):
                 smaller.append(f"{project.grade_simple[grade]}年级")
             else:
                 others.append(f"{project.grade_simple[grade]}年级")
-        res = ''
-        if bigger:
-            local_codes = self._build_codes(bigger)
-            res += f"{local_codes}"
-            match category:
-                case 'total':
-                    res += '分数明显高于全国平均分数，'
-                case 'gender':
-                    res += '男生分数明显高于女生分数，'
 
-        if smaller:
-            local_codes = self._build_codes(smaller)
-            res += f"{local_codes}"
-            match category:
-                case 'total':
-                    res += "分数明显低于全国平均分数，"
-                case 'gender':
-                    res += "男生分数明显低于女生分数，"
-        if (bigger or smaller) and ((len(bigger) + len(smaller)) < len(self.grade.grades)):
-            res += f'其他年级分数没有明显差异。'
-        if not bigger and not smaller:
-            res = f'分数对比无明显差异。'
+        match len(self.grade.grades):
+            case 1:
+                if bigger or smaller:
+                    grade_text = bigger[0] if bigger else smaller[0]
+                    res = f'{grade_text}{subs[0]}分数明显高于/低于{subs[1]}。'
+                else:
+                    res = f'{others[0]}{subs[2]}对比没有明显差异。'
+            case _:  # more than 1
+                grades = []
+                for grade in self.grade.grades:
+                    chinese_grade_text = f"{project.grade_simple[grade]}年级"
+                    if chinese_grade_text in bigger or chinese_grade_text in smaller:
+                        grades.append(chinese_grade_text)
+                if grades:
+                    grades_text = '、'.join(grades)
+                    res = f"{grades_text}{subs[0]}分数明显高于/低于{subs[1]}，其他年级{subs[3]}分数对比没有明显差异。"
+                else:
+                    res = f'各年级{subs[2]}对比均没有明显差异。'
         return res
 
     @property
