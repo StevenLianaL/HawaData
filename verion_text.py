@@ -165,4 +165,5 @@ text = (
     ("0.15.5", "refactor code"),
     ("0.15.6", "refactor code"),
     ("0.15.7", "refactor text"),
+    ("0.15.8", "add condition"),
 )
