@@ -610,7 +610,7 @@ class HealthReportData(HealthData):
                 if grades:
                     grades_text = '、'.join(grades)
                     if len(grades) == len(self.grade.grades):
-                        res = f"{grades_text}{subs[0]}分数明显高于/低于{subs[1]}。"
+                        res = f"各年级{subs[0]}分数明显高于/低于{subs[1]}。"
                     else:
                         res = f"{grades_text}{subs[0]}分数明显高于/低于{subs[1]}，其他年级{subs[3]}分数对比没有明显差异。"
                 else:
