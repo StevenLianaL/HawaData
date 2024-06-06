@@ -598,7 +598,8 @@ class HealthReportData(HealthData):
             case 1:
                 if bigger or smaller:
                     grade_text = bigger[0] if bigger else smaller[0]
-                    res = f'{grade_text}{subs[0]}分数明显高于/低于{subs[1]}。'
+                    compare_text = '高于' if bigger else '低于'
+                    res = f'{grade_text}{subs[0]}分数明显{compare_text}{subs[1]}。'
                 else:
                     res = f'{others[0]}{subs[2]}对比没有明显差异。'
             case _:  # more than 1

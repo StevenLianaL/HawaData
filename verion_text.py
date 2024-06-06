@@ -167,4 +167,5 @@ text = (
     ("0.15.7", "refactor text"),
     ("0.15.8", "add condition"),
     ("0.15.9", "fix grade text des"),
+    ("0.15.10", "update describe text"),
 )
