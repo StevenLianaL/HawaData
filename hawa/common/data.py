@@ -204,8 +204,13 @@ class CommonData(metaclass=MetaCommonData):
         project.logger.debug(f'students: {self.student_count}')
 
     def _to_init_g_items(self):
+        """Hawa测评仅取试卷 items/answers，其他测评取全部"""
+        is_hawa = 'publicWelfare' in self.test_types
         self.item_ids = set(self.answers['item_id'].drop_duplicates())
-        self.items = self.query.query_items(self.item_ids)
+        self.items = self.query.query_items(self.item_ids, is_hawa=is_hawa)
+        if is_hawa:
+            self.item_ids = set(self.items['id'].tolist())
+            self.answers = self.answers.loc[self.answers['item_id'].isin(self.item_ids)]
         project.logger.debug(f'items: {len(self.items)}')
 
     def _to_init_y_item_codes(self):

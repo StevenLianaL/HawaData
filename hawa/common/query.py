@@ -158,10 +158,12 @@ class DataQuery:
             students = pd.read_sql(text(sql), conn).drop_duplicates(subset=['id'])
         return students
 
-    def query_items(self, item_ids: set[int]):
+    def query_items(self, item_ids: set[int], is_hawa: bool = False):
         item_cols = "id, item_text, choices, item_key, item_type, grade, test_type, pattern, " \
                     "`source`, created"
         sql = f"select {item_cols} from items where id in {tuple(item_ids)};"
+        if is_hawa:
+            sql = sql.replace(';', " and test_type=1;")
         with self.db.engine_conn() as conn:
             return pd.read_sql(text(sql), conn)
 
