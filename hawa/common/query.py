@@ -167,6 +167,16 @@ class DataQuery:
         with self.db.engine_conn() as conn:
             return pd.read_sql(text(sql), conn)
 
+    def query_paper_items(self, paper_ids: list[int]):
+        if len(paper_ids) == 0:
+            return []
+        elif len(paper_ids) == 1:
+            sql = f"select * from paper_items where paper_id={paper_ids[0]};"
+        else:
+            sql = f"select * from paper_items where paper_id in {tuple(paper_ids)};"
+        with self.db.engine_conn() as conn:
+            return pd.read_sql(text(sql), conn)
+
     def query_phq_items(self):
         sql = f"select * from items where source='2021浙江心理';"
         with self.db.engine_conn() as conn:

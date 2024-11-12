@@ -73,6 +73,7 @@ class CommonData(metaclass=MetaCommonData):
 
     cases: pd.DataFrame = field(default_factory=pd.DataFrame)
     case_ids: list[int] = field(default_factory=list)
+    paper_ids: list[int] = field(default_factory=list)
     case_project_ids: Counter = field(default_factory=Counter)
 
     answers: pd.DataFrame = field(default_factory=pd.DataFrame)
@@ -184,6 +185,11 @@ class CommonData(metaclass=MetaCommonData):
             project.logger.debug(f'cases: {len(self.cases)}')
         if len(self.cases) == 0:
             raise NoCasesError(f'grade {self.grade} cases is empty')
+        self.paper_ids = self.cases['paper_id'].tolist()
+
+    def _to_init_e2_paper_items(self):
+        self.paper_items = self.query.query_paper_items(self.paper_ids)
+
 
     @log_func_time
     def _to_init_e_answers(self):
@@ -207,6 +213,8 @@ class CommonData(metaclass=MetaCommonData):
         """Hawa测评仅取试卷 items/answers，其他测评取全部"""
         is_hawa = 'publicWelfare' in self.test_types
         self.item_ids = set(self.answers['item_id'].drop_duplicates())
+        paper_item_ids = set(self.paper_items['item_id'].tolist())
+        self.item_ids = self.item_ids & paper_item_ids
         self.items = self.query.query_items(self.item_ids, is_hawa=is_hawa)
         if is_hawa:
             self.item_ids = set(self.items['id'].tolist())
