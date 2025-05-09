@@ -22,7 +22,7 @@ def test_health_api_run():
         # {"meta_unit_id": 5134010001, "target_year": 2023, "meta_unit_type": "school"},
         # {"meta_unit_id": 1101088012, "target_year": 2023, "meta_unit_type": "school"},
         # {"meta_unit_id": 3308250001, "target_year": 2024, "meta_unit_type": "school"},
-        {"meta_unit_id": 1101019056, "target_year": 2024, "meta_unit_type": "school"},
+        {"meta_unit_id": 1101088012, "target_year": 2024, "meta_unit_type": "school","grade": 3},
         # {"meta_unit_type": "school", "meta_unit_id": 3707030003, "target_year": 2021},
         # {"meta_unit_id": 110108, "target_year": 2023, "meta_unit_type": "district", "grade": 10},
         # {"meta_unit_id": 110000, "target_year": 2023, "meta_unit_type": "province", "grade": 10},
@@ -38,7 +38,8 @@ def test_health_api_run():
         # dd.get_grade_focus(limit=60, step=1, mode='field')
         # pprint(dd.grade_class_map)
         # print(dd.case.join_date, dd.case.start_date, dd.case.end_date)
-        pprint(dd.count_grade_class_item_target())
+        print(dd.cronbach_alpha)
+
 
 
 def test_assemble_health_api_run():

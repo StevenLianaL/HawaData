@@ -232,7 +232,7 @@ class HealthReportData(HealthData):
         res = []
         for grade, group in self.final_answers.groupby('grade'):
             base = group.loc[:, cols]
-            data = pd.pivot_table(base, index='item_id', columns='student_id', values='score')
+            data = pd.pivot_table(base, index='student_id', columns='item_id', values='score')
             c = cronbach_alpha(data)
             res.append(c[0])
         self.cronbach_alpha = [round(i, 3) for i in res]
