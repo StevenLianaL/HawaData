@@ -1,10 +1,8 @@
-from hawa.base.db import MongoUtil
 from hawa.config import project
 
 
 def prepare_test():
     project.COMPLETED = True
-    MongoUtil.connect()
 
 
 def validate_data_for_web(d):
@@ -19,4 +17,4 @@ def validate_data_for_web(d):
             for v in d.values():
                 validate_data_for_web(v)
         case _:
-            raise TypeError(f'不支持的类型 {type(d)}')
+            raise TypeError(f"不支持的类型 {type(d)}")

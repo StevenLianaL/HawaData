@@ -171,4 +171,5 @@ text = (
     ("0.16.1", "hawa only count test_type=1"),
     ("0.16.2", "fix paper item ids"),
     ("0.16.3", "fix error cronbach alpha"),
+    ("0.17.0", "remove mongo"),
 )

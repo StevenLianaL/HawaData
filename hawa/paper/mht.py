@@ -53,9 +53,6 @@ class MhtData(CommonData):
         mgarbage_item_ids = self.mgarbage_item_ids
         self.mgarbage_final_answers = old_answers.loc[old_answers['item_id'].isin(mgarbage_item_ids), :]
 
-        project.logger.debug(f'mht_final_answers: {len(self.mht_final_answers)}')
-        project.logger.debug(f'phq_final_answers: {len(self.psy_final_answers)}')
-        project.logger.debug(f'mgarbage_final_answers: {len(self.mgarbage_final_answers)}')
 
     def _to_count_c_mht_ans_score(self):
         ans = self.mht_final_answers

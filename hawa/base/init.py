@@ -19,12 +19,6 @@ def set_project(
         db_name: str = '',
         redis_host: str = '',
         redis_db: int = 0,
-        mongo_host: str = '',
-        mongo_port: int = 27017,
-        mongo_user: str = '',
-        mongo_pswd: str = '',
-        mongo_db: str = '',
-        mongo_auth_db: str = '',
 ):
     for k, v in vars().items():
         upper_k = k.upper()

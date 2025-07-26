@@ -370,7 +370,6 @@ class HealthReportData(HealthData):
     @classmethod
     def cache_year_data(cls, year: int):
         """缓存年数据"""
-        project.logger.info(f"缓存年数据 {year=}")
         key = f"{project.REDIS_PREFIX}{year}:data"
 
         res = defaultdict(dict)
@@ -381,7 +380,6 @@ class HealthReportData(HealthData):
             last_year_num=year - 1,
             is_load_last=False,
         )
-        project.logger.debug("after init data")
 
         for grade, value in zip(
             tool.grade.grades, tool.grade_gender_distribution.values()

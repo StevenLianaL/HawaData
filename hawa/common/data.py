@@ -113,7 +113,6 @@ class CommonData(metaclass=MetaCommonData):
             count_functions = [i for i in dir(self) if i.startswith('_to_count_')]
             for func in count_functions:
                 getattr(self, func)()
-                project.logger.info(f'count {func} success')
 
         else:
             self.load_less_data()
@@ -123,7 +122,6 @@ class CommonData(metaclass=MetaCommonData):
         try:
             self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
         except TypeError as e:
-            project.logger.warning(f'query_unit error: {e}')
             self.__class__.query = DataQuery()
             self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
         if '百万' in self.meta_unit.name:
@@ -133,7 +131,6 @@ class CommonData(metaclass=MetaCommonData):
         if not self.target_year:
             self.target_year = pendulum.now().year
         self.last_year_num = self.target_year - 1
-        project.logger.info(f'target_year: {self.target_year}')
 
     def _to_init_c_schools(self):
         if self.school_ids:
@@ -155,7 +152,6 @@ class CommonData(metaclass=MetaCommonData):
                 case _:
                     raise ValueError(f'unknown meta_unit_type: {self.meta_unit_type}')
             self.school_ids = self.schools['id'].tolist()
-        project.logger.debug(f'schools: {len(self.schools)}')
 
     def _to_init_d_cases(self, is_cleared: bool = True):
         start_stamp = pendulum.datetime(self.target_year, 1, 1)
@@ -177,12 +173,10 @@ class CommonData(metaclass=MetaCommonData):
             raise NoCasesError(f'no cases:{self.meta_unit} {self.school_ids}')
         self.case_ids = self.cases['id'].tolist()
         self.school_ids = self.cases['school_id'].unique().tolist()
-        project.logger.debug(f'cases: {len(self.cases)}')
 
         if self.grade:
             self.cases = self.cases.loc[self.cases['id'] % 100 == self.grade, :]
             self.case_ids = self.cases['id'].tolist()
-            project.logger.debug(f'cases: {len(self.cases)}')
         if len(self.cases) == 0:
             raise NoCasesError(f'grade {self.grade} cases is empty')
         self.paper_ids = self.cases['paper_id'].tolist()
@@ -194,7 +188,6 @@ class CommonData(metaclass=MetaCommonData):
     @log_func_time
     def _to_init_e_answers(self):
         self.answers = self.query.query_answers(case_ids=self.case_ids)
-        project.logger.debug(f'answers: {len(self.answers)}')
         if self.answers.empty:
             raise NoValidAnswers(f"{self.meta_unit.id} no valid answers")
 
@@ -207,7 +200,6 @@ class CommonData(metaclass=MetaCommonData):
             self.students['student_grade'] = self.students['extra'].apply(lambda x: json.loads(x)['grade'])
         except (KeyError, JSONDecodeError):
             self.students['student_grade'] = None
-        project.logger.debug(f'students: {self.student_count}')
 
     def _to_init_g_items(self):
         """Hawa测评仅取试卷 items/answers，其他测评取全部"""
@@ -219,7 +211,6 @@ class CommonData(metaclass=MetaCommonData):
         if is_hawa:
             self.item_ids = set(self.items['id'].tolist())
             self.answers = self.answers.loc[self.answers['item_id'].isin(self.item_ids)]
-        project.logger.debug(f'items: {len(self.items)}')
 
     def _to_init_y_item_codes(self):
         word_list = self.code_word_list | {'other'} if len(self.code_word_list) == 1 else self.code_word_list
@@ -244,7 +235,6 @@ class CommonData(metaclass=MetaCommonData):
     def _to_count_a_final_answers(self):
         items = {k: {} for k in self.code_word_list}
         # code-dimension/field  ~  item_id  ~ code   name
-        project.logger.debug(f"{self.code_word_list=}")
         for (item_id, category), codes in self.item_codes.groupby(['item_id', 'category']):
             if category in self.code_word_list:
                 for _, code_data in codes.iterrows():
@@ -254,12 +244,10 @@ class CommonData(metaclass=MetaCommonData):
             self.answers, self.students.loc[:, ['id', 'gender', 'nickname', 'student_grade']],
             left_on='student_id', right_on='id'
         )
-        project.logger.debug(f"ans merge students {len(data)}")
         # inner 时，final_answers 和 answers 数目不等：final_answers 过滤掉了 没有 code_word_list（维度领域或其他）的题目
         # outer 时，数目相等，不过滤任何题目
         data = pd.merge(data, self.item_codes, left_on='item_id', right_on='item_id', how='inner')
 
-        project.logger.debug(f'merge success {data.shape}')
 
         self.set_data_extra(d=data, set_grade=True, set_class=True)
 
@@ -279,12 +267,10 @@ class CommonData(metaclass=MetaCommonData):
             self.final_answers = self.filter_answers_cls_less10(ans=self.final_answers)
             self.student_ids = set(self.final_answers['student_id'].tolist())
 
-        project.logger.debug(f'final_answers: {len(self.final_answers)}')
 
     @log_func_time
     def _to_count_b_final_scores(self):
         self.final_scores = self.count_final_score(answers=self.final_answers)
-        project.logger.debug(f'final_scores: {len(self.final_scores)}')
 
     @staticmethod
     def get_code_name_items(item_id, word: str, items: dict):
@@ -502,7 +488,6 @@ class CommonData(metaclass=MetaCommonData):
         init_functions = [i for i in dir(self) if i.startswith('_to_init_')]
         for func in init_functions:
             getattr(self, func)()
-            project.logger.info(f'load data {func} success')
 
     def set_data_extra(self, d: pd.DataFrame, set_grade: bool = True, set_class: bool = True):
         """为 数据 设置不同模式下的 extra 字段"""

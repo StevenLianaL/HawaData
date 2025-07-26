@@ -30,7 +30,6 @@ class StudentHealthApiData(StudentMixin, HealthApiData):
         try:
             self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_student_id))
         except TypeError as e:
-            project.logger.warning(f'query_unit error: {e}')
             self.__class__.query = DataQuery()
             self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
         self.student_name = self.meta_unit.name
@@ -47,7 +46,6 @@ class StudentHealthApiData(StudentMixin, HealthApiData):
         if len(self.answers) == 0:
             raise NoAnswersError(f"学生 {self.meta_student_id} 没有答题记录")
 
-        project.logger.debug(f'student answers: {len(self.answers)}')
 
 
 def count_segment_scores(score: float, limit_group: list[float]) -> list[float]:
@@ -117,7 +115,6 @@ class StudentMhtPlusApiData(StudentMixin, MhtPlusApiData):
         try:
             self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_student_id))
         except TypeError as e:
-            project.logger.warning(f'query_unit error: {e}')
             self.__class__.query = DataQuery()
             self.meta_unit = self.query.query_unit(self.meta_unit_type, str(self.meta_unit_id))
         if self.meta_unit.client_id == 10:
@@ -134,7 +131,6 @@ class StudentMhtPlusApiData(StudentMixin, MhtPlusApiData):
         if len(self.answers) == 0:
             raise NoAnswersError(f"学生 {self.meta_student_id} 没有答题记录")
 
-        project.logger.debug(f'student answers: {len(self.answers)}')
 
     def count_student_archive(self):
         """获取学生档案"""

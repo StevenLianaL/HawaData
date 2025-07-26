@@ -1,6 +1,5 @@
 import platform
 
-from mongo_log.models import LogRecord
 from pydantic import BaseSettings
 
 
@@ -30,14 +29,6 @@ class Settings(BaseSettings):
     REDIS_HOST = '' if not DEBUG else 'localhost'
     REDIS_DB = 5
     REDIS_PREFIX = 'report:'
-
-    # mongo
-    MONGO_HOST = '' if not DEBUG else 'localhost'
-    MONGO_PORT = 3717 if not DEBUG else 27017
-    MONGO_USER = '' if not DEBUG else 'test'
-    MONGO_PSWD = '' if not DEBUG else 'test'
-    MONGO_DB = 'record'
-    MONGO_AUTH_DB = 'admin'
 
     # time
     utc = 'UTC'
@@ -95,10 +86,6 @@ class Settings(BaseSettings):
     def grade_mapping(self):
         mappings = dict(zip(range(0, 13), '无 一 二 三 四 五 六 七 八 九 十 十一 十二'.split(' ')))
         return mappings
-
-    @property
-    def logger(self):
-        return LogRecord(project=self.PROJECT)
 
 
 project = Settings()

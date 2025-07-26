@@ -1,7 +1,6 @@
 from contextlib import contextmanager
 
 import MySQLdb
-import mongoengine
 import sqlalchemy
 from redis.client import StrictRedis
 
@@ -19,8 +18,10 @@ class DbUtil:
 
     @property
     def db_engine(self):
-        database_url = f"{project.DB_MODE}://{project.DB_USER}:{project.DB_PSWD}@{project.DB_HOST}/" \
-                       f"{project.DB_NAME}?charset=utf8"
+        database_url = (
+            f"{project.DB_MODE}://{project.DB_USER}:{project.DB_PSWD}@{project.DB_HOST}/"
+            f"{project.DB_NAME}?charset=utf8"
+        )
         engine = sqlalchemy.create_engine(database_url, pool_pre_ping=True)
         return engine
 
@@ -55,11 +56,10 @@ class DbUtil:
         try:
             self._cursor_conn.ping()
         except Exception as e:
-            project.logger.info(f"{type(e)=} {e=}")
             self._cursor_conn = self.connect()
         return self._cursor_conn
 
-    def query_by_sql(self, sql: str, mode: str = 'all'):
+    def query_by_sql(self, sql: str, mode: str = "all"):
         """
         :param sql:
         :param mode: all or one
@@ -68,25 +68,10 @@ class DbUtil:
         with self.cursor_conn.cursor(cursorclass=MySQLdb.cursors.DictCursor) as cursor:
             cursor.execute(sql)
             match mode:
-                case 'all':
+                case "all":
                     return cursor.fetchall()
-                case 'one':
+                case "one":
                     return cursor.fetchone()
-
-
-class MongoUtil:
-    @classmethod
-    def connect(
-            cls, db: str = '', host: str = '', port: int = 0,
-            username: str = '', pswd: str = '', source: str = ''
-    ):
-        mongoengine.connect(
-            db or project.MONGO_DB,
-            host=host or project.MONGO_HOST, port=port or project.MONGO_PORT,
-            username=username or project.MONGO_USER,
-            password=pswd or project.MONGO_PSWD,
-            authentication_source=source or project.MONGO_AUTH_DB
-        )
 
 
 @singleton

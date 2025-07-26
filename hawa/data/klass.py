@@ -44,4 +44,3 @@ class ClassHealthApiData(ClassMixin, HealthApiData):
             if int(str(row['student_id'])[:15]) == self.meta_class_id:
                 records.append(row)
         self.answers = pd.DataFrame.from_records(records)
-        project.logger.debug(f'class answers: {len(self.answers)}')
