@@ -1,6 +1,6 @@
 [project]
 name = "hawadata"
-version = "0.17.2"
+version = "0.17.3"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -9,18 +9,18 @@ dependencies = [
     "decorator",
     "loguru",
     "munch",
-    "mysqlclient>=2.2.7",
-    "numpy==1.24.2",
-    "pandas==2.0.1",
-    "pendulum==2.1.2",
+    "mysqlclient",
+    "numpy",
+    "pandas",
+    "pendulum",
     "pingouin>=0.5.5",
-    "pydantic==1.10.2",
-    "pymysql==1.0.2",
-    "redis==4.3.5",
-    "requests==2.28.1",
+    "pydantic",
+    "pymysql",
+    "redis",
+    "requests",
     "scikit-learn>=1.7.1",
-    "scipy==1.10.1",
-    "seaborn==0.12.1",
+    "scipy",
+    "seaborn",
     "setuptools",
     "sqlalchemy",
 ]

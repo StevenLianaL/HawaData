@@ -245,7 +245,7 @@ wheels = [
 
 [[package]]
 name = "hawadata"
-version = "0.17.2"
+version = "0.17.3"
 source = { editable = "." }
 dependencies = [
     { name = "databases" },
@@ -279,18 +279,18 @@ requires-dist = [
     { name = "decorator" },
     { name = "loguru" },
     { name = "munch" },
-    { name = "mysqlclient", specifier = ">=2.2.7" },
-    { name = "numpy", specifier = "==1.24.2" },
-    { name = "pandas", specifier = "==2.0.1" },
-    { name = "pendulum", specifier = "==2.1.2" },
+    { name = "mysqlclient" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pendulum" },
     { name = "pingouin", specifier = ">=0.5.5" },
-    { name = "pydantic", specifier = "==1.10.2" },
-    { name = "pymysql", specifier = "==1.0.2" },
-    { name = "redis", specifier = "==4.3.5" },
-    { name = "requests", specifier = "==2.28.1" },
+    { name = "pydantic" },
+    { name = "pymysql" },
+    { name = "redis" },
+    { name = "requests" },
     { name = "scikit-learn", specifier = ">=1.7.1" },
-    { name = "scipy", specifier = "==1.10.1" },
-    { name = "seaborn", specifier = "==0.12.1" },
+    { name = "scipy" },
+    { name = "seaborn" },
     { name = "setuptools" },
     { name = "sqlalchemy" },
 ]
