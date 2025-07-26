@@ -1,9 +1,9 @@
 [project]
 name = "hawadata"
-version = "0.17.0"
+version = "0.17.1"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "databases==0.5.3",
     "decorator==5.1.1",
